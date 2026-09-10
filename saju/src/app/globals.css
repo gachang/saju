@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Palette lifted from the Figma exports in /assets. */
+@theme {
+  --color-ink: #012e58;
+  --color-ink-deep: #01203c;
+  --color-glow: #296a92;
+  --color-gold: #faf999;
+  --color-gold-dim: #c9c87a;
+
+  --font-hambak: var(--font-hambak), sans-serif;
+  --font-gmarket: var(--font-gmarket), sans-serif;
+
+  /* The design is a 402 x 874 mobile frame; the stage keeps that ratio. */
+  --stage-width: 26.125rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--color-ink-deep);
+  color: #fff;
+  font-family: var(--font-gmarket);
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior-y: none;
+}
+
+/* Native selects keep their platform arrow; we draw our own instead. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(250 249 153 / 0.25);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
