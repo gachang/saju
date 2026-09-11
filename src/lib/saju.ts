@@ -9,6 +9,7 @@ export type Person = {
   calendar: Calendar;
   birthTime: string;
   timeUnknown: boolean;
+  isLeapMonth: boolean;
 };
 
 export type FormState = {
@@ -27,6 +28,7 @@ export const emptyPerson: Person = {
   calendar: "solar",
   birthTime: "",
   timeUnknown: false,
+  isLeapMonth: false,
 };
 
 export const emptyForm: FormState = {
@@ -43,7 +45,7 @@ export const GENDERS = [
 const CURRENT_YEAR = new Date().getFullYear();
 
 export const YEARS = Array.from(
-  { length: CURRENT_YEAR - 1930 + 1 },
+  { length: CURRENT_YEAR - 1900 + 1 },
   (_, i) => String(CURRENT_YEAR - i),
 );
 
@@ -82,9 +84,7 @@ export const SANGGEUK = ["金克木", "木克土", "土克水", "水克火", "�
 
 export function isPersonComplete(p: Person): boolean {
   return Boolean(
-    p.name.trim() &&
-      p.gender &&
-      p.year &&
+    p.year &&
       p.month &&
       p.day &&
       (p.timeUnknown || p.birthTime),

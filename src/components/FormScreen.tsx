@@ -6,8 +6,6 @@ import { ElementOrbit } from "./ElementOrbit";
 import { CheckOption, Field, Select, TextInput } from "./ui/Field";
 import { GoldButton } from "./ui/GoldButton";
 import {
-  BIRTH_TIMES,
-  GENDERS,
   MONTHS,
   SANGGEUK,
   SANGSAENG,
@@ -51,21 +49,13 @@ function PersonPanel({
       <h2 className="mb-3.5 text-center font-gmarket text-base font-bold text-gold">{title}</h2>
 
       <div className="space-y-3">
-        <Field label="이름">
+        <Field label="호칭 (선택)">
           <TextInput
             value={person.name}
             onChange={(e) => onChange({ name: e.target.value })}
-            placeholder="이름"
+            placeholder="닉네임"
+            maxLength={12}
             autoComplete="off"
-          />
-        </Field>
-
-        <Field label="성별">
-          <Select
-            placeholder="선택"
-            options={GENDERS}
-            value={person.gender}
-            onChange={(e) => onChange({ gender: e.target.value as Person["gender"] })}
           />
         </Field>
 
@@ -86,7 +76,7 @@ function PersonPanel({
               />
               <Select
                 placeholder="일"
-                options={asOptions(daysInMonth(person.year, person.month), "일")}
+                options={asOptions(person.calendar === "lunar" ? Array.from({ length: 30 }, (_, i) => String(i + 1)) : daysInMonth(person.year, person.month), "일")}
                 value={person.day}
                 onChange={(e) => onChange({ day: e.target.value })}
               />
@@ -96,23 +86,24 @@ function PersonPanel({
                 exclusive
                 label="양력"
                 checked={person.calendar === "solar"}
-                onChange={() => onChange({ calendar: "solar" })}
+                onChange={() => onChange({ calendar: "solar", isLeapMonth: false, day: "" })}
               />
               <CheckOption
                 exclusive
                 label="음력"
                 checked={person.calendar === "lunar"}
-                onChange={() => onChange({ calendar: "lunar" })}
+                onChange={() => onChange({ calendar: "lunar", day: "" })}
               />
             </div>
+            {person.calendar === "lunar" && <CheckOption label="윤달" checked={person.isLeapMonth} onChange={() => onChange({ isLeapMonth: !person.isLeapMonth })} />}
           </div>
         </Field>
 
         <Field label="태어난 시각">
           <div className="space-y-1.5">
-            <Select
-              placeholder="시각"
-              options={BIRTH_TIMES}
+            <TextInput
+              type="time"
+              aria-label={`${title} 태어난 시각`}
               value={person.birthTime}
               disabled={person.timeUnknown}
               onChange={(e) => onChange({ birthTime: e.target.value })}
@@ -161,7 +152,7 @@ export function FormScreen({ value, onChange, onSubmit, submitting }: Props) {
             onChange={patch("partner")}
             delay={0.15}
           >
-            <Field label="그룹명" hint="더 정확한 분석을 위해 그룹명을 알려주세요~">
+            <Field label="그룹명" hint="화면 표시용이며 계산에는 사용하지 않아요.">
               <TextInput
                 value={value.groupName}
                 onChange={(e) => onChange({ ...value, groupName: e.target.value })}
@@ -181,6 +172,7 @@ export function FormScreen({ value, onChange, onSubmit, submitting }: Props) {
           <GoldButton onClick={onSubmit} disabled={!ready} pressed={submitting}>
             분석 시작하기
           </GoldButton>
+          <p className="mt-3 text-center text-xs leading-relaxed text-white/60">보정 없는 한국 표준시 · 자정 일 경계 기준이에요.<br />생일은 브라우저에서 계산하며, 풀이는 재미로 즐겨주세요.</p>
           {!ready && (
             <p className="mt-2.5 text-center font-gmarket text-[0.6875rem] text-white/40">
               두 사람의 정보를 모두 채워주게.
