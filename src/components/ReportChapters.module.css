@@ -1,0 +1,99 @@
+.chapters {
+  padding-inline: 28px;
+  color: #fff;
+  font-family: var(--font-report-sans, sans-serif);
+}
+
+.heading {
+  margin: 0 0 30px;
+  color: #faf999;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.04em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.list {
+  display: grid;
+  gap: 30px;
+}
+
+.card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(250, 249, 153, 0.65);
+  border-radius: 20px;
+  background: rgba(1, 30, 61, 0.82);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.number {
+  flex: 0 0 30px;
+  padding-top: 4px;
+  color: #faf999;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.title {
+  min-width: 0;
+  max-width: 238px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: -0.025em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.accent {
+  width: 42px;
+  height: 3px;
+  margin-block: 20px 24px;
+  border-radius: 2px;
+  background: #faf999;
+}
+
+.body {
+  display: grid;
+  gap: 22px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.62;
+  letter-spacing: -0.015em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.body p {
+  margin: 0;
+}
+
+.footer {
+  margin-top: 24px;
+  color: #faf999;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+}
