@@ -1,6 +1,6 @@
 import "server-only";
-import { pairSchema } from "@/lib/compatibility";
-import { generateReading } from "@/lib/reading.server";
+import { pairSchema, nameLengthsSchema } from "@/lib/compatibility";
+import { generateCompleteReading } from "@/lib/reading-complete.server";
 
 export const runtime = "nodejs";
 export const maxDuration = 240;
@@ -9,6 +9,7 @@ let active = 0;
 let windowStart = Date.now();
 let calls = 0;
 const respond = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
+const requestSchema = pairSchema.extend({ name_lengths: nameLengthsSchema.optional() }).strict();
 
 export async function POST(request: Request) {
   if (process.env.READING_API_ENABLED !== "true" || !process.env.OPENAI_API_KEY) return respond({ error: "AI 보고서는 준비 중이에요. 아래 계산 결과를 먼저 확인해 주세요." }, 503);
@@ -29,14 +30,13 @@ export async function POST(request: Request) {
       if (bytes > 4096) { await reader.cancel(); return respond({ error: "요청이 너무 커요." }, 413); }
       text += decoder.decode(value, { stream: true });
     }
-    pair = pairSchema.parse(JSON.parse(text + decoder.decode()));
+    pair = requestSchema.parse(JSON.parse(text + decoder.decode()));
   } catch { return respond({ error: "명식 형식을 확인해 주세요." }, 400); }
   // Recheck after awaiting the request body, so simultaneous slow requests cannot bypass this guard.
   if (active >= 2 || calls >= 6) return respond({ error: "요청이 많아요. 잠시 후 다시 시도해 주세요." }, 429);
   active++; calls++;
   try {
-    let result = await generateReading(pair);
-    if (result.validation.length) result = await generateReading(pair, { previous: result.report });
+    const result = await generateCompleteReading({ self: pair.self, favorite: pair.favorite }, { signal: request.signal, nameLengths: pair.name_lengths });
     if (result.validation.length) return respond({ error: "보고서 품질 검사에 통과하지 못했어요. 계산 결과는 계속 확인할 수 있어요." }, 502);
     return respond({ report: result.report, promptVersion: result.promptVersion });
   } catch {

@@ -3,9 +3,19 @@ import { z } from "zod";
 import { chartSchema, type Chart } from "./engine";
 
 export const AXES = ["끌림", "소통", "안정", "성장", "덕질 텐션"] as const;
+export const AXIS_MEANINGS: Record<typeof AXES[number], string> = {
+  끌림: "관심이 시작되는 지점", 소통: "표현 차이를 이해하는 방식", 안정: "편안한 감상 리듬",
+  성장: "취향을 넓히는 계기", "덕질 텐션": "몰입과 활력의 정도",
+};
 export const RULES_VERSION = "compat-v1.0-core";
 export const pairSchema = z.object({ self: chartSchema, favorite: chartSchema }).strict();
 export type ChartPair = z.infer<typeof pairSchema>;
+export const nameLengthsSchema = z.object({
+  self: z.number().int().min(1).max(12),
+  favorite: z.number().int().min(1).max(12),
+}).strict();
+export type NameLengths = z.infer<typeof nameLengthsSchema>;
+export const DEFAULT_NAME_LENGTHS: NameLengths = { self: 3, favorite: 2 };
 type Kind = "합" | "상생" | "비화" | "상극" | "육합" | "충" | "형" | "해" | "파";
 type Rule = { meaning: string; delta: [number, number, number, number, number] };
 const rules: Record<Kind, Rule> = {
@@ -57,9 +67,9 @@ export function compatibility(pair: ChartPair) {
     compatibility_type: `${highest} 중심 · ${lowest} 조율형`, evidence };
 }
 
-export function readingInput(pair: ChartPair, today = new Date().toISOString().slice(0, 10)) {
+export function readingInput(pair: ChartPair, today = new Date().toISOString().slice(0, 10), nameLengths: NameLengths = DEFAULT_NAME_LENGTHS) {
   const computed = compatibility(pair);
-  return { ...computed, today, coverage: { self: pair.self.hour ? "4주" : "3주", favorite: pair.favorite.hour ? "4주" : "3주", scoring: "연·월·일주만 사용", convention: "선택된 명식 · 시주는 점수 미반영" },
+  return { ...computed, axis_meanings: AXIS_MEANINGS, name_lengths: nameLengthsSchema.parse(nameLengths), today, coverage: { self: pair.self.hour ? "4주" : "3주", favorite: pair.favorite.hour ? "4주" : "3주", scoring: "연·월·일주만 사용", convention: "선택된 명식 · 시주는 점수 미반영" },
     yearly_flow: [], section_plan: Array.from({ length: 8 }, (_, i) => ({ id: i + 1, evidence_ids: computed.evidence.map(e => e.id), flow_ids: [] })) };
 }
 

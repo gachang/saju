@@ -49,6 +49,6 @@ test("scores are deterministic, bounded and independent of hour; copy payload ex
   assert.ok(Object.values(a.scores).every(v => v >= 0 && v <= 100));
   assert.ok(a.evidence.length >= 3);
   const payload = JSON.stringify(readingInput({ self, favorite }));
-  assert.doesNotMatch(payload, /1992|1990|birthTime|longitude|name|gender/);
+  assert.doesNotMatch(payload, /1992|1990|birthTime|longitude|"name"|"self_name"|"favorite_name"|gender/);
   assert.equal(pairSchema.safeParse({ self, favorite, rawBirth: "1992-10-24" }).success, false);
 });

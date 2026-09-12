@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --import tsx --test tests/*.test.ts",
-    "eval:reading": "node --import tsx scripts/eval-reading.ts"
+    "eval:reading": "node --import tsx scripts/eval-reading.ts",
+    "eval:complete": "node --import tsx scripts/eval-complete.ts",
+    "report:export": "node --import tsx scripts/export-report.ts"
   },
   "dependencies": {
     "manseryeok": "2.0.0",

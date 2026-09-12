@@ -5,7 +5,7 @@ import { Backdrop } from "./Backdrop";
 import { GoldButton } from "./ui/GoldButton";
 import { calculateChart } from "@/lib/engine";
 import { AXES, compatibility } from "@/lib/compatibility";
-import { displayText, reportSchema, type Report } from "@/lib/reading-schema";
+import { countText, displayText, reportSchema, type Report } from "@/lib/reading-schema";
 import type { FormState, Person } from "@/lib/saju";
 
 function chartFor(p: Person) {
@@ -32,7 +32,8 @@ export function ResultScreen({ form, onRestart }: { form: FormState; onRestart: 
     const abort = new AbortController(); controller.current = abort;
     const timeout = setTimeout(() => abort.abort(), 235_000);
     try {
-      const response = await fetch("/api/reading-copy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pair), signal: abort.signal });
+      const name_lengths = { self: countText(form.self.name.trim() || "사용자"), favorite: countText(form.partner.name.trim() || "최애") };
+      const response = await fetch("/api/reading-copy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...pair, name_lengths }), signal: abort.signal });
       const body = await response.json();
       if (!response.ok) { setMessage(body.error || "잠시 후 다시 시도해 주세요."); return; }
       setReport(reportSchema.parse(body.report));
@@ -63,7 +64,8 @@ export function ResultScreen({ form, onRestart }: { form: FormState; onRestart: 
       </section>}
       {computed && <>
         <GoldButton onClick={generate} disabled={busy}>{busy ? "보고서를 쓰고 있어요…" : "AI 보고서 만들기"}</GoldButton>
-        <p className="text-xs leading-relaxed text-white/60">AI 요청에는 선택한 명식만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요. 입력과 결과는 새로고침하면 사라져요.</p>
+        {busy && <p role="status" className="text-xs leading-relaxed text-gold">8개 장을 작성하고 근거·문장·분량을 검토하고 있어요. 필요한 장만 다시 다듬으며, 최대 약 4분 걸릴 수 있어요.</p>}
+        <p className="text-xs leading-relaxed text-white/60">AI 요청에는 선택한 명식과 호칭의 글자 수만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요. 입력과 결과는 새로고침하면 사라져요.</p>
       </>}
       <p role="status" aria-live="polite" className="text-sm text-gold">{message}</p>
       {report?.sections.map(section => <section key={section.id} className="rounded-2xl border border-gold/25 bg-ink-deep/80 p-5">
