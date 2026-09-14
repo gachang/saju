@@ -17,3 +17,14 @@ export function validationSummary(errors: string[]) {
     return match ? `${match[1]}:${match[2]}` : "validation";
   }).filter((value, index, all) => all.indexOf(value) === index).slice(0, 40);
 }
+
+export function rateLimitSummary(error: unknown) {
+  const e = error as { status?: number; headers?: { get?: (name: string) => string | null } } | null;
+  if (e?.status !== 429 || typeof e.headers?.get !== "function") return {};
+  const result: Record<string, string> = {};
+  for (const name of ["retry-after", "retry-after-ms", "x-ratelimit-limit-requests", "x-ratelimit-limit-tokens", "x-ratelimit-remaining-requests", "x-ratelimit-remaining-tokens", "x-ratelimit-reset-requests", "x-ratelimit-reset-tokens"]) {
+    const value = e.headers.get(name);
+    if (value && /^[\d.msh]+$/.test(value) && value.length <= 40) result[name] = value;
+  }
+  return result;
+}

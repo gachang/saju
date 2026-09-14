@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readingFailure, validationSummary } from "../src/lib/reading-diagnostics";
+import { readingFailure, validationSummary, rateLimitSummary } from "../src/lib/reading-diagnostics";
+
+test("rate limit metadata only permits numeric counts and reset durations", () => {
+  assert.deepEqual(rateLimitSummary({ status: 429, headers: new Headers({ "x-ratelimit-limit-requests": "3", "x-ratelimit-reset-tokens": "1m2s", "retry-after": "private", authorization: "private" }) }), { "x-ratelimit-limit-requests": "3", "x-ratelimit-reset-tokens": "1m2s" });
+  assert.deepEqual(rateLimitSummary(null), {});
+});
 
 test("classifies quota separately from temporary rate limits", () => {
   assert.equal(readingFailure({ status: 429, code: "insufficient_quota" }).code, "API_QUOTA");

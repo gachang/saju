@@ -1,7 +1,7 @@
 import "server-only";
 import { pairSchema, nameLengthsSchema } from "@/lib/compatibility";
 import { generateCompleteReading } from "@/lib/reading-complete.server";
-import { readingFailure, validationSummary } from "@/lib/reading-diagnostics";
+import { readingFailure, validationSummary, rateLimitSummary } from "@/lib/reading-diagnostics";
 
 export const runtime = "nodejs";
 export const maxDuration = 240;
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     return respond({ report: result.report, promptVersion: result.promptVersion });
   } catch (error) {
     const failure = readingFailure(error);
-    log("reading_failed", { code: failure.code });
+    log("reading_failed", { code: failure.code, limits: rateLimitSummary(error) });
     return respond({ code: failure.code, requestId, error: `${failure.error} 확인 번호: ${requestId}` }, failure.status);
   } finally { active--; }
 }
