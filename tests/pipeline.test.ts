@@ -49,6 +49,20 @@ function withBodyLength(section: ReportSection, length: number): ReportSection {
   };
 }
 
+test("production concurrency is capped at four and keeps repaired sections valid", async () => {
+  const report = validReport();
+  const draft = { ...report, sections: report.sections.map(s => withBodyLength(s, 600)) };
+  let active = 0, peak = 0;
+  const result = await repairReport(draft, input, async ({ section }) => {
+    active++; peak = Math.max(peak, active);
+    await new Promise(resolve => setTimeout(resolve, 5));
+    active--;
+    return report.sections[section.id - 1];
+  }, { concurrency: 99, stages: ["terra", "terra"] });
+  assert.equal(peak, 4);
+  assert.deepEqual(result.validation, []);
+});
+
 test("mergeSection rejects a replacement whose id differs from the requested section", () => {
   const report = validReport();
   assert.throws(() => mergeSection(report, 2, report.sections[2]), /REPAIR_SECTION_MISMATCH/);

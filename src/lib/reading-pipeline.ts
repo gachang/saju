@@ -39,21 +39,22 @@ export async function repairReport(
   draft: Report,
   input: ReadingInput,
   repair: (request: RepairRequest) => Promise<ReportSection>,
-  options: { signal?: AbortSignal; onProgress?: (event: PipelineEvent) => void; onCheckpoint?: (report: Report) => void; stages?: RepairStage[]; editorialIssues?: Record<number, string[]> } = {},
+  options: { signal?: AbortSignal; onProgress?: (event: PipelineEvent) => void; onCheckpoint?: (report: Report) => void; stages?: RepairStage[]; editorialIssues?: Record<number, string[]>; concurrency?: number } = {},
 ) {
   options.signal?.throwIfAborted();
   let report = reportSchema.parse(draft);
   const editorialIssues = { ...options.editorialIssues };
   const currentErrors = (value: Report, id: number) => [...sectionErrors(value, input, id), ...(editorialIssues[id] ?? [])];
   const attempts: { stage: RepairStage; id: number; before: string[]; after: string[]; accepted: boolean }[] = [];
+  const concurrency = Math.max(1, Math.min(4, Math.floor(options.concurrency ?? 2) || 2));
   for (const [attempt, stage] of (options.stages ?? ["luna", "terra", "terra"]).entries()) {
     const ids = report.sections.filter(section => currentErrors(report, section.id).length).map(s => s.id);
     if (!ids.length) break;
-    // At most two concurrent short repairs; every round preserves all passing sections exactly.
-    for (let offset = 0; offset < ids.length; offset += 2) {
+    // Bounded short repairs; every round preserves all passing sections exactly.
+    for (let offset = 0; offset < ids.length; offset += concurrency) {
       options.signal?.throwIfAborted();
       const snapshot = report;
-      const batchIds = ids.slice(offset, offset + 2);
+      const batchIds = ids.slice(offset, offset + concurrency);
       const candidates = await Promise.allSettled(batchIds.map(async id => {
         const errors = currentErrors(snapshot, id);
         const section = snapshot.sections.find(s => s.id === id)!;

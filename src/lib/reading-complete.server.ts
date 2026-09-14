@@ -50,7 +50,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
     return sectionSchema.parse(response.output_parsed);
   };
   let result = await repairReport(draft.report, input, repair, { signal, onProgress: options.onProgress, onCheckpoint: options.onCheckpoint, editorialIssues: options.initialEditorialIssues,
-    stages: options.initialEditorialIssues ? ["terra", "terra"] : undefined });
+    stages: ["terra", "terra"], concurrency: 4 });
   const editorial: Awaited<ReturnType<typeof reviewReading>>["issues"][] = [];
   for (let pass = 0; pass < 3 && !result.validation.length; pass++) {
     options.onPhase?.(`editor-${pass + 1}`);
@@ -61,7 +61,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
     const editorialIssues: Record<number, string[]> = {};
     for (const issue of review.issues) (editorialIssues[issue.section_id] ??= []).push(`${issue.section_id}:editorial:${issue.code}:${issue.explanation} [원문: ${issue.quote}]`);
     if (pass === 2) { result.validation.push(...Object.values(editorialIssues).flat()); break; }
-    const revised = await repairReport(result.report, input, repair, { signal, onProgress: options.onProgress, onCheckpoint: options.onCheckpoint, stages: ["terra", "terra"], editorialIssues });
+    const revised = await repairReport(result.report, input, repair, { signal, onProgress: options.onProgress, onCheckpoint: options.onCheckpoint, stages: ["terra", "terra"], concurrency: 4, editorialIssues });
     result = { ...revised, attempts: [...result.attempts, ...revised.attempts] };
   }
   if (!result.validation.length) options.onProgress?.({ stage: "complete", completed: 8, total: 8 });
