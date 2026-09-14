@@ -29,6 +29,7 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
   const [busy, setBusy] = useState(false), [message, setMessage] = useState("");
   const [shareMessage, setShareMessage] = useState("");
   const controller = useRef<AbortController | null>(null);
+  const resumeToken = useRef<string | undefined>(undefined);
   const chapters = useRef<HTMLDivElement | null>(null);
   useEffect(() => () => controller.current?.abort(), []);
   useEffect(() => {
@@ -45,6 +46,7 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
     "전통 명리의 상징을 활용한 엔터테인먼트 콘텐츠로, 실제 감정·관계·미래를 예측하지 않습니다.",
   ].join("\n\n") : "";
   function selectChart(index: number, favorite = false) {
+    resumeToken.current = undefined;
     (favorite ? setFavoriteIndex : setSelfIndex)(index);
     setReport(null); setMessage(""); setShareMessage("");
   }
@@ -52,15 +54,31 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
     if (!pair || busy || example) return;
     setBusy(true); setMessage(""); setShareMessage(""); setReport(null);
     const abort = new AbortController(); controller.current = abort;
-    const timeout = setTimeout(() => abort.abort(), 235_000);
     try {
       const name_lengths = { self: countText(selfName), favorite: countText(favoriteName) };
-      const response = await fetch("/api/reading-copy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...pair, name_lengths }), signal: abort.signal });
-      const body = await response.json();
-      if (!response.ok) { setMessage(body.error || "잠시 후 다시 시도해 주세요."); return; }
-      setReport(reportSchema.parse(body.report));
+      for (let step = 0; step < 3; step++) {
+        const timeout = setTimeout(() => abort.abort(), 235_000);
+        let response: Response, body;
+        try {
+          response = await fetch("/api/reading-copy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...pair, name_lengths, resumeToken: resumeToken.current }), signal: abort.signal });
+          body = await response.json();
+        } finally { clearTimeout(timeout); }
+        if (body.resumeToken) resumeToken.current = body.resumeToken;
+        if (body.resumeToken && (response.status === 202 || body.code === "READING_TIMEOUT")) {
+          setMessage("완성된 부분은 보존했어요. 남은 수정·검수를 이어가고 있어요.");
+          continue;
+        }
+        if (!response.ok) {
+          if (response.status === 400 || body.code === "READING_ATTEMPTS") resumeToken.current = undefined;
+          setMessage(`${body.error || "잠시 후 다시 시도해 주세요."}${body.resumeToken ? " 한도가 회복되면 이 화면에서 다시 눌러 중간 결과부터 이어갈 수 있어요. 이어하기 정보는 30분간 유효해요." : ""}`);
+          return;
+        }
+        setReport(reportSchema.parse(body.report)); resumeToken.current = undefined;
+        return;
+      }
+      setMessage("자동 처리 횟수에 도달했어요. 추가 요청을 멈췄습니다.");
     } catch { setMessage("보고서를 불러오지 못했어요. 계산 결과는 계속 확인할 수 있어요."); }
-    finally { clearTimeout(timeout); setBusy(false); }
+    finally { setBusy(false); }
   }
   async function share() {
     if (!report) return;
@@ -97,7 +115,7 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
       </div>
       {computed && !report && !example && <div className={styles.actions}>
         <GoldButton onClick={generate} disabled={busy}>{busy ? "보고서를 쓰고 있어요…" : "분석하기"}</GoldButton>
-        {busy && <p role="status" className={styles.feedback}>8개 장의 근거·문장·분량을 검토하고 있어요. 최대 약 4분 걸릴 수 있어요.</p>}
+        {busy && <p role="status" className={styles.feedback}>8개 장의 근거·문장·분량을 검토하고 있어요. 단계별로 이어 처리하며 수 분 걸릴 수 있어요.</p>}
         <p className={styles.privacy}>AI 요청에는 선택한 명식과 호칭의 글자 수만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요.</p>
         <Link href="/report/example" className={styles.exampleLink}>완성 보고서 레이아웃 예시 보기</Link>
         <p role="status" aria-live="polite" className={styles.feedback}>{message}</p>

@@ -7,7 +7,7 @@ import { paragraphRepairTarget, repairReport, type PipelineEvent, type RepairReq
 import { sectionSchema, type Report } from "./reading-schema";
 import { SYSTEM_PROMPT, SECTION_TOPICS, PROMPT_VERSION } from "./reading-prompt";
 import { reviewReading } from "./reading-editor.server";
-import { withRateLimitRetry } from "./openai-retry.server";
+import { withPacedReadingRetry as withRateLimitRetry } from "./openai-retry.server";
 import { generatedSectionSchema } from "./reading-output-schema";
 export type ReadingUsage = { model: ReadingModel; phase: string; usage: unknown; elapsedMs: number };
 
@@ -66,7 +66,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
   for (let pass = 0; pass < 3 && !result.validation.length; pass++) {
     options.onPhase?.(`editor-${pass + 1}`);
     const review = await reviewReading(result.report, input, signal);
-    recordUsage({ model: "gpt-5.6-terra", phase: `editor-${pass + 1}`, usage: review.usage, elapsedMs: review.elapsedMs });
+    recordUsage({ model: "gpt-5.6-luna", phase: `editor-${pass + 1}`, usage: review.usage, elapsedMs: review.elapsedMs });
     editorial.push(review.issues);
     if (!review.issues.length) break;
     const editorialIssues: Record<number, string[]> = {};

@@ -3,7 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { readingInput, type ChartPair, type NameLengths } from "./compatibility";
 import { reportSchema, validateReport, type Report } from "./reading-schema";
 import { SYSTEM_PROMPT, PROMPT_VERSION } from "./reading-prompt";
-import { withRateLimitRetry } from "./openai-retry.server";
+import { withPacedReadingRetry as withRateLimitRetry } from "./openai-retry.server";
 import { generatedReportSchema } from "./reading-output-schema";
 
 export type ReadingModel = "gpt-5.6-luna" | "gpt-5.6-terra";
