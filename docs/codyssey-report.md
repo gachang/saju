@@ -16,8 +16,9 @@
   pair illustration, zodiac, divider, chevron and share icon are self-hosted in
   `public/report`. The first chapter is expanded; the other seven are accessible
   native disclosure controls. Unknown birth hours remain unknown.
-- `/report/example` is the existing synthetic accepted fixture, not a live
-  personal reading or evidence that the new provider completed a request.
+- `/report/example` uses the synthetic Codyssey GPT-5.4 report generated and
+  repaired on 2026-09-14, with eight validated chapters and a clean editorial
+  review. It is a saved example, never substituted for a visitor's live report.
 
 Verify offline with `node --import tsx --test tests/*.test.ts`, then explicitly
 run `node --import tsx scripts/smoke-production-reading.ts` after deployment.
