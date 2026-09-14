@@ -9,7 +9,7 @@ Vercel `otaku-saju-web`의 Root Directory는 빈 값(저장소 루트), Producti
 - 검증 전용: `@fullstackfamily/manseryeok@1.0.8`. 음양력과 절기 경계에서 떨어진 날짜의 명식을 보정 없이 비교합니다. 런타임 결과를 두 라이브러리에서 섞지 않습니다.
 - 5축은 `compat-v1.0-core` 자체 엔터테인먼트 규칙입니다. 연/월/일 20/30/50%이며 사용자와 최애 모두 시주는 제외합니다. 실제 관계 확률이나 검증된 성격 척도가 아닙니다.
 - 이 버전은 같은 위치의 기둥 간 천간 합·상생·비화·상극과 지지 육합·충·일부 형·해·파를 다룹니다. 교차 위치, 삼합·방합, 삼형 전체, 원진·십신·용신·대운·신살, 연도별 예측은 포함하지 않습니다.
-- OpenAI 직접 Chat Completions API: 초안·보정·검수 모두 `gpt-5.4`와 reasoning effort `low`를 사용합니다. Structured Outputs로 JSON을 요청하고 서버에서 스키마·분량·근거를 검증합니다. 고정 프롬프트는 `src/lib/reading-prompt.ts`이며, 제목 후보 선택과 문단 단위 보정으로 통과한 본문을 보존합니다. [연동 상세](docs/openai-report.md).
+- OpenAI 직접 Chat Completions API: 초안·보정·검수 모두 `gpt-5.6-luna`와 reasoning effort `low`를 사용합니다. Structured Outputs로 JSON을 요청하고 서버에서 스키마·분량·근거를 검증합니다. 고정 프롬프트는 `src/lib/reading-prompt.ts`이며, 제목 후보 선택과 문단 단위 보정으로 통과한 본문을 보존합니다. [연동 상세](docs/openai-report.md).
 - 브라우저에서 명식을 계산하며 API에는 선택한 명식과 호칭의 글자 수만 전달합니다. 서버가 점수와 승인된 근거를 다시 구성한 뒤 OpenAI에는 근거·점수·범위·호칭 길이만 보냅니다. 원본 생일/호칭/성별/그룹명은 전송하지 않습니다.
 - 선택한 명식의 형식은 검증하지만 원본 생일의 진위까지 서버가 인증하지는 않습니다. 출생정보·명식·보고서는 서버 저장소나 브라우저 저장소에 저장하지 않습니다.
 - API 실패/분량·근거·형식 검사 실패 시 계산 결과를 유지하고 안내합니다. 짧은 기본 해석을 완성된 AI 보고서로 가장하지 않습니다.
@@ -40,7 +40,7 @@ pnpm report:export .eval/fresh-2.json example
 
 공개 AI API는 기본 비활성입니다. Vercel Production에 서버 전용 비밀변수 `OPENAI_API_KEY`와 `READING_API_ENABLED=true`를 설정하고 재배포해야 합니다. 키는 사용자가 직접 입력하며 Git이나 문서에 포함하지 않습니다. 기존 `CODYSSEY_API_KEY`는 사용하지 않습니다. 인스턴스별 호출 제한은 글로벌 비용 한도가 아니므로 상용 공개 전 분산 호출 제한·인증·비용 한도를 추가해야 합니다. 실제 호칭 대신 NFC 기준 길이(각 1~12자)를 전송해 치환 후 분량을 검사합니다.
 
-API 키를 Git에 커밋하지 마세요. `.env.local`은 무시되며 `.env.example`은 변수명만 포함합니다. 현재 직접 OpenAI 전환은 사용자의 키 입력 후 실제 생성 확인이 필요합니다. 위 Codyssey 성공 기록은 이전 공급자 검증이며 현재 직접 호출 검증이 아닙니다.
+API 키를 Git에 커밋하지 마세요. `.env.local`은 무시되며 `.env.example`은 변수명만 포함합니다. 2026-09-14 Vercel Production 키로 직접 OpenAI Luna 단일 연결 테스트를 통과했습니다(3,265ms, 총 64토큰). 전체 보고서 품질은 이번 테스트 범위가 아닙니다. 위 Codyssey 성공 기록은 이전 공급자 검증입니다.
 
 ## 기존 Next.js 개발 안내
 
