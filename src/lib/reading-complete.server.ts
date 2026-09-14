@@ -50,8 +50,8 @@ export async function generateCompleteReading(pair: ChartPair, options: {
       const response = await withRateLimitRetry(() => client.structured.parse({
         model, store: false, tools: [], reasoning: { effort: "low" }, max_output_tokens: 2200,
         instructions: SYSTEM_PROMPT + "\n이번 요청은 본문 한 문단의 길이 수정이다. paragraphs 전체나 제목을 반환하지 않는다. 지정 문단 하나의 대안 3개만 candidates로 반환한다. 각 대안은 완결된 문장들로 구성된 한 문단이다. 원문의 근거·의미·호칭을 유지하고 새 주장을 추가하지 않는다. 길이를 맞추려고 무관한 문장을 붙이지 않는다.",
-        input: JSON.stringify({ ...input, section_id: section.id, section, paragraph_index: target.index, current_chars: target.current_chars, target_chars: target.target_chars,
-          candidate_target_chars: [target.target_chars - 12, target.target_chars, target.target_chars + 12], instruction: "다른 두 문단은 코드가 그대로 보존한다. 지정된 한 문단만 줄이거나 늘려 세 가지 대안을 반환한다. 자리표시자 치환 뒤 공백·문장부호를 포함한 길이다." }),
+        input: JSON.stringify({ ...input, section_id: section.id, section, paragraph_number: target.index + 1, paragraph_to_replace: section.paragraphs[target.index], preserved_paragraphs: section.paragraphs.filter((_, index) => index !== target.index), current_chars: target.current_chars, target_chars: target.target_chars,
+          candidate_target_chars: [target.target_chars - 12, target.target_chars, target.target_chars + 12], instruction: "paragraph_to_replace만 고친다. preserved_paragraphs의 문장은 절대로 복사하거나 반복하지 않는다. 다른 두 문단은 코드가 그대로 보존한다. 지정 문단의 시작과 주제를 유지하며 세 가지 대안을 반환한다. 자리표시자 치환 뒤 공백·문장부호를 포함한 길이다." }),
         text: { format: zodTextFormat(z.object({ candidates: z.array(z.string()) }).strict(), "paragraph_candidates") },
       }, { signal }), signal);
       recordUsage({ model, phase: `paragraph-${attempt}-${section.id}`, usage: response.usage, elapsedMs: Date.now() - start });

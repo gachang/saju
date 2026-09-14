@@ -72,6 +72,13 @@ test("production concurrency is capped at four and keeps repaired sections valid
   assert.deepEqual(result.validation, []);
 });
 
+test("paragraph candidate selection rejects a valid-length copy of a preserved paragraph", () => {
+  const good = validReport().sections[0];
+  const long = withBodyLength(good, 827);
+  const selected = selectParagraphRepair(long, [good.paragraphs[1], good.paragraphs[2]], input);
+  assert.deepEqual(selected, good);
+});
+
 test("mergeSection rejects a replacement whose id differs from the requested section", () => {
   const report = validReport();
   assert.throws(() => mergeSection(report, 2, report.sections[2]), /REPAIR_SECTION_MISMATCH/);

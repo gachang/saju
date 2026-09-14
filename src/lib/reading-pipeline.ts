@@ -1,5 +1,5 @@
 import type { readingInput } from "./compatibility";
-import { countText, countDisplayedText, reportSchema, sectionSchema, validateReport, validateSection, type Report, type ReportSection } from "./reading-schema";
+import { countText, countDisplayedText, displayText, reportSchema, sectionSchema, validateReport, validateSection, type Report, type ReportSection } from "./reading-schema";
 
 export type ReadingInput = ReturnType<typeof readingInput>;
 export type RepairStage = "luna" | "terra";
@@ -38,7 +38,21 @@ export function paragraphRepairTarget(section: ReportSection, input?: Pick<Readi
 export function selectParagraphRepair(section: ReportSection, candidates: string[], input: ReadingInput) {
   const { index } = paragraphRepairTarget(section, input);
   const variants = candidates.map(paragraph => ({ ...section, paragraphs: section.paragraphs.map((p, i) => i === index ? paragraph : p) as ReportSection["paragraphs"] }));
-  return [section, ...variants].sort((a, b) => penalty(validateSection(a, input)) - penalty(validateSection(b, input)))[0];
+  const candidatePenalty = (candidate: ReportSection) => {
+    const seen = new Set<string>();
+    let repetitions = 0;
+    for (const paragraph of candidate.paragraphs) {
+      const copy = displayText(paragraph).normalize("NFC").replace(/\s+/gu, " ").trim();
+      for (const sentence of copy.match(/[^.!?]+[.!?]+|[^.!?]+$/gu) ?? []) {
+        const normalized = sentence.trim();
+        if (countText(normalized) < 30) continue;
+        if (seen.has(normalized)) repetitions++;
+        seen.add(normalized);
+      }
+    }
+    return penalty(validateSection(candidate, input)) + repetitions * 10_000;
+  };
+  return [section, ...variants].sort((a, b) => candidatePenalty(a) - candidatePenalty(b))[0];
 }
 
 export async function repairReport(
