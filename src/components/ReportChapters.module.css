@@ -102,6 +102,7 @@
 .chapters { padding-inline:24px; }
 .divider { position:relative; height:14px; margin-bottom:32px; display:flex; justify-content:center; align-items:center; }
 .divider > img:last-child { position:relative; }
+.divider > img:first-child { height:.5px !important; top:50% !important; }
 .heading { margin-bottom:24px; color:#f8f2e6; font-family:var(--font-report-serif),serif; font-size:19px; letter-spacing:normal; }
 .list { gap:12px; }
 .card { border:1px solid rgba(231,191,103,.16); border-radius:22px; background:linear-gradient(180deg,rgba(5,71,135,.75),rgba(5,71,135,.27)); }
