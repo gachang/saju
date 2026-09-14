@@ -23,3 +23,6 @@
 Verify offline with `node --import tsx --test tests/*.test.ts`, then explicitly
 run `node --import tsx scripts/smoke-production-reading.ts` after deployment.
 The live smoke test consumes provider credits and sends synthetic chart data only.
+# 과거 연동 기록
+
+이 문서는 이전 Codyssey 구성의 기록입니다. 현재 설정은 [OpenAI 직접 연동](openai-report.md)을 따릅니다.

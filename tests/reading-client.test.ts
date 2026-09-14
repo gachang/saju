@@ -4,18 +4,20 @@ import { z } from "zod";
 import { zodTextFormat } from "openai/helpers/zod";
 import { createReadingClient } from "../src/lib/reading-client.server";
 
-test("Codyssey transport uses Chat Completions, gpt-5.4, and validates structured output", async () => {
+test("OpenAI transport uses strict structured output and rejects third-party keys", async () => {
   const previousFetch = globalThis.fetch;
-  const previousKey = process.env.CODYSSEY_API_KEY;
-  process.env.CODYSSEY_API_KEY = "sk-cody-test-not-a-real-key";
+  const previousKey = process.env.OPENAI_API_KEY;
+  process.env.OPENAI_API_KEY = "sk-test-not-a-real-key";
   let finish = "stop", content = '{"title":"확인"}';
   globalThis.fetch = async (url, init) => {
-    assert.equal(String(url), "https://copa.codyssey.kr/v1/chat/completions");
+    assert.equal(String(url), "https://api.openai.com/v1/chat/completions");
     const body = JSON.parse(String(init?.body));
     assert.equal(body.model, "gpt-5.4");
-    assert.equal(body.response_format, undefined);
-    assert.equal(body.reasoning_effort, undefined);
-    assert.ok(body.messages[0].content.includes('"required":["title"]'));
+    assert.equal(body.response_format.type, "json_schema");
+    assert.equal(body.response_format.json_schema.strict, true);
+    assert.deepEqual(body.response_format.json_schema.schema.required, ["title"]);
+    assert.equal(body.reasoning_effort, "low");
+    assert.equal(body.store, false);
     assert.deepEqual(body.messages.map((m: { role: string }) => m.role), ["system", "user"]);
     assert.equal(body.max_completion_tokens, 100);
     assert.equal(body.input, undefined);
@@ -29,11 +31,13 @@ test("Codyssey transport uses Chat Completions, gpt-5.4, and validates structure
     await assert.rejects(client.structured.parse(request), /READING_INCOMPLETE/);
     finish = "stop"; content = '{"title":3}';
     await assert.rejects(client.structured.parse(request));
-    process.env.CODYSSEY_API_KEY = "sk-proj-not-for-this-provider";
+    process.env.OPENAI_API_KEY = "sk-cody-not-for-this-provider";
+    assert.throws(() => createReadingClient(1000), /READING_PROVIDER_KEY_REQUIRED/);
+    delete process.env.OPENAI_API_KEY;
     assert.throws(() => createReadingClient(1000), /READING_PROVIDER_KEY_REQUIRED/);
   } finally {
     globalThis.fetch = previousFetch;
-    if (previousKey === undefined) delete process.env.CODYSSEY_API_KEY;
-    else process.env.CODYSSEY_API_KEY = previousKey;
+    if (previousKey === undefined) delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY = previousKey;
   }
 });

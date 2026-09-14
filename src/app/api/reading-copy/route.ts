@@ -16,7 +16,7 @@ const respond = (body: unknown, status = 200) => Response.json(body, { status, h
 const requestSchema = pairSchema.extend({ name_lengths: nameLengthsSchema.optional(), resumeToken: z.string().max(100_000).optional() }).strict();
 
 export async function POST(request: Request) {
-  if (process.env.READING_API_ENABLED !== "true" || !process.env.CODYSSEY_API_KEY) return respond({ error: "AI 보고서는 준비 중이에요. 아래 계산 결과를 먼저 확인해 주세요." }, 503);
+  if (process.env.READING_API_ENABLED !== "true" || !process.env.OPENAI_API_KEY) return respond({ error: "AI 보고서는 준비 중이에요. 아래 계산 결과를 먼저 확인해 주세요." }, 503);
   if (request.headers.get("origin") !== new URL(request.url).origin) return respond({ error: "허용되지 않은 요청이에요." }, 403);
   if (!request.headers.get("content-type")?.includes("application/json")) return respond({ error: "JSON 형식이 필요해요." }, 415);
   if (Date.now() - windowStart > 60_000) { windowStart = Date.now(); calls = 0; }
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   } catch { return respond({ error: "명식 형식을 확인해 주세요." }, 400); }
   const scope = checkpointScope({ self: pair.self, favorite: pair.favorite, name_lengths: pair.name_lengths });
   let checkpoint;
-  try { checkpoint = pair.resumeToken ? openCheckpoint(pair.resumeToken, scope, process.env.CODYSSEY_API_KEY) : undefined; }
+  try { checkpoint = pair.resumeToken ? openCheckpoint(pair.resumeToken, scope, process.env.OPENAI_API_KEY) : undefined; }
   catch { return respond({ error: "이어서 처리할 정보가 만료되었거나 유효하지 않아요." }, 400); }
   if (checkpoint && checkpoint.attempt >= 3) return respond({ code: "READING_ATTEMPTS", error: "자동 수정 횟수에 도달했어요. 추가 요청을 멈췄습니다." }, 422);
   // Recheck after awaiting the request body, so simultaneous slow requests cannot bypass this guard.
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   let partial: Report | undefined = checkpoint?.report;
   const attempt = (checkpoint?.attempt ?? 0) + 1;
   const continuation = (editorial: Record<string, string[]> = {}) => partial && attempt < 3
-    ? sealCheckpoint({ scope, attempt, report: partial, editorial }, process.env.CODYSSEY_API_KEY!) : undefined;
+    ? sealCheckpoint({ scope, attempt, report: partial, editorial }, process.env.OPENAI_API_KEY!) : undefined;
   const log = (event: string, details: Record<string, unknown> = {}) => console.info(JSON.stringify({ event, requestId, phase, elapsedMs: Date.now() - started, ...details }));
   log("reading_started");
   try {

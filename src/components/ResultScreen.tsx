@@ -116,7 +116,7 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
       {computed && !report && !example && <div className={styles.actions}>
         <GoldButton onClick={generate} disabled={busy}>{busy ? "보고서를 쓰고 있어요…" : "분석하기"}</GoldButton>
         {busy && <p role="status" className={styles.feedback}>8개 장의 근거·문장·분량을 검토하고 있어요. 단계별로 이어 처리하며 수 분 걸릴 수 있어요.</p>}
-        <p className={styles.privacy}>Codyssey의 AI API에는 선택한 명식과 호칭의 글자 수만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요.</p>
+        <p className={styles.privacy}>OpenAI API에는 선택한 명식과 호칭의 글자 수만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요.</p>
         <Link href="/report/example" className={styles.exampleLink}>완성 보고서 레이아웃 예시 보기</Link>
         <p role="status" aria-live="polite" className={styles.feedback}>{message}</p>
       </div>}

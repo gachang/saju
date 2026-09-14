@@ -2,12 +2,13 @@ import OpenAI from "openai";
 import type { AutoParseableTextFormat } from "openai/lib/parser";
 
 export const READING_MODEL = "gpt-5.4" as const;
-export const READING_BASE_URL = "https://copa.codyssey.kr/v1";
+export const READING_BASE_URL = "https://api.openai.com/v1";
 
-/** All report stages use the explicitly selected provider; no direct-OpenAI fallback. */
+/** All report stages call OpenAI directly; never forward a third-party key. */
 export function createReadingClient(timeout: number) {
-  if (!process.env.CODYSSEY_API_KEY?.startsWith("sk-cody-")) throw new Error("READING_PROVIDER_KEY_REQUIRED");
-  const client = new OpenAI({ apiKey: process.env.CODYSSEY_API_KEY, baseURL: READING_BASE_URL, maxRetries: 0, timeout });
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey || apiKey.startsWith("sk-cody-")) throw new Error("READING_PROVIDER_KEY_REQUIRED");
+  const client = new OpenAI({ apiKey, baseURL: READING_BASE_URL, maxRetries: 0, timeout });
   return { structured: { async parse<T>(request: {
     model: string; instructions: string; input: string; max_output_tokens: number;
     text: { format: AutoParseableTextFormat<T>; verbosity?: string };
@@ -16,9 +17,10 @@ export function createReadingClient(timeout: number) {
     const format = request.text.format;
     const response = await client.chat.completions.create({
       model: request.model,
-      // Codyssey currently rejects response_format and reasoning_effort with
-      // unsupported_feature. Require JSON in the prompt and still validate locally.
-      messages: [{ role: "system", content: `${request.instructions}\nReturn only one JSON object matching this JSON Schema. No markdown fences or surrounding text.\n${JSON.stringify(format.schema)}` }, { role: "user", content: request.input }],
+      messages: [{ role: "system", content: request.instructions }, { role: "user", content: request.input }],
+      response_format: { type: "json_schema", json_schema: { name: format.name, strict: true, schema: format.schema } },
+      reasoning_effort: request.reasoning?.effort ?? "low",
+      store: false,
       max_completion_tokens: request.max_output_tokens,
       stream: false,
     }, options);
