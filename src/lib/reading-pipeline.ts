@@ -55,6 +55,11 @@ export function selectParagraphRepair(section: ReportSection, candidates: string
   return [section, ...variants].sort((a, b) => candidatePenalty(a) - candidatePenalty(b))[0];
 }
 
+export function selectTitleRepair(section: ReportSection, titles: string[], input: ReadingInput) {
+  const candidates = titles.map(title => ({ ...section, title }));
+  return [...candidates, section].sort((a, b) => penalty(validateSection(a, input)) - penalty(validateSection(b, input)))[0];
+}
+
 export async function repairReport(
   draft: Report,
   input: ReadingInput,

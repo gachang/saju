@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { AXES, readingInput } from "../src/lib/compatibility";
-import { mergeSection, paragraphRepairTarget, selectParagraphRepair, repairReport, type PipelineEvent, type RepairRequest } from "../src/lib/reading-pipeline";
+import { mergeSection, paragraphRepairTarget, selectParagraphRepair, selectTitleRepair, repairReport, type PipelineEvent, type RepairRequest } from "../src/lib/reading-pipeline";
 import { countText, displayText, validateReport, type Report, type ReportSection } from "../src/lib/reading-schema";
 
 const input = readingInput({
@@ -48,6 +48,12 @@ function withBodyLength(section: ReportSection, length: number): ReportSection {
     paragraphs: [section.paragraphs[0], section.paragraphs[1], paragraph(`${section.id}번째 길이 수정 문단에서 `, length - 480)],
   };
 }
+
+test("title candidates retain the body and choose the valid title", () => {
+  const good = validReport().sections[0];
+  const selected = selectTitleRepair({ ...good, title:"짧은 제목기니" }, ["아직 짧기니", good.title], input);
+  assert.deepEqual(selected, good);
+});
 
 test("paragraph-only repair preserves other paragraphs and selects a valid length", () => {
   const good = validReport().sections[0];
