@@ -21,7 +21,7 @@ async function main() {
   const initialEditorialIssues: Record<number, string[]> = {};
   for (const issue of previous?.validation ?? []) if (/^\d+:editorial:/.test(issue)) (initialEditorialIssues[Number(issue.split(":")[0])] ??= []).push(issue);
   const nameLengths = nameLengthsSchema.parse({ self: Number(process.env.READING_EVAL_NAME_SELF ?? 3), favorite: Number(process.env.READING_EVAL_NAME_FAVORITE ?? 2) });
-  const draftModel = process.env.READING_EVAL_MODEL === "gpt-5.6-terra" ? "gpt-5.6-terra" : "gpt-5.6-luna";
+  const draftModel = "gpt-5.4";
   await mkdir(".eval", { recursive: true });
   const traces: ReadingUsage[] = [];
   const result = await generateCompleteReading({ self, favorite }, { today: "2026-09-12", initial, nameLengths, draftModel,

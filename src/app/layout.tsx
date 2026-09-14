@@ -23,7 +23,7 @@ const reportSans = localFont({
   variable: "--font-report-sans", display: "swap", preload: false,
 });
 const reportSerif = localFont({
-  src: "./fonts/report/NotoSerifKR-Bold.woff2", weight: "700", style: "normal",
+  src: "./fonts/report/NotoSerifKR-400-900.woff2", weight: "400 900", style: "normal",
   variable: "--font-report-serif", display: "swap", preload: false,
 });
 

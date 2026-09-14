@@ -1,5 +1,10 @@
 # Report fonts
 
+The 2011:4530 layout uses `NotoSerifKR-400-900.woff2` (variable weights
+400–900), generated from the same source and character ranges below with
+`wght=400:900`. Body text uses real regular 400; headings use 700/900.
+The earlier static Bold file is retained for historical asset compatibility.
+
 Self-hosted fonts used by the supplied Figma report designs. These are genuine
 Google Fonts sources, not replacement typefaces or traced glyphs.
 

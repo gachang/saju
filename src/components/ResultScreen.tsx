@@ -100,14 +100,14 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
   return <div className={styles.screen} aria-label="성덕기니 결과 보고서">
     {example && <p className={styles.exampleNotice}>완성 보고서 예시 · 합성 입력<br />입력하신 정보에 대한 결과가 아니에요.</p>}
     <div className={styles.content}>
-      <div className={styles.background} aria-hidden="true"><div className={styles.light}><Image src="/report/light.png" alt="" fill sizes="492px" className="object-cover" preload /></div></div>
+      <div className={styles.background} aria-hidden="true"><Image src="/report/zodiac.png" alt="" width={1128} height={1127} className={styles.zodiac} /><div className={styles.light}><Image src="/report/light.png" alt="" fill sizes="386px" className="object-cover" preload /></div></div>
       <ReadingHero computed={computed} />
       <div className={styles.overview}>
         {result.error && <p role="alert" className={styles.feedback}>{result.error}</p>}
         {result.self && <ChartCard name={selfName} chart={result.self} selected={selfIndex} disabled={busy || example} onSelect={index => selectChart(index)} />}
         {result.favorite && <ChartCard name={favoriteName} favorite chart={result.favorite} selected={favoriteIndex} disabled={busy || example} onSelect={index => selectChart(index, true)} />}
-        {computed && <AxisCard computed={computed} />}
-        {computed && <aside className={styles.notice}>
+        {computed && !report && <AxisCard computed={computed} />}
+        {computed && !report && <aside className={styles.notice}>
           <strong>{report ? "여덟 장의 이야기가 완성됐어요" : "두 명식의 계산을 마쳤어요"}</strong>
           <p>{report ? `${selfName} 님과 ${favoriteName} 님의 명식에서 출발한 이야기를 아래에서 읽어보세요.` : "AI 보고서는 아래 버튼으로 별도 요청해요. 생성되지 않은 본문을 완성본으로 표시하지 않아요."}</p>
           <p>{result.self?.convention} · 시주는 궁합에서 제외해요.</p>
@@ -116,15 +116,15 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
       {computed && !report && !example && <div className={styles.actions}>
         <GoldButton onClick={generate} disabled={busy}>{busy ? "보고서를 쓰고 있어요…" : "분석하기"}</GoldButton>
         {busy && <p role="status" className={styles.feedback}>8개 장의 근거·문장·분량을 검토하고 있어요. 단계별로 이어 처리하며 수 분 걸릴 수 있어요.</p>}
-        <p className={styles.privacy}>AI 요청에는 선택한 명식과 호칭의 글자 수만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요.</p>
+        <p className={styles.privacy}>Codyssey의 AI API에는 선택한 명식과 호칭의 글자 수만 전송해요. 생일·이름·성별·그룹명은 전송하지 않아요.</p>
         <Link href="/report/example" className={styles.exampleLink}>완성 보고서 레이아웃 예시 보기</Link>
         <p role="status" aria-live="polite" className={styles.feedback}>{message}</p>
       </div>}
       {report && <div ref={chapters} className="pt-10"><ReportChapters report={report} selfName={selfName} favoriteName={favoriteName} /></div>}
       <footer className={styles.footer}>
         {report && <>
-          <button type="button" className={styles.share} onClick={share}>공유하기</button>
-          <p className={styles.footnote}>보고서를 기기에 저장해 두고 다시 읽어보세요.<br />입력과 결과는 서버에 저장하지 않아요.</p>
+          <div className={styles.shareDock}><button type="button" className={styles.share} onClick={share}><Image src="/report/share.svg" alt="" width={24} height={24} unoptimized />공유하기</button></div>
+          <p className={styles.footnote}>전통 명리의 상징을 활용한 오락 콘텐츠예요.<br />실제 감정·관계·미래를 예측하지 않아요.</p>
           <p role="status" aria-live="polite" className={styles.feedback}>{shareMessage}</p>
         </>}
         <div className={styles.footerActions}>

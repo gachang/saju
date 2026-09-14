@@ -28,13 +28,14 @@ before(async () => {
 
 test("report layout renders all eight chapters and all 24 original paragraphs", () => {
   const html = renderToStaticMarkup(createElement(ReportChapters, { report, selfName: "사용자", favoriteName: "최애" }));
-  assert.equal((html.match(/<article\b/g) ?? []).length, 8);
+  assert.equal((html.match(/<details\b/g) ?? []).length, 8);
+  assert.equal((html.match(/<details[^>]*open=""/g) ?? []).length, 1);
+  assert.equal((html.match(/<summary\b/g) ?? []).length, 8);
   assert.equal((html.match(/<h2\b/g) ?? []).length, 1);
   assert.equal((html.match(/<h3\b/g) ?? []).length, 8);
-  assert.equal((html.match(/<p\b/g) ?? []).length, 24);
+  assert.equal((html.match(/<p\b/g) ?? []).length, 40);
   for (const section of report.sections) {
     assert.ok(html.includes(`id="report-chapter-${section.id}-heading"`));
-    assert.ok(html.includes(`aria-labelledby="report-chapter-${section.id}-heading"`));
     assert.ok(html.includes(section.title));
     for (const paragraph of section.paragraphs) assert.ok(html.includes(displayText(paragraph)));
   }
@@ -49,7 +50,7 @@ test("names render as escaped text and footer counts use the displayed names", (
   assert.ok(!html.includes("<나&별>"));
   assert.ok(!html.includes("{{USER}}"));
   assert.ok(!html.includes("{{FAVORITE}}"));
-  const footerCounts = [...html.matchAll(/<footer[^>]*>(\d+)자 · 3문단<\/footer>/g)].map(match => Number(match[1]));
+  const footerCounts = [...html.matchAll(/<p[^>]*>(\d+)자 · 3문단<\/p>/g)].map(match => Number(match[1]));
   const expectedCounts = report.sections.map(section => section.paragraphs.reduce((total, paragraph) => total + countText(displayText(paragraph, selfName, favoriteName)), 0));
   assert.deepEqual(footerCounts, expectedCounts);
 });
