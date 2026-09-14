@@ -30,8 +30,11 @@ export function paragraphRepairTarget(section: ReportSection, input?: Pick<Readi
   const lengths = section.paragraphs.map(p => countDisplayedText(p, input));
   const total = lengths.reduce((a, b) => a + b, 0);
   const delta = 725 - total;
-  // One paragraph correction avoids rewriting the two good paragraphs when only length is wrong.
-  const index = lengths.indexOf(delta < 0 ? Math.max(...lengths) : Math.min(...lengths));
+  // Keep the opening names/evidence and middle definitions intact when a shorter
+  // conclusion can absorb the reduction. The longest paragraph may contain all
+  // mandatory axis definitions and be impossible to compress to the target.
+  const index = delta < 0 && lengths[2] + delta >= 100
+    ? 2 : lengths.indexOf(delta < 0 ? Math.max(...lengths) : Math.min(...lengths));
   return { index, current_chars: lengths[index], target_chars: lengths[index] + delta, total_chars: total };
 }
 

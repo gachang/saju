@@ -116,10 +116,10 @@ test("paragraphRepairTarget expands the shortest paragraph using rendered, norma
   assert.deepEqual(paragraphRepairTarget(section), { index: 0, current_chars: 200, target_chars: 275, total_chars: 650 });
 });
 
-test("paragraphRepairTarget shortens the longest paragraph and leaves a target-length body stable", () => {
+test("paragraphRepairTarget shortens the conclusion while preserving evidence-heavy paragraphs", () => {
   const section = validReport().sections[0];
   section.paragraphs = [paragraph("가장 긴 문단 ", 300), paragraph("중간 문단 ", 260), paragraph("짧은 문단 ", 240)];
-  assert.deepEqual(paragraphRepairTarget(section), { index: 0, current_chars: 300, target_chars: 225, total_chars: 800 });
+  assert.deepEqual(paragraphRepairTarget(section), { index: 2, current_chars: 250, target_chars: 175, total_chars: 800 });
   assert.deepEqual(paragraphRepairTarget(validReport().sections[0]), { index: 0, current_chars: 240, target_chars: 240, total_chars: 725 });
 });
 
