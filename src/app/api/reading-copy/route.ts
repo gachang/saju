@@ -1,6 +1,7 @@
 import "server-only";
 import { pairSchema, nameLengthsSchema } from "@/lib/compatibility";
 import { generateCompleteReading } from "@/lib/reading-complete.server";
+import { readingFailure, validationSummary } from "@/lib/reading-diagnostics";
 
 export const runtime = "nodejs";
 export const maxDuration = 240;
@@ -35,11 +36,26 @@ export async function POST(request: Request) {
   // Recheck after awaiting the request body, so simultaneous slow requests cannot bypass this guard.
   if (active >= 2 || calls >= 6) return respond({ error: "요청이 많아요. 잠시 후 다시 시도해 주세요." }, 429);
   active++; calls++;
+  const requestId = crypto.randomUUID();
+  const started = Date.now();
+  let phase = "draft";
+  const log = (event: string, details: Record<string, unknown> = {}) => console.info(JSON.stringify({ event, requestId, phase, elapsedMs: Date.now() - started, ...details }));
+  log("reading_started");
   try {
-    const result = await generateCompleteReading({ self: pair.self, favorite: pair.favorite }, { signal: request.signal, nameLengths: pair.name_lengths });
-    if (result.validation.length) return respond({ error: "보고서 품질 검사에 통과하지 못했어요. 계산 결과는 계속 확인할 수 있어요." }, 502);
+    const result = await generateCompleteReading({ self: pair.self, favorite: pair.favorite }, {
+      signal: request.signal, nameLengths: pair.name_lengths,
+      onPhase: value => { phase = value; log("reading_phase"); },
+      onUsage: value => log("reading_call_completed", { model: value.model, callPhase: value.phase, callElapsedMs: value.elapsedMs }),
+    });
+    if (result.validation.length) {
+      log("reading_quality_failed", { validation: validationSummary(result.validation), repairAttempts: result.attempts.length });
+      return respond({ code: "READING_QUALITY", requestId, error: `보고서 품질 검사에 통과하지 못했어요. 확인 번호: ${requestId}` }, 502);
+    }
+    log("reading_completed");
     return respond({ report: result.report, promptVersion: result.promptVersion });
-  } catch {
-    return respond({ error: "AI 보고서를 불러오지 못했어요. 계산 결과는 계속 확인할 수 있어요." }, 502);
+  } catch (error) {
+    const failure = readingFailure(error);
+    log("reading_failed", { code: failure.code });
+    return respond({ code: failure.code, requestId, error: `${failure.error} 확인 번호: ${requestId}` }, failure.status);
   } finally { active--; }
 }

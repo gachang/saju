@@ -15,6 +15,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
   today?: string; signal?: AbortSignal; initial?: Report; draftModel?: ReadingModel; nameLengths?: NameLengths;
   onProgress?: (event: PipelineEvent) => void;
   onCheckpoint?: (report: Report) => void; onUsage?: (usage: ReadingUsage) => void;
+  onPhase?: (phase: string) => void;
   initialEditorialIssues?: Record<number, string[]>;
 } = {}) {
   const started = Date.now();
@@ -24,12 +25,14 @@ export async function generateCompleteReading(pair: ChartPair, options: {
   const recordUsage = (entry: ReadingUsage) => { usage.push(entry); options.onUsage?.(entry); };
   const input = readingInput(pair, options.today, options.nameLengths);
   const draftModel = options.draftModel ?? "gpt-5.6-luna";
+  options.onPhase?.("draft");
   const draft = options.initial ? { report: options.initial } : await generateReading(pair, { today: options.today, model: draftModel, nameLengths: options.nameLengths, signal,
     onUsage: (usage, elapsedMs) => recordUsage({ model: draftModel, phase: "draft", usage, elapsedMs }) });
   options.onCheckpoint?.(draft.report);
   options.onProgress?.({ stage: "draft", completed: 0, total: 8 });
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0, timeout: 55_000 });
   const repair = async ({ section, errors, stage, attempt, repeatedSentences }: RepairRequest) => {
+    options.onPhase?.(`repair-${stage}-${attempt}`);
     const model: ReadingModel = stage === "terra" ? "gpt-5.6-terra" : "gpt-5.6-luna";
     const start = Date.now();
     const target = paragraphRepairTarget(section, input);
@@ -50,6 +53,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
     stages: options.initialEditorialIssues ? ["terra", "terra"] : undefined });
   const editorial: Awaited<ReturnType<typeof reviewReading>>["issues"][] = [];
   for (let pass = 0; pass < 3 && !result.validation.length; pass++) {
+    options.onPhase?.(`editor-${pass + 1}`);
     const review = await reviewReading(result.report, input, signal);
     recordUsage({ model: "gpt-5.6-terra", phase: `editor-${pass + 1}`, usage: review.usage, elapsedMs: review.elapsedMs });
     editorial.push(review.issues);
