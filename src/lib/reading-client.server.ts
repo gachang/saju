@@ -16,10 +16,10 @@ export function createReadingClient(timeout: number) {
     const format = request.text.format;
     const response = await client.chat.completions.create({
       model: request.model,
-      messages: [{ role: "system", content: request.instructions }, { role: "user", content: request.input }],
+      // Codyssey currently rejects response_format and reasoning_effort with
+      // unsupported_feature. Require JSON in the prompt and still validate locally.
+      messages: [{ role: "system", content: `${request.instructions}\nReturn only one JSON object matching this JSON Schema. No markdown fences or surrounding text.\n${JSON.stringify(format.schema)}` }, { role: "user", content: request.input }],
       max_completion_tokens: request.max_output_tokens,
-      reasoning_effort: "low",
-      response_format: { type: "json_schema", json_schema: { name: format.name, strict: true, schema: format.schema } },
       stream: false,
     }, options);
     const choice = response.choices[0];

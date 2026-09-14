@@ -1,7 +1,11 @@
 # Codyssey report deployment
 
 - Provider endpoint: `https://copa.codyssey.kr/v1/chat/completions`
-- Model: `gpt-5.4`, low reasoning for draft, repairs and editorial review.
+- Model: `gpt-5.4` for draft, repairs and editorial review. Codyssey currently
+  rejects `reasoning_effort` and both `response_format` variants with HTTP 400
+  `unsupported_feature` (verified with minimal requests). These options are omitted.
+  JSON Schema is included in the system instruction and validated locally; this
+  is not provider-enforced Structured Outputs. Invalid or truncated JSON fails closed.
 - Server-only secret: `CODYSSEY_API_KEY`; feature flag: `READING_API_ENABLED=true`.
 - The previous `OPENAI_API_KEY` is not read by production report code. It is not
   sent to Codyssey. There is no automatic provider/model fallback.

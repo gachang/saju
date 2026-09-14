@@ -13,7 +13,9 @@ test("Codyssey transport uses Chat Completions, gpt-5.4, and validates structure
     assert.equal(String(url), "https://copa.codyssey.kr/v1/chat/completions");
     const body = JSON.parse(String(init?.body));
     assert.equal(body.model, "gpt-5.4");
-    assert.equal(body.response_format.type, "json_schema");
+    assert.equal(body.response_format, undefined);
+    assert.equal(body.reasoning_effort, undefined);
+    assert.ok(body.messages[0].content.includes('"required":["title"]'));
     assert.deepEqual(body.messages.map((m: { role: string }) => m.role), ["system", "user"]);
     assert.equal(body.max_completion_tokens, 100);
     assert.equal(body.input, undefined);
