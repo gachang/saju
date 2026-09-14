@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { AXES, readingInput } from "../src/lib/compatibility";
-import { mergeSection, paragraphRepairTarget, repairReport, type PipelineEvent, type RepairRequest } from "../src/lib/reading-pipeline";
+import { mergeSection, paragraphRepairTarget, selectParagraphRepair, repairReport, type PipelineEvent, type RepairRequest } from "../src/lib/reading-pipeline";
 import { countText, displayText, validateReport, type Report, type ReportSection } from "../src/lib/reading-schema";
 
 const input = readingInput({
@@ -48,6 +48,15 @@ function withBodyLength(section: ReportSection, length: number): ReportSection {
     paragraphs: [section.paragraphs[0], section.paragraphs[1], paragraph(`${section.id}번째 길이 수정 문단에서 `, length - 480)],
   };
 }
+
+test("paragraph-only repair preserves other paragraphs and selects a valid length", () => {
+  const good = validReport().sections[0];
+  const long = withBodyLength(good, 827);
+  const selected = selectParagraphRepair(long, ["짧아요.", good.paragraphs[2]], input);
+  assert.deepEqual(selected, good);
+  assert.equal(selected.paragraphs[0], long.paragraphs[0]);
+  assert.equal(selected.paragraphs[1], long.paragraphs[1]);
+});
 
 test("production concurrency is capped at four and keeps repaired sections valid", async () => {
   const report = validReport();

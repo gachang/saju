@@ -15,6 +15,7 @@ async function main() {
     console.log(JSON.stringify({ step, status: response.status, code: body.code, requestId: body.requestId, elapsedMs: Date.now() - started, sections: body.report?.sections.length }));
     await mkdir(".eval", { recursive: true });
     await writeFile(".eval/luna-production-result.json", JSON.stringify(body, null, 2), { mode: 0o600 });
+    await writeFile(`.eval/luna-production-step-${step}.json`, JSON.stringify(body, null, 2), { mode: 0o600 });
     if (body.resumeToken && (response.status === 202 || body.code === "READING_TIMEOUT")) {
       resumeToken = body.resumeToken;
       await setTimeout(7000);

@@ -1,5 +1,5 @@
 import type { readingInput } from "./compatibility";
-import { countText, countDisplayedText, reportSchema, sectionSchema, validateReport, type Report, type ReportSection } from "./reading-schema";
+import { countText, countDisplayedText, reportSchema, sectionSchema, validateReport, validateSection, type Report, type ReportSection } from "./reading-schema";
 
 export type ReadingInput = ReturnType<typeof readingInput>;
 export type RepairStage = "luna" | "terra";
@@ -33,6 +33,12 @@ export function paragraphRepairTarget(section: ReportSection, input?: Pick<Readi
   // One paragraph correction avoids rewriting the two good paragraphs when only length is wrong.
   const index = lengths.indexOf(delta < 0 ? Math.max(...lengths) : Math.min(...lengths));
   return { index, current_chars: lengths[index], target_chars: lengths[index] + delta, total_chars: total };
+}
+
+export function selectParagraphRepair(section: ReportSection, candidates: string[], input: ReadingInput) {
+  const { index } = paragraphRepairTarget(section, input);
+  const variants = candidates.map(paragraph => ({ ...section, paragraphs: section.paragraphs.map((p, i) => i === index ? paragraph : p) as ReportSection["paragraphs"] }));
+  return [section, ...variants].sort((a, b) => penalty(validateSection(a, input)) - penalty(validateSection(b, input)))[0];
 }
 
 export async function repairReport(
