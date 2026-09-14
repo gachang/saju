@@ -13,7 +13,7 @@ const fixtures = [
 async function main() {
   const start = Number(process.argv[2] ?? 0), count = Number(process.argv[3] ?? 4);
   const tag = process.argv[4] ?? "baseline";
-  if (!process.env.OPENAI_API_KEY || !Number.isInteger(count) || count < 1 || count > 10) throw new Error("Invalid evaluation configuration");
+  if (!process.env.CODYSSEY_API_KEY || !Number.isInteger(count) || count < 1 || count > 10) throw new Error("Invalid evaluation configuration");
   await mkdir(".eval", { recursive: true });
   for (let offset = 0; offset < count; offset += 2) {
     await Promise.all(Array.from({ length: Math.min(2, count - offset) }, async (_, n) => {
