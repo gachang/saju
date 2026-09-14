@@ -37,6 +37,13 @@ test("an already-aborted signal prevents the first request", async () => {
   await assert.rejects(withRateLimitRetry(async () => assert.fail("aborted work must not dispatch"), controller.signal), { name: "AbortError" });
 });
 
+test("token reset cannot be overridden by a shorter retry-after", async () => {
+  const failure = { status: 429, code: "rate_limit_exceeded", headers: new Headers({ "retry-after": "1", "x-ratelimit-reset-tokens": "2m" }) };
+  let calls = 0;
+  await assert.rejects(withRateLimitRetry(async () => { calls++; throw failure; }), error => error === failure);
+  assert.equal(calls, 1);
+});
+
 test("cancellation after a confirmed transient 429 prevents waiting and dispatching again", async () => {
   const controller = new AbortController();
   const failure = { status: 429, code: "rate_limit_exceeded", headers: new Headers({ "retry-after": "30" }) };

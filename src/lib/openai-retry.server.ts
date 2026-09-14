@@ -15,8 +15,8 @@ export async function withRateLimitRetry<T>(request: () => Promise<T>, signal?: 
       const milliseconds = Number(failure.headers?.get("retry-after-ms"));
       const tokenReset = durationMs(failure.headers?.get("x-ratelimit-reset-tokens"));
       const requestReset = failure.headers?.get("x-ratelimit-remaining-requests") === "0" ? durationMs(failure.headers?.get("x-ratelimit-reset-requests")) : 0;
-      const delay = Math.max(2000 * 2 ** attempt, milliseconds || seconds * 1000 || tokenReset + 500, requestReset);
-      if (delay > 60_000) throw error; // A long daily-limit reset is not a useful in-request retry.
+      const delay = Math.max(2000 * 2 ** attempt, milliseconds, seconds * 1000, tokenReset + 500, requestReset);
+      if (delay > 90_000) throw error; // Daily resets are not useful in-request retries; the caller deadline still applies.
       await wait(delay, undefined, { signal });
     }
   }
