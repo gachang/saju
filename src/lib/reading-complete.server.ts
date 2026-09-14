@@ -1,4 +1,4 @@
-import { createReadingClient } from "./reading-client.server";
+import { createReadingClient, READING_MODEL } from "./reading-client.server";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { readingInput, type ChartPair, type NameLengths } from "./compatibility";
@@ -23,7 +23,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
   const usage: ReadingUsage[] = [];
   const recordUsage = (entry: ReadingUsage) => { usage.push(entry); options.onUsage?.(entry); };
   const input = readingInput(pair, options.today, options.nameLengths);
-  const draftModel = options.draftModel ?? "gpt-5.4";
+  const draftModel = options.draftModel ?? READING_MODEL;
   options.onPhase?.("draft");
   const draft = options.initial ? { report: options.initial } : await generateReading(pair, { today: options.today, model: draftModel, nameLengths: options.nameLengths, signal,
     onUsage: (usage, elapsedMs) => recordUsage({ model: draftModel, phase: "draft", usage, elapsedMs }) });
@@ -33,7 +33,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
   const lengthFeedback = new Map<number, { paragraph: string; actual_chars: number }[]>();
   const repair = async ({ section, errors, stage, attempt, repeatedSentences }: RepairRequest) => {
     options.onPhase?.(`repair-${stage}-${attempt}`);
-    const model: ReadingModel = "gpt-5.4";
+    const model: ReadingModel = READING_MODEL;
     const start = Date.now();
     if (errors.every(error => /^\d+:title_(?:style|length=\d+)$/.test(error) || /^\d+:editorial:title_fluency:/.test(error))) {
       const response = await withRateLimitRetry(() => client.structured.parse({
@@ -82,7 +82,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
   for (let pass = 0; pass < 3 && !result.validation.length; pass++) {
     options.onPhase?.(`editor-${pass + 1}`);
     const review = await reviewReading(result.report, input, signal);
-    recordUsage({ model: "gpt-5.4", phase: `editor-${pass + 1}`, usage: review.usage, elapsedMs: review.elapsedMs });
+    recordUsage({ model: READING_MODEL, phase: `editor-${pass + 1}`, usage: review.usage, elapsedMs: review.elapsedMs });
     editorial.push(review.issues);
     if (!review.issues.length) break;
     const editorialIssues: Record<number, string[]> = {};

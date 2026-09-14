@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import type { AutoParseableTextFormat } from "openai/lib/parser";
 
-export const READING_MODEL = "gpt-5.4" as const;
+export const READING_MODEL = "gpt-5.6-luna" as const;
 export const READING_BASE_URL = "https://api.openai.com/v1";
 
 /** All report stages call OpenAI directly; never forward a third-party key. */

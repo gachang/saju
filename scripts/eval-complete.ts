@@ -4,6 +4,7 @@ import { calculateChart } from "../src/lib/engine";
 import { generateCompleteReading, type ReadingUsage } from "../src/lib/reading-complete.server";
 import { displayedBodyLength, reportSchema } from "../src/lib/reading-schema";
 import { nameLengthsSchema, readingInput } from "../src/lib/compatibility";
+import { READING_MODEL } from "../src/lib/reading-client.server";
 
 const fixtures = [
   [{ year: 1992, month: 10, day: 24, hour: 5, minute: 30 }, { year: 1990, month: 5, day: 15 }],
@@ -21,7 +22,7 @@ async function main() {
   const initialEditorialIssues: Record<number, string[]> = {};
   for (const issue of previous?.validation ?? []) if (/^\d+:editorial:/.test(issue)) (initialEditorialIssues[Number(issue.split(":")[0])] ??= []).push(issue);
   const nameLengths = nameLengthsSchema.parse({ self: Number(process.env.READING_EVAL_NAME_SELF ?? 3), favorite: Number(process.env.READING_EVAL_NAME_FAVORITE ?? 2) });
-  const draftModel = "gpt-5.4";
+  const draftModel = READING_MODEL;
   await mkdir(".eval", { recursive: true });
   const traces: ReadingUsage[] = [];
   const result = await generateCompleteReading({ self, favorite }, { today: "2026-09-12", initial, nameLengths, draftModel,

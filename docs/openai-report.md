@@ -1,7 +1,7 @@
 # OpenAI 직접 연동
 
 현재 보고서는 `https://api.openai.com/v1/chat/completions`를 직접 호출합니다.
-초안·보정·검수는 모두 `gpt-5.4`, reasoning effort `low`를 사용합니다.
+초안·보정·검수는 모두 `gpt-5.6-luna`, reasoning effort `low`를 사용합니다.
 Structured Outputs와 서버의 분량·근거·문체 검사를 함께 사용합니다.
 
 Vercel 프로젝트의 Environment Variables에서 사용자가 직접 설정합니다.
