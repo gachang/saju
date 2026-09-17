@@ -52,3 +52,20 @@ test("scores are deterministic, bounded and independent of hour; copy payload ex
   assert.doesNotMatch(payload, /1992|1990|birthTime|longitude|"name"|"self_name"|"favorite_name"|gender/);
   assert.equal(pairSchema.safeParse({ self, favorite, rawBirth: "1992-10-24" }).success, false);
 });
+
+test("copy input exposes familiar month climate and day-master explanations", () => {
+  const input = readingInput({
+    self: { year: "임신", month: "계사", day: "무오", hour: null },
+    favorite: { year: "경오", month: "기축", day: "신유", hour: null },
+  });
+  assert.deepEqual(input.manse_profiles.self.day_master, {
+    stem: "무", element: "토", label: "무토", image: "넓고 단단하게 중심을 잡는 산 같은 무토",
+  });
+  assert.equal(input.manse_profiles.self.month_climate.label, "사월");
+  assert.equal(input.manse_profiles.self.month_climate.climate_type, "조열");
+  assert.equal(input.manse_profiles.favorite.day_master.label, "신금");
+  assert.equal(input.manse_profiles.favorite.month_climate.label, "축월");
+  assert.equal(input.manse_profiles.favorite.month_climate.climate_type, "한습");
+  assert.match(input.manse_pair.climate_flow, /뜨거운 기운.*서늘함.*식혀/u);
+  assert.match(input.manse_pair.day_master_flow, /무토.*신금.*북돋는/u);
+});

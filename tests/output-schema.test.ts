@@ -119,7 +119,8 @@ test("zodTextFormat sends title length and style instructions without a pattern 
     assert.equal(Object.hasOwn(titleSchema, "pattern"), false);
     assert.equal(typeof titleSchema.description, "string");
     assert.ok(titleSchema.description!.includes("쉼표"));
-    assert.ok(titleSchema.description!.includes("앞말에 붙여"));
+    assert.ok(titleSchema.description!.includes("완료된 행동"));
+    assert.ok(titleSchema.description!.includes("명사형"));
     const paragraphSchema = schema.properties!.paragraphs.items!;
     assert.equal(paragraphSchema.type, "string");
     assert.equal(paragraphSchema.minLength, undefined);
