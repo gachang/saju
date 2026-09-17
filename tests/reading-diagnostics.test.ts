@@ -17,5 +17,5 @@ test("classifies quota separately from temporary rate limits", () => {
 test("does not copy upstream secrets, messages or generated text", () => {
   const result = JSON.stringify(readingFailure({ message: "private input", code: "private input", body: "private input" }));
   assert.equal(result.includes("private input"), false);
-  assert.deepEqual(validationSummary(["1:body_length=612", "2:editorial:meaning:private input", "private input"]), ["1:body_length", "2:editorial", "validation"]);
+  assert.deepEqual(validationSummary(["1:body_length=612", "2:editorial:wrong_topic:private input", "private input"]), ["1:body_length", "2:editorial:wrong_topic", "validation"]);
 });

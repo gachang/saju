@@ -13,6 +13,8 @@ export function readingFailure(error: unknown) {
 export function validationSummary(errors: string[]) {
   // Only section numbers and fixed validation labels; never quotes/explanations.
   return errors.map(value => {
+    const editorial = value.match(/^([1-8]):editorial:([a-z_]+):/);
+    if (editorial) return `${editorial[1]}:editorial:${editorial[2]}`;
     const match = value.match(/^([1-8]):([a-z_]+)(?:=|:|$)/);
     return match ? `${match[1]}:${match[2]}` : "validation";
   }).filter((value, index, all) => all.indexOf(value) === index).slice(0, 40);
