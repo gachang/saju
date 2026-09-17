@@ -12,6 +12,11 @@ export type ReadingUsage = { model: ReadingModel; phase: string; usage: unknown;
 const isNonBlockingCopyIssue = (issue: string) =>
   /^(?:[1-8]:(?:body_length|title_length|title_style|formal_register|repeated_sentence_with|duplicate_paragraph_with|evidence_label|axis_meaning|compatibility_type|names)=?|title_punctuation_count$|missing_(?:time|hour)_limitation$)/u.test(issue);
 
+const sanitizeParagraph = (paragraph: string) => paragraph
+  .replace(/그 사람/gu, "{{FAVORITE}} 님")
+  .replace(/당신|그대/gu, "{{USER}} 님")
+  .replace(/운명적으로/gu, "자연스럽게");
+
 export async function generateCompleteReading(pair: ChartPair, options: {
   today?: string; signal?: AbortSignal; initial?: Report; draftModel?: ReadingModel; nameLengths?: NameLengths;
   onProgress?: (event: PipelineEvent) => void;
@@ -40,7 +45,10 @@ export async function generateCompleteReading(pair: ChartPair, options: {
 
   const report: Report = {
     ...draft.report,
-    sections: draft.report.sections.map(normalizeTitleStyle),
+    sections: draft.report.sections.map(section => normalizeTitleStyle({
+      ...section,
+      paragraphs: section.paragraphs.map(sanitizeParagraph),
+    })),
   };
   options.onCheckpoint?.(report);
   options.onProgress?.({ stage: "draft", completed: 8, total: 8 });
