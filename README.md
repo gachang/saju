@@ -18,7 +18,7 @@ Vercel `otaku-saju-web`의 Root Directory는 빈 값(저장소 루트), Producti
 
 실제 API 결과에서 내보낸 [완성 보고서](docs/reports/complete-example.md)와 [HTML](docs/reports/complete-example.html)을 확인할 수 있습니다. 합성 입력 예시이며 실제 인물의 감정이나 미래를 예측하지 않습니다. 해당 JSON은 회귀 검사 fixture로도 보관합니다.
 
-현재 검증 상태(2026-09-14): Codyssey GPT-5.4로 생성·보정·검수를 통과한 합성 보고서를 `/report/example`에서 보여줍니다. 프로덕션에서도 실제 초안 생성 후 중간 결과를 이어 보정해 HTTP 200과 8장 전체 검증 통과를 확인했습니다. 재개 요청 시간은 전체 신규 생성 시간이 아니며, 생성에는 수 분이 걸릴 수 있습니다. 과거 기록은 [평가 기록](docs/evals/2026-09-12.md)에 별도로 남겨 두었습니다.
+현재 검증 상태(2026-09-17): OpenAI `gpt-5.6-luna`가 프로덕션에서 실제 생성·보정·검수를 수행한 합성 보고서를 `/report/example`에서 보여줍니다. 최종 응답은 HTTP 200이며 8장·24문단, 장당 700~750자와 전체 형식·근거·중복·편집 검사를 통과했습니다. 첫 생성은 수 분이 걸릴 수 있고 서명된 중간 결과에서 이어 처리합니다. 이전 Codyssey 기록은 [평가 기록](docs/evals/2026-09-12.md)에 별도로 남겨 두었습니다.
 
 ## 실행 및 API 테스트
 
@@ -40,7 +40,7 @@ pnpm report:export .eval/fresh-2.json example
 
 공개 AI API는 기본 비활성입니다. Vercel Production에 서버 전용 비밀변수 `OPENAI_API_KEY`와 `READING_API_ENABLED=true`를 설정하고 재배포해야 합니다. 키는 사용자가 직접 입력하며 Git이나 문서에 포함하지 않습니다. 기존 `CODYSSEY_API_KEY`는 사용하지 않습니다. 인스턴스별 호출 제한은 글로벌 비용 한도가 아니므로 상용 공개 전 분산 호출 제한·인증·비용 한도를 추가해야 합니다. 실제 호칭 대신 NFC 기준 길이(각 1~12자)를 전송해 치환 후 분량을 검사합니다.
 
-API 키를 Git에 커밋하지 마세요. `.env.local`은 무시되며 `.env.example`은 변수명만 포함합니다. 2026-09-14 Vercel Production 키로 직접 OpenAI Luna 단일 연결 테스트를 통과했습니다(3,265ms, 총 64토큰). 전체 보고서 품질은 이번 테스트 범위가 아닙니다. 위 Codyssey 성공 기록은 이전 공급자 검증입니다.
+API 키를 Git에 커밋하지 마세요. `.env.local`은 무시되며 `.env.example`은 변수명만 포함합니다. 2026-09-17 Vercel Production 키로 직접 OpenAI Luna의 8장 전체 생성과 최종 품질 검사를 통과했습니다. 위 Codyssey 기록은 이전 공급자 검증입니다.
 
 ## 기존 Next.js 개발 안내
 

@@ -6,7 +6,7 @@ The application preserves the visual treatment of [Figma 1991:3079](https://www.
 - Eight numbered cards, heading, gold rule, three paragraphs and actual character count: second reference.
 - Cards grow with content; long accepted reports are never clipped to a fixed Figma frame height.
 - Existing calculated scores, chart variants, generation endpoint and validated report text are preserved. The hero score explicitly labels the mean of the five existing axes; it is not a predicted real-world relationship probability.
-- `/report/example` uses the existing accepted synthetic fixture, clearly labels it as an example and makes no generation request. It is excluded from search indexing.
+- `/report/example` uses the accepted synthetic OpenAI GPT-5.6 Luna production fixture, clearly labels it as an example and makes no generation request. It is excluded from search indexing.
 - Sharing is user-triggered and saving downloads plain text locally; neither claims persistent server storage. API availability is unchanged.
 
 ## Assets

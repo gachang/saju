@@ -21,3 +21,15 @@ test("Codyssey GPT-5.4 accepted report passes all final checks", () => {
   assert.deepEqual(validateReport(report, input), []);
   assert.deepEqual(report.sections.map(s => displayedBodyLength(s, input)), [720,744,713,746,737,710,712,750]);
 });
+
+test("OpenAI GPT-5.6 Luna production report passes all final checks", () => {
+  const fixture = JSON.parse(readFileSync(new URL("./fixtures/luna-accepted-report.json", import.meta.url), "utf8"));
+  const input = readingInput(pairSchema.parse(fixture.pair), "2026-09-17", fixture.nameLengths);
+  const report = reportSchema.parse(fixture.report);
+  assert.equal(fixture.provider, "OpenAI");
+  assert.equal(fixture.model, "gpt-5.6-luna");
+  assert.equal(fixture.productionVerified, true);
+  assert.deepEqual(fixture.editorial, [[]]);
+  assert.deepEqual(validateReport(report, input), []);
+  assert.deepEqual(report.sections.map(s => displayedBodyLength(s, input)), [701, 710, 718, 709, 729, 736, 709, 725]);
+});
