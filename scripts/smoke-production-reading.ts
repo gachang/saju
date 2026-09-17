@@ -16,7 +16,7 @@ async function main() {
       body: JSON.stringify({ ...fixture.pair, name_lengths: fixture.nameLengths, resumeToken }), signal: AbortSignal.timeout(250_000),
     });
     const body = await response.json();
-    console.log(JSON.stringify({ step, status: response.status, code: body.code, requestId: body.requestId, elapsedMs: Date.now() - started, sections: body.report?.sections.length }));
+    console.log(JSON.stringify({ step, status: response.status, code: body.code, requestId: body.requestId, elapsedMs: Date.now() - started, sections: body.report?.sections.length, issues: body.issues }));
     await mkdir(".eval", { recursive: true });
     await writeFile(".eval/luna-production-result.json", JSON.stringify(body, null, 2), { mode: 0o600 });
     await writeFile(`.eval/luna-production-step-${step}.json`, JSON.stringify(body, null, 2), { mode: 0o600 });

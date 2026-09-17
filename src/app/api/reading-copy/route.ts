@@ -62,13 +62,14 @@ export async function POST(request: Request) {
       onUsage: value => log("reading_call_completed", { model: value.model, callPhase: value.phase, callElapsedMs: value.elapsedMs }),
     });
     if (result.validation.length) {
-      log("reading_quality_failed", { validation: validationSummary(result.validation), repairAttempts: result.attempts.length });
+      const issues = validationSummary(result.validation);
+      log("reading_quality_failed", { validation: issues, repairAttempts: result.attempts.length });
       partial = result.report;
       const editorial: Record<string, string[]> = {};
       for (const issue of result.validation) if (/^[1-8]:editorial:/.test(issue)) (editorial[issue.split(":")[0]] ??= []).push(issue);
       const resumeToken = continuation(editorial);
-      if (resumeToken) return respond({ code: "READING_CONTINUE", resumeToken, requestId, retryAfter: 7 }, 202);
-      return respond({ code: "READING_QUALITY", requestId, error: `보고서 품질 검사에 통과하지 못했어요. 확인 번호: ${requestId}` }, 502);
+      if (resumeToken) return respond({ code: "READING_CONTINUE", resumeToken, requestId, retryAfter: 7, issues }, 202);
+      return respond({ code: "READING_QUALITY", requestId, issues, error: `보고서 품질 검사에 통과하지 못했어요. 확인 번호: ${requestId}` }, 502);
     }
     log("reading_completed");
     return respond({ report: result.report, promptVersion: result.promptVersion });
