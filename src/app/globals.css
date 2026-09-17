@@ -42,6 +42,74 @@ body {
   opacity: 0.7;
 }
 
+@keyframes saju-intro-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes saju-intro-logo-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes saju-orbit-clockwise {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes saju-orbit-counterclockwise {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.saju-intro-enter {
+  opacity: 0;
+  animation: saju-intro-enter 0.65s ease-out 0.3s forwards;
+}
+
+.saju-intro-logo-enter {
+  opacity: 0;
+  animation: saju-intro-logo-enter 0.65s ease-out 0.3s forwards;
+}
+
+.saju-orbit-track-intro,
+.saju-orbit-counter-intro {
+  animation: saju-orbit-clockwise 18s linear infinite;
+}
+
+.saju-orbit-counter-intro {
+  animation-name: saju-orbit-counterclockwise;
+}
+
+.saju-orbit-ring-intro {
+  animation: saju-orbit-counterclockwise 36s linear infinite;
+}
+
+.saju-orbit-track-loading,
+.saju-orbit-counter-loading {
+  animation: saju-orbit-clockwise 42s linear infinite;
+}
+
+.saju-orbit-counter-loading {
+  animation-name: saju-orbit-counterclockwise;
+}
+
+.saju-orbit-ring-loading {
+  animation: saju-orbit-counterclockwise 90s linear infinite;
+}
+
 /* Native selects keep their platform arrow; we draw our own instead. */
 select {
   appearance: none;
@@ -61,6 +129,17 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .saju-intro-enter {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .saju-intro-logo-enter {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
   *,
   *::before,
   *::after {

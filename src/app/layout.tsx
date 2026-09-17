@@ -27,6 +27,7 @@ const reportSerif = localFont({
   variable: "--font-report-serif", display: "swap", preload: false,
 });
 const chartFont = localFont({ src:"./fonts/report/YujiMai-chart.woff2", variable:"--font-report-chart", weight:"400", display:"swap", preload:false });
+const onboardingHanjaFont = localFont({ src:"./fonts/report/YujiMai-onboarding.ttf", variable:"--font-onboarding-hanja", weight:"400", display:"swap", preload:false });
 const scoreFont = localFont({ src:"./fonts/report/Diphylleia-score.woff2", variable:"--font-report-score", weight:"400", display:"swap", preload:false });
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${hambakSnow.variable} ${gmarketSans.variable} ${reportSans.variable} ${reportSerif.variable} ${chartFont.variable} ${scoreFont.variable} h-full antialiased`}
+      className={`${hambakSnow.variable} ${gmarketSans.variable} ${reportSans.variable} ${reportSerif.variable} ${chartFont.variable} ${onboardingHanjaFont.variable} ${scoreFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

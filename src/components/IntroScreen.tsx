@@ -27,8 +27,12 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         />
       </motion.div>
 
-      <BrandMark className="absolute top-[6.86%] left-1/2 z-20 size-[72px] -translate-x-1/2" />
+      <BrandMark className="saju-intro-logo-enter absolute top-[6.86%] left-1/2 z-20 size-[72px] -translate-x-1/2" />
 
+      <div
+        data-intro-content="true"
+        className="saju-intro-enter absolute inset-0"
+      >
       <div className="absolute inset-x-4 top-[16.48%] z-20 text-center">
         <h1 className="font-hambak text-[24px] leading-[1.25] text-white drop-shadow-[0_2px_12px_rgba(0,12,23,0.75)]">
           성덕의 기운이 흐를지 보겠기니
@@ -73,7 +77,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
 
       <p
         aria-hidden="true"
-        className="absolute top-[51.3%] left-[29.5%] z-10 -translate-x-1/2 font-[var(--font-report-chart)] text-[120px] leading-[0.68] text-white/10"
+        className="absolute top-[51.3%] left-[29.5%] z-10 -translate-x-1/2 [font-family:var(--font-onboarding-hanja)] text-[120px] leading-[0.68] text-white/10"
       >
         成
         <br />
@@ -81,7 +85,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       </p>
       <p
         aria-hidden="true"
-        className="absolute top-[70.4%] left-[71%] z-10 -translate-x-1/2 font-[var(--font-report-chart)] text-[120px] leading-[0.68] text-white/10"
+        className="absolute top-[70.4%] left-[71%] z-10 -translate-x-1/2 [font-family:var(--font-onboarding-hanja)] text-[120px] leading-[0.68] text-white/10"
       >
         祈
         <br />
@@ -105,6 +109,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       >
         <GoldButton onClick={onStart}>시작하기</GoldButton>
       </motion.div>
+      </div>
     </section>
   );
 }

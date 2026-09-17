@@ -38,7 +38,6 @@ export function ElementOrbit({
   const visibleElements = ELEMENTS.filter(
     (element) => elementSet === "all" || INTRO_ELEMENTS.has(element.key),
   );
-
   return (
     <div className="relative aspect-square w-full" aria-hidden="true">
       <motion.div
@@ -61,9 +60,13 @@ export function ElementOrbit({
       </motion.div>
 
       <motion.div
-        className="absolute inset-[11.5%] opacity-95"
-        animate={reduceMotion ? undefined : { rotate: -360 }}
-        transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
+        className={`absolute inset-[11.5%] opacity-95 ${
+          reduceMotion
+            ? ""
+            : elementSet === "intro"
+              ? "saju-orbit-ring-intro"
+              : "saju-orbit-ring-loading"
+        }`}
       >
         <Image
           src="/rings.svg"
@@ -127,9 +130,14 @@ export function ElementOrbit({
       )}
 
       <motion.div
-        className="absolute inset-0"
-        animate={reduceMotion ? undefined : { rotate: 360 }}
-        transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
+        data-orbit-track={elementSet}
+        className={`absolute inset-0 ${
+          reduceMotion
+            ? ""
+            : elementSet === "intro"
+              ? "saju-orbit-track-intro"
+              : "saju-orbit-track-loading"
+        }`}
       >
         {visibleElements.map((element, index) => (
           <div
@@ -138,9 +146,13 @@ export function ElementOrbit({
             style={{ left: `${element.left}%`, top: `${element.top + 7.8}%` }}
           >
             <motion.div
-              className="relative size-full"
-              animate={reduceMotion ? undefined : { rotate: -360 }}
-              transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
+              className={`relative size-full ${
+                reduceMotion
+                  ? ""
+                  : elementSet === "intro"
+                    ? "saju-orbit-counter-intro"
+                    : "saju-orbit-counter-loading"
+              }`}
             >
               <motion.div
                 className="relative size-full"
