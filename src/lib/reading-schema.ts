@@ -55,7 +55,8 @@ function hasGuaranteedOutcomeClaim(text: string) {
 }
 
 export function normalizeTitleStyle(section: ReportSection): ReportSection {
-  if (!section.title.includes("기니")) return section;
+  const originalLength = countText(section.title);
+  if (!section.title.includes("기니") && (originalLength < 35 || originalLength > 45)) return section;
   const punctuation = [2, 5].includes(section.id) ? "!" : "";
   const cleaned = section.title.normalize("NFC")
     .replace(/[\r\n]+/gu, " ")

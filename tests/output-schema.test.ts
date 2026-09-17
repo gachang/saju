@@ -49,6 +49,9 @@ test("title normalization removes accidental punctuation and suffix spacing", ()
   const missingComma = normalizeTitleStyle({ ...base, title: base.title.replace(",", "") });
   assert.equal((missingComma.title.match(/,/gu) ?? []).length, 1);
   assert.ok(!validateSection(missingComma, input).includes("8:title_style"));
+  const missingSuffix = normalizeTitleStyle({ ...base, title: base.title.replace(/기니$/u, "결론") });
+  assert.match(missingSuffix.title, /기니$/u);
+  assert.ok(!validateSection(missingSuffix, input).includes("8:title_style"));
 });
 
 for (const { name, value, error } of invalidTitles) {
