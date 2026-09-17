@@ -237,6 +237,13 @@ test("formal sentence endings fail the conversational register without banning n
   }
 });
 
+test("safety language rejecting a guaranteed return is not treated as a prediction", () => {
+  for (const text of ["반드시 돌아올 필요는 없어요.", "반드시 다시 만난다고 보장할 수 없어요.", "반드시 탈덕하는 것은 아니에요."]) {
+    assert.ok(!validateSection(sectionWithText(text, 6), input).includes("6:forbidden_style"), text);
+  }
+  assert.ok(validateSection(sectionWithText("반드시 다시 돌아오게 돼요.", 6), input).includes("6:forbidden_style"));
+});
+
 test("report-wide copied paragraphs and substantial sentences identify the later section", () => {
   const report = structuredClone(fixture);
   const sentence = "낯선 표현을 살펴본 뒤 마음에 남은 한 장면만 기록하며 편안한 감상 속도를 찾아봐요.";

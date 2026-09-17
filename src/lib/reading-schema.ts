@@ -46,6 +46,25 @@ function hasReciprocalAffectionClaim(text: string) {
   });
 }
 
+function hasGuaranteedOutcomeClaim(text: string) {
+  return sentences(text).some(sentence => {
+    if (!/반드시[^.!?]{0,80}(?:만나|돌아|탈덕)/u.test(sentence)) return false;
+    // A clear rejection of a guarantee is a safety statement, not a prediction.
+    return !/(?:필요|이유|보장|약속|것|상황|결과)[^.!?]{0,20}(?:없|아니)|(?:돌아|만나|탈덕)[^.!?]{0,15}(?:않|수\s*없)|(?:단정|예측|보장|확인)[^.!?]{0,15}(?:않|수\s*없)/u.test(sentence);
+  });
+}
+
+export function normalizeTitleStyle(section: ReportSection): ReportSection {
+  const punctuation = [2, 5].includes(section.id) ? "!" : "";
+  const title = section.title.normalize("NFC")
+    .replace(/[\r\n]+/gu, " ")
+    .replace(/\s+/gu, " ")
+    .trim()
+    .replace(/[!?]/gu, "")
+    .replace(/\s+기니$/u, "기니");
+  return { ...section, title: title.endsWith("기니") ? `${title}${punctuation}` : section.title };
+}
+
 export function validateSection(section: ReportSection, input: ReadingInput) {
   const errors: string[] = [];
   const fail = (error: string) => errors.push(`${section.id}:${error}`);
@@ -70,7 +89,8 @@ export function validateSection(section: ReportSection, input: ReadingInput) {
   if (/[{}]/u.test(section.title)) fail("title_placeholder");
   if (/\p{Extended_Pictographic}/u.test(section.title + body)) fail("emoji");
   if (/[\p{Script=Han}]/u.test(section.title + body)) fail("hanja");
-  if (/기니|당신|(?:^|\s)그대(?:는|가|를|의|에게|여|와|도)?(?:\s|[,.!?]|$)|그 사람|운명적으로|반드시.*(?:만나|돌아|탈덕)/u.test(body)) fail("forbidden_style");
+  if (/기니|당신|(?:^|\s)그대(?:는|가|를|의|에게|여|와|도)?(?:\s|[,.!?]|$)|그 사람|운명적으로/u.test(body)
+    || hasGuaranteedOutcomeClaim(body)) fail("forbidden_style");
   if (/[가-힣]니다(?:[.!?]|\s|$)|(?:입니까|습니까)[.!?]?/u.test(body)) fail("formal_register");
   const firstParagraph = section.paragraphs[0] ?? "";
   if (!firstParagraph.includes("{{USER}} 님") || !firstParagraph.includes("{{FAVORITE}} 님")) fail("names");

@@ -1,5 +1,5 @@
 import type { readingInput } from "./compatibility";
-import { countText, countDisplayedText, displayText, reportSchema, sectionSchema, validateReport, validateSection, type Report, type ReportSection } from "./reading-schema";
+import { countText, countDisplayedText, displayText, normalizeTitleStyle, reportSchema, sectionSchema, validateReport, validateSection, type Report, type ReportSection } from "./reading-schema";
 
 export type ReadingInput = ReturnType<typeof readingInput>;
 export type RepairStage = "luna" | "terra";
@@ -11,7 +11,7 @@ export function sectionErrors(report: Report, input: ReadingInput, id: number) {
 }
 
 export function mergeSection(report: Report, requestedId: number, replacement: ReportSection): Report {
-  const parsed = sectionSchema.parse(replacement);
+  const parsed = normalizeTitleStyle(sectionSchema.parse(replacement));
   if (parsed.id !== requestedId) throw new Error("REPAIR_SECTION_MISMATCH");
   return reportSchema.parse({ ...report, sections: report.sections.map(section => section.id === requestedId ? parsed : section) });
 }
@@ -59,7 +59,7 @@ export function selectParagraphRepair(section: ReportSection, candidates: string
 }
 
 export function selectTitleRepair(section: ReportSection, titles: string[], input: ReadingInput) {
-  const candidates = titles.map(title => ({ ...section, title }));
+  const candidates = titles.map(title => normalizeTitleStyle({ ...section, title }));
   return [...candidates, section].sort((a, b) => penalty(validateSection(a, input)) - penalty(validateSection(b, input)))[0];
 }
 
@@ -70,7 +70,7 @@ export async function repairReport(
   options: { signal?: AbortSignal; onProgress?: (event: PipelineEvent) => void; onCheckpoint?: (report: Report) => void; stages?: RepairStage[]; editorialIssues?: Record<number, string[]>; concurrency?: number } = {},
 ) {
   options.signal?.throwIfAborted();
-  let report = reportSchema.parse(draft);
+  let report = reportSchema.parse({ ...draft, sections: draft.sections.map(normalizeTitleStyle) });
   const editorialIssues = { ...options.editorialIssues };
   const currentErrors = (value: Report, id: number) => [...sectionErrors(value, input, id), ...(editorialIssues[id] ?? [])];
   const attempts: { stage: RepairStage; id: number; before: string[]; after: string[]; accepted: boolean }[] = [];

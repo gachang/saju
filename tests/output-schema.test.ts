@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { zodTextFormat } from "openai/helpers/zod";
 import { pairSchema, readingInput } from "../src/lib/compatibility";
 import { generatedReportSchema, generatedSectionSchema, generatedTitleSchema } from "../src/lib/reading-output-schema";
-import { reportSchema, validateSection } from "../src/lib/reading-schema";
+import { normalizeTitleStyle, reportSchema, validateSection } from "../src/lib/reading-schema";
 
 const fixture = JSON.parse(readFileSync(new URL("./fixtures/accepted-report.json", import.meta.url), "utf8"));
 const report = reportSchema.parse(fixture.report);
@@ -34,6 +34,16 @@ test("generation accepts both inclusive title length boundaries", () => {
   assert.equal(title.length, 35);
   assert.equal(generatedTitleSchema.safeParse(title).success, true);
   assert.equal(generatedTitleSchema.safeParse("가".repeat(10) + title).success, true);
+});
+
+test("title normalization removes accidental punctuation and suffix spacing", () => {
+  const base = report.sections[7];
+  const changed = { ...base, title: base.title.replace(/기니$/u, " 기니!?") };
+  const normalized = normalizeTitleStyle(changed);
+  assert.equal(normalized.title, base.title);
+  assert.ok(!validateSection(normalized, input).includes("8:title_style"));
+  const excited = normalizeTitleStyle({ ...report.sections[1], title: report.sections[1].title.replace(/!$/u, "?!") });
+  assert.equal(excited.title, report.sections[1].title);
 });
 
 for (const { name, value, error } of invalidTitles) {

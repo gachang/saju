@@ -67,7 +67,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
       model, instructions: SYSTEM_PROMPT,
       input: JSON.stringify({ ...input, task: "repair_one_section", section_id: section.id, topic: SECTION_TOPICS[section.id - 1],
         previous_section: section, errors, repeated_sentences_to_rewrite: repeatedSentences, paragraph_repair: target,
-        instruction: `오직 ${section.id}번 장을 반환한다. 실측 총 ${target.total_chars}자이며 목표는 725자다. 본문 길이만 문제라면 ${target.index + 1}번째 문단을 약 ${target.target_chars}자로 고치고 다른 문단은 그대로 둔다. formal_register는 모든 입니다/습니다/합니다를 자연스러운 해요체로 바꾸라는 뜻이다. 여러 문제가 있으면 그 오류도 함께 고친다. 편집 검수의 잘못된 의미가 제목이나 다른 문단에도 반복되어 있으면 함께 수정한다. 전체 보고서나 다른 장을 출력하지 않는다. 문장을 자르거나 무관한 문장으로 채우지 않는다.` }),
+        instruction: `오직 ${section.id}번 장을 반환한다. 실측 총 ${target.total_chars}자이며 목표는 725자다. 본문 길이만 문제라면 ${target.index + 1}번째 문단을 약 ${target.target_chars}자로 고치고 다른 문단은 그대로 둔다. formal_register는 모든 입니다/습니다/합니다를 자연스러운 해요체로 바꾸라는 뜻이다. forbidden_style은 본문의 기니·당신·그대·그 사람·운명적으로 또는 실제 만남·회귀·탈덕을 반드시 일어난다고 보장하는 표현을 제거하라는 뜻이다. 여러 문제가 있으면 그 오류도 함께 고친다. 편집 검수의 잘못된 의미가 제목이나 다른 문단에도 반복되어 있으면 함께 수정한다. 전체 보고서나 다른 장을 출력하지 않는다. 문장을 자르거나 무관한 문장으로 채우지 않는다.` }),
       // Counts are measured by code; short edits should not spend the entire budget recounting internally.
       reasoning: { effort: "low" }, text: { verbosity: "high", format: zodTextFormat(sectionSchema.extend({ id: z.literal(section.id) }), "report_section") },
       max_output_tokens: 2800, store: false, tools: [],
