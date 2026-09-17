@@ -20,8 +20,8 @@ export type FormState = {
 };
 
 export const emptyPerson: Person = {
-  name: "",
-  gender: "",
+  name: "김기니",
+  gender: "female",
   year: "",
   month: "",
   day: "",
@@ -36,6 +36,14 @@ export const emptyForm: FormState = {
   partner: { ...emptyPerson },
   groupName: "",
 };
+
+export function createInitialForm(): FormState {
+  return {
+    self: { ...emptyPerson },
+    partner: { ...emptyPerson },
+    groupName: "",
+  };
+}
 
 export const GENDERS = [
   { value: "male", label: "남자" },

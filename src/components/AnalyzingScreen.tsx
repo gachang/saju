@@ -1,105 +1,132 @@
 "use client";
 
-import { useEffect } from "react";
-import { motion } from "motion/react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { Backdrop } from "./Backdrop";
 import { ElementOrbit } from "./ElementOrbit";
+import type { FormState } from "@/lib/saju";
 
-const ANALYZE_MS = 10_000;
+const ANALYZE_MS = 9_200;
+const PROGRESS_STEPS = [
+  { at: 0, value: 8 },
+  { at: 700, value: 30 },
+  { at: 2_500, value: 52 },
+  { at: 4_600, value: 74 },
+  { at: 6_700, value: 91 },
+  { at: 8_400, value: 100 },
+] as const;
 
-/**
- * Positions are percentages of the 402 x 874 design frame taken from
- * assets/loading_example.svg, so the composition holds at any viewport height.
- */
-const RING_CENTER_Y = (386.5 / 874) * 100;
-const TITLE_Y = (137.8 / 874) * 100;
-const HEADLINE_Y = (687.5 / 874) * 100;
-const SUBLINE_Y = (727 / 874) * 100;
+export function AnalyzingScreen({
+  form,
+  onDone,
+}: {
+  form: FormState;
+  onDone: () => void;
+}) {
+  const reduceMotion = useReducedMotion();
+  const [progress, setProgress] = useState(reduceMotion ? 100 : 8);
 
-export function AnalyzingScreen({ onDone }: { onDone: () => void }) {
   useEffect(() => {
-    // #TODO
-    const t = setTimeout(onDone, ANALYZE_MS);
-    return () => clearTimeout(t);
-  }, [onDone]);
+    if (reduceMotion) {
+      const done = window.setTimeout(onDone, 350);
+      return () => window.clearTimeout(done);
+    }
+
+    const timers = PROGRESS_STEPS.slice(1).map((step) =>
+      window.setTimeout(() => setProgress(step.value), step.at),
+    );
+    const done = window.setTimeout(onDone, ANALYZE_MS);
+    return () => {
+      timers.forEach(window.clearTimeout);
+      window.clearTimeout(done);
+    };
+  }, [onDone, reduceMotion]);
+
+  const selfName = form.self.name.trim() || "김기니";
+  const partnerName = form.partner.name.trim() || "김기니";
+  const headline =
+    progress >= 74
+      ? "거의 다 됐기니...."
+      : progress >= 30
+        ? "기운을 맞춰보는 중이기니"
+        : "사주를 펼쳐보는 중이기니";
 
   return (
-    <div className="relative h-full overflow-hidden">
-      <Backdrop />
+    <section className="relative h-full overflow-hidden bg-ink" aria-label="궁합 분석 중">
+      <Backdrop dial />
 
-      {/* The ring assembly is 493px wide in a 402px frame, so it bleeds past
-          both edges exactly as the export does. */}
-      <div
-        className="absolute left-1/2 w-[123%] -translate-x-1/2 -translate-y-1/2"
-        style={{ top: `${RING_CENTER_Y}%` }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.88 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        >
-          <ElementOrbit />
-        </motion.div>
-      </div>
-
-      <div
-        className="absolute inset-x-0 -translate-y-1/2 text-center"
-        style={{ top: `${TITLE_Y}%` }}
-      >
-        <motion.p
-          className="font-hambak text-[2.5rem] leading-none text-gold"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          성덕기니
-        </motion.p>
-      </div>
-
-      <div
-        className="absolute inset-x-0 -translate-y-1/2 px-6 text-center"
-        style={{ top: `${HEADLINE_Y}%` }}
-      >
+      <div className="absolute inset-x-5 top-[14.2%] z-20 text-center">
         <motion.h1
-          className="font-hambak text-[2.5625rem] leading-none text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.6)]"
-          initial={{ opacity: 0, y: 16 }}
+          key={headline}
+          className="font-hambak text-[40px] leading-[1.12] text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.45)]"
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
         >
-          분석중이기니
-          <motion.span
-            className="inline-block"
-            animate={{ opacity: [0.2, 1, 0.2] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            ...
-          </motion.span>
+          {headline}
         </motion.h1>
+        <p className="mt-3 font-hambak text-[20px] leading-[1.25] text-[#f8f2e6]">
+          나가면 힘이 빠지니 기다리겠기니?
+        </p>
+      </div>
+
+      <motion.div
+        className="absolute top-[31.2%] left-1/2 z-10 w-[81.1%] -translate-x-1/2"
+        initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+      >
+        <ElementOrbit />
+      </motion.div>
+
+      <div className="absolute inset-x-[10.7%] top-[73.55%] z-20">
+        <div className="flex items-center">
+          {[selfName, partnerName].map((name, index) => (
+            <div key={`${index}-${name}`} className="contents">
+              {index === 1 && (
+                <div className="relative h-[46px] w-[51px] shrink-0">
+                  <Image
+                    src="/figma-final/name-connector.png"
+                    alt="좋아하는 사이"
+                    fill
+                    sizes="51px"
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <div className="flex min-h-[64px] min-w-0 flex-1 rounded-[66px] border border-[#f3ef9c]/80 p-0.5">
+                <div className="flex min-h-[58px] w-full items-center justify-center rounded-[32px] border border-[#f3ef9c]/80 px-3 py-1 text-center font-hambak text-[18px] leading-[1.15] text-[#f3ef9c]">
+                  <span className="line-clamp-2 [overflow-wrap:anywhere]">{name}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-center font-[var(--font-report-serif)] text-[16px] leading-normal text-[#f8f2e6]">
+          성덕기니가 둘의 궁합을 살펴보는 중이에요
+        </p>
       </div>
 
       <div
-        className="absolute inset-x-0 -translate-y-1/2 px-6 text-center"
-        style={{ top: `${SUBLINE_Y}%` }}
+        className="absolute top-[89.25%] left-1/2 z-20 h-1 w-[170px] -translate-x-1/2 overflow-hidden rounded-[14px] bg-[#000c17]"
+        role="progressbar"
+        aria-label="보고서 준비 진행률"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progress}
       >
-        <motion.p
-          className="font-hambak text-[1.3125rem] leading-none text-white/90"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.45 }}
-        >
-          잠시만 기다리기니
-        </motion.p>
-      </div>
-
-      {/* Thin gold meter so the ten second wait reads as progress. */}
-      <div className="absolute bottom-[6%] left-1/2 h-px w-40 -translate-x-1/2 overflow-hidden bg-white/15">
         <motion.div
-          className="h-full bg-gold"
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{ duration: ANALYZE_MS / 1000, ease: "linear" }}
+          className="h-full bg-[#f3f04e]"
+          initial={false}
+          animate={{ width: `${progress}%` }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+          }
         />
       </div>
-    </div>
+    </section>
   );
 }

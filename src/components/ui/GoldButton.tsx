@@ -7,6 +7,7 @@ type Props = {
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
+  type?: "button" | "submit";
   /** Plays a press-and-release flourish before `onClick` resolves. */
   pressed?: boolean;
 };
@@ -15,13 +16,13 @@ type Props = {
  * The 시작하기 button from the design: navy fill, brushed-gold edge.
  * Press feedback is a spring so a tap feels physical on touch devices.
  */
-export function GoldButton({ children, onClick, disabled, pressed }: Props) {
+export function GoldButton({ children, onClick, disabled, pressed, type = "button" }: Props) {
   return (
     <motion.button
-      type="button"
+      type={type}
       onClick={onClick}
       disabled={disabled}
-      className="group relative h-14 w-full overflow-hidden rounded-2xl border border-gold/70 bg-ink font-gmarket text-lg font-bold tracking-wide text-gold disabled:cursor-not-allowed disabled:opacity-40"
+      className="group relative h-[54px] w-full overflow-hidden rounded-2xl border-[1.5px] border-gold/80 bg-[#054787] font-hambak text-[18px] tracking-wide text-gold disabled:cursor-not-allowed disabled:opacity-40"
       initial={false}
       animate={
         pressed

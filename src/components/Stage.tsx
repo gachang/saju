@@ -6,9 +6,9 @@ import { AnalyzingScreen } from "./AnalyzingScreen";
 import { FormScreen } from "./FormScreen";
 import { IntroScreen } from "./IntroScreen";
 import { ResultScreen } from "./ResultScreen";
-import { emptyForm, type FormState } from "@/lib/saju";
+import { createInitialForm, type FormState } from "@/lib/saju";
 
-type Step = "intro" | "form" | "analyzing" | "result";
+type Step = "intro" | "self" | "partner" | "analyzing" | "result";
 
 /** Lets the button's press-and-release flourish land before the screen swaps. */
 const PRESS_MS = 420;
@@ -21,7 +21,7 @@ const fade = {
 
 export function Stage() {
   const [step, setStep] = useState<Step>("intro");
-  const [form, setForm] = useState<FormState>(emptyForm);
+  const [form, setForm] = useState<FormState>(createInitialForm);
   const [pressed, setPressed] = useState(false);
 
   const advance = useCallback((to: Step) => {
@@ -33,24 +33,35 @@ export function Stage() {
   }, []);
 
   const restart = useCallback(() => {
-    setForm(emptyForm);
+    setForm(createInitialForm());
     setStep("intro");
   }, []);
 
   return (
-    <main className="flex min-h-dvh justify-center bg-ink-deep">
-      <div className="relative h-dvh w-full max-w-(--stage-width) overflow-hidden bg-ink shadow-[0_0_80px_rgba(0,0,0,0.6)]">
-        <AnimatePresence mode="wait">
+    <main className="flex h-dvh w-full justify-center overflow-hidden bg-ink-deep sm:items-center">
+      <div className="relative h-dvh max-h-[874px] w-full max-w-[402px] overflow-hidden bg-ink shadow-[0_0_80px_rgba(0,0,0,0.6)]">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={step}
             className="absolute inset-0"
             {...fade}
             transition={{ duration: 0.45, ease: "easeInOut" }}
           >
-            {step === "intro" && <IntroScreen onStart={() => advance("form")} />}
+            {step === "intro" && <IntroScreen onStart={() => advance("self")} />}
 
-            {step === "form" && (
+            {step === "self" && (
               <FormScreen
+                mode="self"
+                value={form}
+                onChange={setForm}
+                onSubmit={() => advance("partner")}
+                submitting={pressed}
+              />
+            )}
+
+            {step === "partner" && (
+              <FormScreen
+                mode="partner"
                 value={form}
                 onChange={setForm}
                 onSubmit={() => advance("analyzing")}
@@ -59,7 +70,7 @@ export function Stage() {
             )}
 
             {step === "analyzing" && (
-              <AnalyzingScreen onDone={() => setStep("result")} />
+              <AnalyzingScreen form={form} onDone={() => setStep("result")} />
             )}
 
             {step === "result" && <ResultScreen form={form} onRestart={restart} />}

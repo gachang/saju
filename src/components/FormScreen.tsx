@@ -1,190 +1,268 @@
 "use client";
 
-import { motion } from "motion/react";
+import { BrandMark } from "./BrandMark";
 import { Backdrop } from "./Backdrop";
-import { ElementOrbit } from "./ElementOrbit";
-import { CheckOption, Field, Select, TextInput } from "./ui/Field";
 import { GoldButton } from "./ui/GoldButton";
-import {
-  MONTHS,
-  SANGGEUK,
-  SANGSAENG,
-  YEARS,
-  daysInMonth,
-  isPersonComplete,
-  type FormState,
-  type Person,
-} from "@/lib/saju";
+import { isPersonComplete, type FormState, type Person } from "@/lib/saju";
+
+type Mode = "self" | "partner";
 
 type Props = {
+  mode: Mode;
   value: FormState;
   onChange: (next: FormState) => void;
   onSubmit: () => void;
   submitting: boolean;
 };
 
-const asOptions = (values: string[], suffix: string) =>
-  values.map((v) => ({ value: v, label: `${v}${suffix}` }));
+const controlClass =
+  "h-[52px] w-full rounded-[13px] border border-[#faf999]/20 bg-[#001e3b] px-[14px] font-[var(--font-report-sans)] text-[16px] text-[#fcfcf4] outline-none transition-colors placeholder:text-[#fcfcf4]/60 focus:border-[#faf999]/60";
 
-function PersonPanel({
-  title,
-  person,
-  onChange,
+function Segment({
+  selected,
+  onClick,
   children,
-  delay,
 }: {
-  title: string;
-  person: Person;
-  onChange: (patch: Partial<Person>) => void;
-  children?: React.ReactNode;
-  delay: number;
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
-    <motion.section
-      className="flex-1 rounded-2xl border border-gold/25 bg-white/6 p-3 shadow-[0_0_28px_rgba(1,32,60,0.55),inset_0_1px_0_rgba(250,249,153,0.12)] backdrop-blur-md"
-      initial={{ opacity: 0, y: 26 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, delay, ease: "easeOut" }}
+    <button
+      type="button"
+      role="radio"
+      aria-checked={selected}
+      onClick={onClick}
+      className={`flex h-[42px] min-w-0 flex-1 items-center justify-center rounded-[10px] font-[var(--font-report-sans)] text-[13px] font-bold transition-colors ${
+        selected ? "bg-[#054787] text-[#f3ef9c]" : "text-[#fcfcf4]/60"
+      }`}
     >
-      <h2 className="mb-3.5 text-center font-gmarket text-base font-bold text-gold">{title}</h2>
-
-      <div className="space-y-3">
-        <Field label="호칭 (선택)">
-          <TextInput
-            value={person.name}
-            onChange={(e) => onChange({ name: e.target.value })}
-            placeholder="닉네임"
-            maxLength={12}
-            autoComplete="off"
-          />
-        </Field>
-
-        <Field label="생년월일">
-          <div className="space-y-1.5">
-            <Select
-              placeholder="년"
-              options={asOptions(YEARS, "년")}
-              value={person.year}
-              onChange={(e) => onChange({ year: e.target.value, day: "" })}
-            />
-            <div className="flex gap-1.5">
-              <Select
-                placeholder="월"
-                options={asOptions(MONTHS, "월")}
-                value={person.month}
-                onChange={(e) => onChange({ month: e.target.value, day: "" })}
-              />
-              <Select
-                placeholder="일"
-                options={asOptions(person.calendar === "lunar" ? Array.from({ length: 30 }, (_, i) => String(i + 1)) : daysInMonth(person.year, person.month), "일")}
-                value={person.day}
-                onChange={(e) => onChange({ day: e.target.value })}
-              />
-            </div>
-            <div role="radiogroup" aria-label="양력 음력" className="flex gap-3 pt-0.5">
-              <CheckOption
-                exclusive
-                label="양력"
-                checked={person.calendar === "solar"}
-                onChange={() => onChange({ calendar: "solar", isLeapMonth: false, day: "" })}
-              />
-              <CheckOption
-                exclusive
-                label="음력"
-                checked={person.calendar === "lunar"}
-                onChange={() => onChange({ calendar: "lunar", day: "" })}
-              />
-            </div>
-            {person.calendar === "lunar" && <CheckOption label="윤달" checked={person.isLeapMonth} onChange={() => onChange({ isLeapMonth: !person.isLeapMonth })} />}
-          </div>
-        </Field>
-
-        <Field label="태어난 시각">
-          <div className="space-y-1.5">
-            <TextInput
-              type="time"
-              aria-label={`${title} 태어난 시각`}
-              value={person.birthTime}
-              disabled={person.timeUnknown}
-              onChange={(e) => onChange({ birthTime: e.target.value })}
-            />
-            <CheckOption
-              label="모름"
-              checked={person.timeUnknown}
-              onChange={() => onChange({ timeUnknown: !person.timeUnknown, birthTime: "" })}
-            />
-          </div>
-        </Field>
-
-        {children}
-      </div>
-    </motion.section>
+      {children}
+    </button>
   );
 }
 
-export function FormScreen({ value, onChange, onSubmit, submitting }: Props) {
-  const patch = (who: "self" | "partner") => (p: Partial<Person>) =>
-    onChange({ ...value, [who]: { ...value[who], ...p } });
+function FieldLabel({
+  children,
+  hint,
+}: {
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="flex items-end gap-2 whitespace-nowrap">
+      <span className="font-[var(--font-report-score)] text-[16px] text-[#fcfcf4]">
+        {children}
+      </span>
+      {hint && (
+        <span className="pb-px font-[var(--font-report-score)] text-[12px] text-[#fcfcf4]/60">
+          {hint}
+        </span>
+      )}
+    </div>
+  );
+}
 
-  const ready = isPersonComplete(value.self) && isPersonComplete(value.partner);
+function personDate(person: Person) {
+  if (!person.year || !person.month || !person.day) return "";
+  return `${person.year}-${person.month.padStart(2, "0")}-${person.day.padStart(2, "0")}`;
+}
+
+export function FormScreen({
+  mode,
+  value,
+  onChange,
+  onSubmit,
+  submitting,
+}: Props) {
+  const key = mode === "self" ? "self" : "partner";
+  const person = value[key];
+  const patchPerson = (patch: Partial<Person>) =>
+    onChange({ ...value, [key]: { ...person, ...patch } });
+  const ready = isPersonComplete(person);
+
+  function updateDate(date: string) {
+    if (!date) {
+      patchPerson({ year: "", month: "", day: "" });
+      return;
+    }
+    const [year, month, day] = date.split("-");
+    patchPerson({
+      year,
+      month: String(Number(month)),
+      day: String(Number(day)),
+    });
+  }
 
   return (
-    <div className="relative h-full overflow-y-auto">
-      <Backdrop dim />
+    <section className="relative h-full overflow-hidden bg-ink" aria-label={mode === "self" ? "본인 정보 입력" : "좋아하는 사람 정보 입력"}>
+      <Backdrop />
+      <BrandMark className="absolute top-[6.86%] left-1/2 z-10 size-[72px] -translate-x-1/2" />
 
-      {/* Ring assembly drifting behind the panels, with 金 clearing the top
-          edge of the panels the way the mockup frames it. */}
-      <div className="pointer-events-none absolute top-[-2.5%] left-1/2 w-[92%] -translate-x-1/2 opacity-40">
-        <ElementOrbit showFigure={false} />
-      </div>
+      <h1 className="absolute inset-x-4 top-[16.48%] z-10 text-center font-hambak text-[24px] leading-[1.25] text-white">
+        {mode === "self" ? (
+          <>
+            당신이 태어난
+            <br />
+            순간을 알려주기니
+          </>
+        ) : (
+          "좋아하는 사람 알려주기니"
+        )}
+      </h1>
 
-      <div className="relative flex min-h-full flex-col px-4 pt-20 pb-5">
-        <div className="flex items-stretch gap-2.5">
-          <PersonPanel
-            title="본인"
-            person={value.self}
-            onChange={patch("self")}
-            delay={0.05}
-          />
-          <PersonPanel
-            title="상대방 (=연예인)"
-            person={value.partner}
-            onChange={patch("partner")}
-            delay={0.15}
-          >
-            <Field label="그룹명" hint="화면 표시용이며 계산에는 사용하지 않아요.">
-              <TextInput
-                value={value.groupName}
-                onChange={(e) => onChange({ ...value, groupName: e.target.value })}
-                placeholder="그룹명 (선택)"
+      <form
+        className="absolute inset-0 z-10"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (ready) onSubmit();
+        }}
+      >
+        <div className="absolute inset-x-6 top-[25.4%] flex flex-col gap-5">
+          <div className="flex items-end gap-2">
+            <label className="min-w-0 flex-1">
+              <FieldLabel>이름</FieldLabel>
+              <input
+                className={`${controlClass} mt-2`}
+                value={person.name}
+                onChange={(event) => patchPerson({ name: event.target.value })}
+                placeholder="김기니"
+                maxLength={12}
                 autoComplete="off"
               />
-            </Field>
-          </PersonPanel>
-        </div>
+            </label>
+            <div
+              role="radiogroup"
+              aria-label="성별"
+              className="flex h-[50px] w-[118px] shrink-0 gap-1 rounded-[14px] bg-[#001e3b] p-1"
+            >
+              <Segment
+                selected={person.gender === "female"}
+                onClick={() => patchPerson({ gender: "female" })}
+              >
+                여자
+              </Segment>
+              <Segment
+                selected={person.gender === "male"}
+                onClick={() => patchPerson({ gender: "male" })}
+              >
+                남자
+              </Segment>
+            </div>
+          </div>
 
-        <motion.div
-          className="mt-6"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <GoldButton onClick={onSubmit} disabled={!ready} pressed={submitting}>
-            분석 시작하기
-          </GoldButton>
-          <p className="mt-3 text-center text-xs leading-relaxed text-white/60">보정 없는 한국 표준시 · 자정 일 경계 기준이에요.<br />생일은 브라우저에서 계산하며, 풀이는 재미로 즐겨주세요.</p>
-          {!ready && (
-            <p className="mt-2.5 text-center font-gmarket text-[0.6875rem] text-white/40">
-              두 사람의 정보를 모두 채워주게.
-            </p>
+          <div>
+            <FieldLabel>생년월일</FieldLabel>
+            <div
+              role="radiogroup"
+              aria-label="양력 음력"
+              className="mt-2 flex h-[50px] w-full gap-1 rounded-[14px] bg-[#001e3b] p-1"
+            >
+              <Segment
+                selected={person.calendar === "solar"}
+                onClick={() =>
+                  patchPerson({ calendar: "solar", isLeapMonth: false })
+                }
+              >
+                양력
+              </Segment>
+              <Segment
+                selected={person.calendar === "lunar"}
+                onClick={() => patchPerson({ calendar: "lunar" })}
+              >
+                음력
+              </Segment>
+            </div>
+            <input
+              type="date"
+              aria-label={`${mode === "self" ? "본인" : "좋아하는 사람"} 생년월일`}
+              className={`${controlClass} saju-native-input mt-2`}
+              value={personDate(person)}
+              min="1900-01-01"
+              max={`${new Date().getFullYear()}-12-31`}
+              onChange={(event) => updateDate(event.target.value)}
+            />
+            {person.calendar === "lunar" && (
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={person.isLeapMonth}
+                onClick={() => patchPerson({ isLeapMonth: !person.isLeapMonth })}
+                className="mt-2 flex items-center gap-2 font-[var(--font-report-score)] text-[12px] text-[#fcfcf4]/75"
+              >
+                <span className={`grid size-4 place-items-center rounded-[4px] border ${person.isLeapMonth ? "border-[#f3ef9c] bg-[#054787]" : "border-[#faf999]/25 bg-[#001e3b]"}`}>
+                  {person.isLeapMonth ? "✓" : ""}
+                </span>
+                윤달이에요
+              </button>
+            )}
+          </div>
+
+          <div>
+            <FieldLabel hint="정확할수록 좋아요">태어난 시각</FieldLabel>
+            <input
+              type="time"
+              aria-label={`${mode === "self" ? "본인" : "좋아하는 사람"} 태어난 시각`}
+              className={`${controlClass} saju-native-input mt-2 disabled:opacity-45`}
+              value={person.birthTime}
+              disabled={person.timeUnknown}
+              onChange={(event) => patchPerson({ birthTime: event.target.value })}
+            />
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={person.timeUnknown}
+              onClick={() =>
+                patchPerson({
+                  timeUnknown: !person.timeUnknown,
+                  birthTime: "",
+                })
+              }
+              className="mt-3 flex items-start gap-2 text-left"
+            >
+              <span className={`mt-px grid size-5 shrink-0 place-items-center rounded-[5px] border text-[12px] ${person.timeUnknown ? "border-[#f3ef9c] bg-[#054787] text-[#f3ef9c]" : "border-[#faf999]/25 bg-[#001e3b] text-transparent"}`}>
+                ✓
+              </span>
+              <span className="font-[var(--font-report-score)]">
+                <span className="block text-[14px] text-[#fcfcf4]">
+                  태어난 시간을 몰라요
+                </span>
+                <span className="mt-1 block text-[10px] leading-[1.55] text-[#fcfcf4]/60">
+                  시주를 빼고 후보를 모두 비교해요.
+                </span>
+              </span>
+            </button>
+          </div>
+
+          {mode === "partner" && (
+            <label>
+              <FieldLabel hint="더 정확한 분석을 위해 그룹명을 알려주세요">
+                그룹명
+              </FieldLabel>
+              <input
+                className={`${controlClass} mt-2`}
+                value={value.groupName}
+                onChange={(event) =>
+                  onChange({ ...value, groupName: event.target.value })
+                }
+                placeholder="그룹명"
+                maxLength={24}
+                autoComplete="off"
+              />
+            </label>
           )}
-        </motion.div>
-
-        <div className="mt-auto space-y-1.5 pt-6 text-center font-gmarket text-[0.625rem] tracking-wide text-gold/70">
-          <p>相生: {SANGSAENG.join(" | ")}</p>
-          <p>相克: {SANGGEUK.join(" | ")}</p>
         </div>
-      </div>
-    </div>
+
+        <div className="absolute inset-x-6 bottom-[6.18%]">
+          <GoldButton
+            disabled={!ready}
+            pressed={submitting}
+            type="submit"
+          >
+            분석하기
+          </GoldButton>
+        </div>
+      </form>
+    </section>
   );
 }

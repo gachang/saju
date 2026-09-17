@@ -1,164 +1,170 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
-/**
- * All geometry below is expressed as a percentage of a 493x493 box, which is
- * the ring assembly's size in the Figma export (assets/round_thing.svg).
- * Sharing that one reference frame keeps the layers registered as they scale.
- */
-const BADGE_RADIUS = (137 / 493) * 100; // gold glyph badges orbit at r=137
-const BADGE_SIZE = (52 / 493) * 100;
+type ElementKey = "metal" | "water" | "wood" | "fire" | "earth";
 
-/** Clockwise from the top in 相生 order: 金 → 水 → 木 → 火 → 土. */
-const ELEMENTS = [
-  { key: "metal", glyph: "金", angle: 0 },
-  { key: "water", glyph: "水", angle: 72 },
-  { key: "wood", glyph: "木", angle: 144 },
-  { key: "fire", glyph: "火", angle: 216 },
-  { key: "earth", glyph: "土", angle: 288 },
+const ELEMENTS: Array<{
+  key: ElementKey;
+  glyph: string;
+  left: number;
+  top: number;
+}> = [
+  { key: "metal", glyph: "金", left: 50, top: 1.5 },
+  { key: "water", glyph: "水", left: 90.5, top: 33.1 },
+  { key: "wood", glyph: "木", left: 75.5, top: 76.7 },
+  { key: "fire", glyph: "火", left: 25, top: 76.7 },
+  { key: "earth", glyph: "土", left: 9.5, top: 33.1 },
 ];
 
-const ORBIT_SECONDS = 44;
+const INTRO_ELEMENTS = new Set<ElementKey>(["metal", "earth", "water"]);
 
-/** `showFigure` off leaves just the turning rings, for use as background art. */
-export function ElementOrbit({ showFigure = true }: { showFigure?: boolean }) {
+type Props = {
+  showFigure?: boolean;
+  elementSet?: "all" | "intro";
+};
+
+/**
+ * The animated circular altar from the final 402 × 874 Figma frames.
+ * `intro` keeps only 金·土·水; the full five-element assembly is reserved for
+ * the loading page.
+ */
+export function ElementOrbit({
+  showFigure = true,
+  elementSet = "all",
+}: Props) {
+  const reduceMotion = useReducedMotion();
+  const visibleElements = ELEMENTS.filter(
+    (element) => elementSet === "all" || INTRO_ELEMENTS.has(element.key),
+  );
+
   return (
-    <div className="relative aspect-square w-full">
-      {/* Diffused blue core, matching the blurred #296A92 circle in the export. */}
-      {showFigure && (
-        <motion.div
-          aria-hidden
-          className="absolute inset-[12%] rounded-full bg-glow blur-[42px]"
-          animate={{ opacity: [0.5, 0.85, 0.5], scale: [0.94, 1.04, 0.94] }}
-          transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut" }}
-        />
-      )}
-
-      {/* Gold aura: the brightening / dimming pulse. */}
-      {showFigure && (
-        <motion.div
-          aria-hidden
-          className="absolute"
-          style={{
-            left: `${(83.5 / 493) * 100}%`,
-            top: `${(83.5 / 493) * 100}%`,
-            width: `${(326 / 493) * 100}%`,
-            height: `${(326 / 493) * 100}%`,
-          }}
-          animate={{
-            opacity: [0.72, 1, 0.72],
-            scale: [0.97, 1.05, 0.97],
-            filter: [
-              "brightness(0.85) saturate(1)",
-              "brightness(1.45) saturate(1.15)",
-              "brightness(0.85) saturate(1)",
-            ],
-          }}
-          transition={{ duration: 3.1, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Image src="/aura.png" alt="" fill sizes="420px" className="object-contain" priority />
-        </motion.div>
-      )}
-
-      {/* Concentric brush circles, drifting slowly against the orbit. */}
+    <div className="relative aspect-square w-full" aria-hidden="true">
       <motion.div
-        aria-hidden
-        className="absolute inset-0 opacity-80"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-0 mix-blend-lighten"
+        animate={
+          reduceMotion
+            ? undefined
+            : { opacity: [0.68, 1, 0.68], scale: [0.985, 1.025, 0.985] }
+        }
+        transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Image src="/rings.svg" alt="" fill sizes="520px" className="object-contain" priority />
+        <Image
+          src="/figma-final/orbit-aura.png"
+          alt=""
+          fill
+          sizes="326px"
+          className="object-contain"
+          priority
+        />
       </motion.div>
 
-      {/* Banners flanking the throne. */}
-      {showFigure && [27.99, 55.58].map((left, i) => (
-        <motion.div
-          key={left}
-          aria-hidden
-          className="absolute opacity-56"
-          style={{
-            left: `${left}%`,
-            top: `${(131 / 493) * 100}%`,
-            width: `${(81 / 493) * 100}%`,
-            height: `${(122 / 493) * 100}%`,
-          }}
-          animate={{ y: ["0%", "-2.5%", "0%"], rotate: i === 0 ? [-0.6, 0.6, -0.6] : [0.6, -0.6, 0.6] }}
-          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Image src="/banner.png" alt="" fill sizes="140px" className="object-contain" />
-        </motion.div>
-      ))}
+      <motion.div
+        className="absolute inset-[11.5%] opacity-95"
+        animate={reduceMotion ? undefined : { rotate: -360 }}
+        transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
+      >
+        <Image
+          src="/rings.svg"
+          alt=""
+          fill
+          sizes="260px"
+          className="object-contain"
+          priority
+        />
+      </motion.div>
 
-      {/* The guinea pig, breathing. */}
       {showFigure && (
-        <motion.div
-          className="absolute"
-          style={{
-            left: `${(167 / 493) * 100}%`,
-            top: `${(136 / 493) * 100}%`,
-            width: `${(160 / 493) * 100}%`,
-            height: `${(200 / 493) * 100}%`,
-          }}
-          animate={{ y: ["0%", "-2%", "0%"], scale: [1, 1.018, 1] }}
-          transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Image
-            src="/guinea.png"
-            alt="성덕기니"
-            fill
-            sizes="280px"
-            className="object-contain drop-shadow-[0_0_18px_rgba(250,249,153,0.35)]"
-            priority
-          />
-        </motion.div>
+        <>
+          {[16.9, 58.6].map((left, index) => (
+            <motion.div
+              key={left}
+              className="absolute top-[15.9%] h-[37.5%] w-[24.85%] opacity-60"
+              style={{ left: `${left}%` }}
+              animate={
+                reduceMotion
+                  ? undefined
+                  : {
+                      y: [0, -4, 0],
+                      rotate:
+                        index === 0
+                          ? [-0.7, 0.7, -0.7]
+                          : [0.7, -0.7, 0.7],
+                    }
+              }
+              transition={{ duration: 6.2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Image
+                src="/figma-final/banner.png"
+                alt=""
+                fill
+                sizes="82px"
+                className="object-contain"
+              />
+            </motion.div>
+          ))}
+
+          <motion.div
+            className="absolute left-[25.5%] top-[16.25%] h-[61.35%] w-[49.1%]"
+            animate={
+              reduceMotion
+                ? undefined
+                : { y: [0, -5, 0], scale: [1, 1.012, 1] }
+            }
+            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Image
+              src="/figma-final/guinea-loading.png"
+              alt="성덕기니"
+              fill
+              sizes="200px"
+              className="object-contain drop-shadow-[0_0_18px_rgba(250,249,153,0.34)]"
+              priority
+            />
+          </motion.div>
+        </>
       )}
 
-      {/* Orbiting 五行 badges. */}
       <motion.div
-        aria-hidden
         className="absolute inset-0"
-        animate={{ rotate: 360 }}
-        transition={{ duration: ORBIT_SECONDS, repeat: Infinity, ease: "linear" }}
+        animate={reduceMotion ? undefined : { rotate: 360 }}
+        transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
       >
-        {ELEMENTS.map((el, i) => (
+        {visibleElements.map((element, index) => (
           <div
-            key={el.key}
-            className="absolute top-1/2 left-1/2"
-            style={{
-              width: `${BADGE_SIZE}%`,
-              height: `${BADGE_SIZE}%`,
-              // Swing out to the pentagon vertex, then undo the swing so the
-              // badge box itself stays axis-aligned.
-              transform: `translate(-50%, -50%) rotate(${el.angle}deg) translateY(-${
-                (BADGE_RADIUS / BADGE_SIZE) * 100
-              }%) rotate(${-el.angle}deg)`,
-            }}
+            key={element.key}
+            className="absolute size-[15.65%] -translate-x-1/2 -translate-y-1/2"
+            style={{ left: `${element.left}%`, top: `${element.top + 7.8}%` }}
           >
-            {/* Counter-spin at the orbit's rate keeps each glyph upright. */}
             <motion.div
               className="relative size-full"
-              animate={{ rotate: -360 }}
-              transition={{ duration: ORBIT_SECONDS, repeat: Infinity, ease: "linear" }}
+              animate={reduceMotion ? undefined : { rotate: -360 }}
+              transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
             >
               <motion.div
                 className="relative size-full"
-                animate={{ opacity: [0.65, 1, 0.65], scale: [0.94, 1.06, 0.94] }}
+                animate={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        opacity: [0.72, 1, 0.72],
+                        scale: [0.96, 1.06, 0.96],
+                      }
+                }
                 transition={{
-                  duration: 2.4,
+                  duration: 2.8,
+                  delay: index * 0.28,
                   repeat: Infinity,
                   ease: "easeInOut",
-                  // Stagger so the brightening chases around the 相生 cycle.
-                  delay: (i * 2.4) / ELEMENTS.length,
                 }}
               >
                 <Image
-                  src={`/el-${el.key}.svg`}
-                  alt={el.glyph}
+                  src={`/el-${element.key}.svg`}
+                  alt={element.glyph}
                   fill
-                  sizes="56px"
-                  className="object-contain drop-shadow-[0_0_10px_rgba(250,249,153,0.65)]"
+                  sizes="52px"
+                  className="object-contain drop-shadow-[0_0_9px_rgba(250,249,153,0.54)]"
                 />
               </motion.div>
             </motion.div>

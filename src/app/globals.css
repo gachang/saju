@@ -12,11 +12,15 @@
   --font-gmarket: var(--font-gmarket), sans-serif;
 
   /* The design is a 402 x 874 mobile frame; the stage keeps that ratio. */
-  --stage-width: 26.125rem;
+  --stage-width: 25.125rem;
 }
 
 html,
 body {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
   background: var(--color-ink-deep);
   color: #fff;
   font-family: var(--font-gmarket);
@@ -24,7 +28,18 @@ body {
 }
 
 body {
+  margin: 0;
   overscroll-behavior-y: none;
+}
+
+.saju-native-input {
+  color-scheme: dark;
+}
+
+.saju-native-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: sepia(1) saturate(0.7) brightness(1.55);
+  opacity: 0.7;
 }
 
 /* Native selects keep their platform arrow; we draw our own instead. */

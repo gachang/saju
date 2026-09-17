@@ -38,9 +38,11 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
   const pair = result.self && result.favorite ? { self: result.self.variants[selfIndex], favorite: result.favorite.variants[favoriteIndex] } : null;
   const computed = pair ? compatibility(pair) : null;
   const selfName = form.self.name.trim() || "사용자", favoriteName = form.partner.name.trim() || "최애";
+  const groupName = form.groupName.trim();
+  const favoriteDisplayName = groupName ? `${favoriteName} · ${groupName}` : favoriteName;
   const format = (text: string) => displayText(text, selfName, favoriteName);
   const reportText = () => report ? [
-    `성덕기니 · ${selfName} 님 × ${favoriteName} 님`,
+    `성덕기니 · ${selfName} 님 × ${favoriteDisplayName} 님`,
     ...(example ? ["합성 입력으로 만든 AI 보고서 예시입니다."] : []),
     ...report.sections.map(section => `${String(section.id).padStart(2, "0")}. ${section.title}\n\n${section.paragraphs.map(format).join("\n\n")}`),
     "전통 명리의 상징을 활용한 엔터테인먼트 콘텐츠로, 실제 감정·관계·미래를 예측하지 않습니다.",
@@ -105,7 +107,7 @@ export function ResultScreen({ form, onRestart, initialReport, example = false }
       <div className={styles.overview}>
         {result.error && <p role="alert" className={styles.feedback}>{result.error}</p>}
         {result.self && <ChartCard name={selfName} chart={result.self} selected={selfIndex} disabled={busy || example} onSelect={index => selectChart(index)} />}
-        {result.favorite && <ChartCard name={favoriteName} favorite chart={result.favorite} selected={favoriteIndex} disabled={busy || example} onSelect={index => selectChart(index, true)} />}
+        {result.favorite && <ChartCard name={favoriteDisplayName} favorite chart={result.favorite} selected={favoriteIndex} disabled={busy || example} onSelect={index => selectChart(index, true)} />}
         {computed && !report && <AxisCard computed={computed} />}
         {computed && !report && <aside className={styles.notice}>
           <strong>{report ? "여덟 장의 이야기가 완성됐어요" : "두 명식의 계산을 마쳤어요"}</strong>
