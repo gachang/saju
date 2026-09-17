@@ -14,7 +14,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       <motion.div
         aria-hidden="true"
         className="absolute top-0 left-1/2 h-[84.5%] w-[122.4%] -translate-x-1/2 mix-blend-screen"
-        animate={reduceMotion ? undefined : { opacity: [0.23, 0.38, 0.23] }}
+        animate={reduceMotion ? { opacity: 0.146 } : { opacity: [0.12, 0.17, 0.12] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       >
         <Image
@@ -22,7 +22,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
           alt=""
           fill
           sizes="492px"
-          className="object-cover object-top opacity-90"
+          className="object-cover object-top"
           priority
         />
       </motion.div>
@@ -34,17 +34,19 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         className="saju-intro-enter absolute inset-0"
       >
       <div className="absolute inset-x-4 top-[16.48%] z-20 text-center">
-        <h1 className="font-hambak text-[24px] leading-[1.25] text-white drop-shadow-[0_2px_12px_rgba(0,12,23,0.75)]">
+        <h1 className="font-hambak text-[24px] leading-[31px] text-white">
           성덕의 기운이 흐를지 보겠기니
         </h1>
-        <p className="mt-3 font-[var(--font-report-serif)] text-[15px] font-black leading-[1.55] text-[#fcfcf4]/80">
+      </div>
+      <div className="absolute inset-x-4 top-[21.62%] z-20 text-center">
+        <p className="font-[var(--font-report-serif)] text-[15px] font-black leading-[22px] text-[rgba(252,252,244,0.78)]">
           자네 마음에 품은 그 별…
           <br />
           사주팔자로 낱낱이 파헤쳐 주겠네
         </p>
       </div>
 
-      <div className="pointer-events-none absolute top-[28.5%] left-1/2 w-[81.1%] -translate-x-1/2">
+      <div className="pointer-events-none absolute top-[29.63%] left-1/2 w-[81.1%] -translate-x-1/2">
         <ElementOrbit showFigure={false} animationMode="intro" />
       </div>
 
@@ -72,7 +74,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
 
       <div
         aria-hidden="true"
-        className="absolute inset-x-[-6%] bottom-0 z-10 h-[54.2%] bg-linear-to-b from-transparent to-[#121212] to-[72%]"
+        className="absolute right-[-24px] bottom-0 left-[-16px] z-10 h-[54.23%] bg-linear-to-b from-transparent to-[#121212] to-[72.226%]"
       />
 
       <p
@@ -85,7 +87,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       </p>
       <p
         aria-hidden="true"
-        className="absolute top-[70.4%] left-[71%] z-10 -translate-x-1/2 [font-family:var(--font-onboarding-hanja)] text-[120px] leading-[0.68] text-white/10"
+        className="absolute top-[71.51%] left-[71%] z-10 -translate-x-1/2 [font-family:var(--font-onboarding-hanja)] text-[120px] leading-[0.682] text-white/10"
       >
         祈
         <br />
@@ -93,7 +95,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       </p>
 
       <motion.p
-        className="absolute top-[67.4%] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap font-hambak text-[48px] leading-none text-[#f3f04e] drop-shadow-[0_3px_18px_rgba(0,0,0,0.75)]"
+        className="absolute top-[67.39%] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap font-hambak text-[48px] leading-[62px] text-[#f3f04e]"
         initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.75, delay: 0.28, ease: "easeOut" }}
@@ -102,12 +104,12 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       </motion.p>
 
       <motion.div
-        className="absolute inset-x-[13.7%] top-[80.9%] z-30"
+        className="absolute inset-x-[13.93%] top-[80.89%] z-30"
         initial={reduceMotion ? false : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.65, delay: 0.45, ease: "easeOut" }}
       >
-        <GoldButton onClick={onStart}>시작하기</GoldButton>
+        <GoldButton onClick={onStart} artwork="intro">시작하기</GoldButton>
       </motion.div>
       </div>
     </section>

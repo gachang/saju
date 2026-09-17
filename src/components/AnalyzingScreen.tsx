@@ -56,23 +56,23 @@ export function AnalyzingScreen({
     <section className="relative h-full overflow-hidden bg-ink" aria-label="궁합 분석 중">
       <Backdrop dial />
 
-      <div className="absolute inset-x-5 top-[14.2%] z-20 text-center">
+      <div className="absolute top-[14.19%] left-1/2 z-20 w-[294px] -translate-x-1/2 text-center">
         <motion.h1
           key={headline}
-          className="font-hambak text-[40px] leading-[1.12] text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.45)]"
+          className="font-hambak text-[40px] leading-[52px] text-white"
           initial={reduceMotion ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           {headline}
         </motion.h1>
-        <p className="mt-3 font-hambak text-[20px] leading-[1.25] text-[#f8f2e6]">
+        <p className="mt-3 font-hambak text-[20px] leading-[26px] text-[#f8f2e6]">
           나가면 힘이 빠지니 기다리겠기니?
         </p>
       </div>
 
       <motion.div
-        className="absolute top-[31.2%] left-1/2 z-10 w-[81.1%] -translate-x-1/2"
+        className="absolute top-[31.35%] left-1/2 z-10 w-[81.1%] -translate-x-1/2"
         initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
@@ -80,7 +80,7 @@ export function AnalyzingScreen({
         <ElementOrbit />
       </motion.div>
 
-      <div className="absolute inset-x-[10.7%] top-[73.55%] z-20">
+      <div className="absolute top-[73.55%] left-[10.7%] z-20 w-[78.86%]">
         <div className="flex items-center">
           {[selfName, partnerName].map((name, index) => (
             <div key={`${index}-${name}`} className="contents">
@@ -95,15 +95,15 @@ export function AnalyzingScreen({
                   />
                 </div>
               )}
-              <div className="flex min-h-[64px] min-w-0 flex-1 rounded-[66px] border border-[#f3ef9c]/80 p-0.5">
-                <div className="flex min-h-[58px] w-full items-center justify-center rounded-[32px] border border-[#f3ef9c]/80 px-3 py-1 text-center font-hambak text-[18px] leading-[1.15] text-[#f3ef9c]">
+              <div className="flex h-[60px] min-w-0 flex-1 rounded-[66px] border-[0.5px] border-[#f3ef9c] p-0.5">
+                <div className="flex h-full w-full items-center justify-center rounded-[32px] border-[0.5px] border-[#f3ef9c] px-3 py-1 text-center font-hambak text-[18.536px] leading-[normal] text-[#f3ef9c]">
                   <span className="line-clamp-2 [overflow-wrap:anywhere]">{name}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-5 text-center font-[var(--font-report-serif)] text-[16px] leading-normal text-[#f8f2e6]">
+        <p className="mt-6 text-center font-[var(--font-report-serif)] text-[16px] leading-[23px] text-[#f8f2e6]">
           성덕기니가 둘의 궁합을 살펴보는 중이에요
         </p>
       </div>

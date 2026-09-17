@@ -11,11 +11,11 @@ const ELEMENTS: Array<{
   left: number;
   top: number;
 }> = [
-  { key: "metal", glyph: "金", left: 50, top: 1.5 },
-  { key: "water", glyph: "水", left: 90.5, top: 33.1 },
-  { key: "wood", glyph: "木", left: 75.5, top: 76.7 },
-  { key: "fire", glyph: "火", left: 25, top: 76.7 },
-  { key: "earth", glyph: "土", left: 9.5, top: 33.1 },
+  { key: "metal", glyph: "金", left: 50.15, top: 9.36 },
+  { key: "water", glyph: "水", left: 90.64, top: 40.95 },
+  { key: "wood", glyph: "木", left: 75.61, top: 84.51 },
+  { key: "fire", glyph: "火", left: 25, top: 84.51 },
+  { key: "earth", glyph: "土", left: 7.82, top: 40.95 },
 ];
 
 type Props = {
@@ -36,7 +36,7 @@ export function ElementOrbit({
   return (
     <div className="relative aspect-square w-full" aria-hidden="true">
       <motion.div
-        className="absolute inset-0 mix-blend-lighten"
+        className="absolute top-[3.37%] left-0 size-full mix-blend-lighten"
         animate={
           reduceMotion
             ? undefined
@@ -44,18 +44,21 @@ export function ElementOrbit({
         }
         transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Image
-          src="/figma-final/orbit-aura.png"
-          alt=""
-          fill
-          sizes="326px"
-          className="object-contain"
-          priority
-        />
+        {Array.from({ length: animationMode === "intro" ? 2 : 3 }).map((_, index) => (
+          <Image
+            key={index}
+            src="/figma-final/orbit-aura.png"
+            alt=""
+            fill
+            sizes="326px"
+            className="object-contain"
+            priority
+          />
+        ))}
       </motion.div>
 
       <motion.div
-        className={`absolute inset-[11.5%] opacity-95 ${
+        className={`absolute top-[12.88%] left-[11.5%] size-[77%] opacity-95 ${
           reduceMotion
             ? ""
             : animationMode === "intro"
@@ -78,7 +81,7 @@ export function ElementOrbit({
           {[16.9, 58.6].map((left, index) => (
             <motion.div
               key={left}
-              className="absolute top-[15.9%] h-[37.5%] w-[24.85%] opacity-60"
+              className="absolute top-[15.95%] h-[37.5%] w-[24.85%] opacity-[0.56]"
               style={{ left: `${left}%` }}
               animate={
                 reduceMotion
@@ -104,7 +107,7 @@ export function ElementOrbit({
           ))}
 
           <motion.div
-            className="absolute left-[25.5%] top-[16.25%] h-[61.35%] w-[49.1%]"
+            className="absolute top-[17.48%] left-[25.5%] h-[61.35%] w-[49.1%]"
             animate={
               reduceMotion
                 ? undefined
@@ -138,7 +141,7 @@ export function ElementOrbit({
           <div
             key={element.key}
             className="absolute size-[15.65%] -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${element.left}%`, top: `${element.top + 7.8}%` }}
+            style={{ left: `${element.left}%`, top: `${element.top}%` }}
           >
             <motion.div
               className={`relative size-full ${

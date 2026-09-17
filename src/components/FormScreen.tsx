@@ -51,14 +51,56 @@ function FieldLabel({
 }) {
   return (
     <div className="flex items-end gap-2 whitespace-nowrap">
-      <span className="font-[var(--font-report-score)] text-[16px] text-[#fcfcf4]">
+      <span className="font-[var(--font-report-score)] text-[16px] leading-[23px] text-[#fcfcf4]">
         {children}
       </span>
       {hint && (
-        <span className="pb-px font-[var(--font-report-score)] text-[12px] text-[#fcfcf4]/60">
+        <span className="pb-px font-[var(--font-report-score)] text-[12px] leading-[17px] text-[#fcfcf4]/60">
           {hint}
         </span>
       )}
+    </div>
+  );
+}
+
+function NativePickerField({
+  type,
+  label,
+  value,
+  displayValue,
+  disabled,
+  min,
+  max,
+  onChange,
+}: {
+  type: "date" | "time";
+  label: string;
+  value: string;
+  displayValue: string;
+  disabled?: boolean;
+  min?: string;
+  max?: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div
+      className={`relative mt-2 flex h-[52px] items-center overflow-hidden rounded-[13px] border border-[#faf999]/20 bg-[#001e3b] px-[14px] transition-colors focus-within:border-[#faf999]/60 ${
+        disabled ? "opacity-45" : ""
+      }`}
+    >
+      <span className="font-[var(--font-report-sans)] text-[16px] text-[#fcfcf4]/60">
+        {displayValue}
+      </span>
+      <input
+        type={type}
+        aria-label={label}
+        className="absolute inset-0 z-10 size-full cursor-pointer opacity-0 disabled:cursor-default"
+        value={value}
+        disabled={disabled}
+        min={min}
+        max={max}
+        onChange={(event) => onChange(event.target.value)}
+      />
     </div>
   );
 }
@@ -99,7 +141,7 @@ export function FormScreen({
       <Backdrop />
       <BrandMark className="absolute top-[6.86%] left-1/2 z-10 size-[72px] -translate-x-1/2" />
 
-      <h1 className="absolute inset-x-4 top-[16.48%] z-10 text-center font-hambak text-[24px] leading-[1.25] text-white">
+      <h1 className="absolute inset-x-4 top-[16.48%] z-10 text-center font-hambak text-[24px] leading-[31px] text-white">
         {mode === "self" ? (
           <>
             당신이 태어난
@@ -173,14 +215,18 @@ export function FormScreen({
                 음력
               </Segment>
             </div>
-            <input
+            <NativePickerField
               type="date"
-              aria-label={`${mode === "self" ? "본인" : "좋아하는 사람"} 생년월일`}
-              className={`${controlClass} saju-native-input mt-2`}
+              label={`${mode === "self" ? "본인" : "좋아하는 사람"} 생년월일`}
               value={personDate(person)}
+              displayValue={
+                personDate(person)
+                  ? personDate(person).replaceAll("-", ".")
+                  : "YYYY.MM.DD"
+              }
               min="1900-01-01"
               max={`${new Date().getFullYear()}-12-31`}
-              onChange={(event) => updateDate(event.target.value)}
+              onChange={updateDate}
             />
             {person.calendar === "lunar" && (
               <button
@@ -200,13 +246,13 @@ export function FormScreen({
 
           <div>
             <FieldLabel hint="정확할수록 좋아요">태어난 시각</FieldLabel>
-            <input
+            <NativePickerField
               type="time"
-              aria-label={`${mode === "self" ? "본인" : "좋아하는 사람"} 태어난 시각`}
-              className={`${controlClass} saju-native-input mt-2 disabled:opacity-45`}
+              label={`${mode === "self" ? "본인" : "좋아하는 사람"} 태어난 시각`}
               value={person.birthTime}
+              displayValue={person.birthTime || "--:--"}
               disabled={person.timeUnknown}
-              onChange={(event) => patchPerson({ birthTime: event.target.value })}
+              onChange={(birthTime) => patchPerson({ birthTime })}
             />
             <button
               type="button"
@@ -224,10 +270,10 @@ export function FormScreen({
                 ✓
               </span>
               <span className="font-[var(--font-report-score)]">
-                <span className="block text-[14px] text-[#fcfcf4]">
+                <span className="block text-[14px] leading-[20px] text-[#fcfcf4]">
                   태어난 시간을 몰라요
                 </span>
-                <span className="mt-1 block text-[10px] leading-[1.55] text-[#fcfcf4]/60">
+                <span className="mt-1 block text-[10px] leading-[15px] text-[#fcfcf4]/60">
                   시주를 빼고 후보를 모두 비교해요.
                 </span>
               </span>
