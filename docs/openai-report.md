@@ -1,7 +1,7 @@
 # OpenAI 직접 연동
 
 현재 보고서는 `https://api.openai.com/v1/chat/completions`를 직접 호출합니다.
-초안·보정·검수는 모두 Structured Outputs를 지원하는 저비용 모델 `gpt-4o-mini`를 사용합니다.
+초안·보정·검수는 모두 Structured Outputs와 추론 강도 설정을 지원하는 `gpt-5.6-luna`를 사용합니다. 더 낮은 비용의 `gpt-4o-mini`도 운영 테스트했지만, 이 보고서의 길이·근거·문체 품질 검사를 제한된 보정 횟수 안에 통과하지 못해 적용하지 않았습니다.
 Structured Outputs와 서버의 분량·근거·문체 검사를 함께 사용합니다.
 
 Vercel 프로젝트의 Environment Variables에서 사용자가 직접 설정합니다.

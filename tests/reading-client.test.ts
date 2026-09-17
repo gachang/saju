@@ -12,11 +12,11 @@ test("OpenAI transport uses strict structured output and rejects third-party key
   globalThis.fetch = async (url, init) => {
     assert.equal(String(url), "https://api.openai.com/v1/chat/completions");
     const body = JSON.parse(String(init?.body));
-    assert.equal(body.model, "gpt-4o-mini");
+    assert.equal(body.model, "gpt-5.6-luna");
     assert.equal(body.response_format.type, "json_schema");
     assert.equal(body.response_format.json_schema.strict, true);
     assert.deepEqual(body.response_format.json_schema.schema.required, ["title"]);
-    assert.equal(body.reasoning_effort, undefined);
+    assert.equal(body.reasoning_effort, "low");
     assert.equal(body.store, false);
     assert.deepEqual(body.messages.map((m: { role: string }) => m.role), ["system", "user"]);
     assert.equal(body.max_completion_tokens, 100);
@@ -25,7 +25,7 @@ test("OpenAI transport uses strict structured output and rejects third-party key
   };
   try {
     const client = createReadingClient(1000);
-    const request = { model: "gpt-4o-mini", instructions: "Return JSON", input: "test", max_output_tokens: 100, text: { format: zodTextFormat(z.object({ title: z.string() }), "test") } };
+    const request = { model: "gpt-5.6-luna", instructions: "Return JSON", input: "test", max_output_tokens: 100, text: { format: zodTextFormat(z.object({ title: z.string() }), "test") } };
     assert.deepEqual((await client.structured.parse(request)).output_parsed, { title: "확인" });
     finish = "length";
     await assert.rejects(client.structured.parse(request), /READING_INCOMPLETE/);
