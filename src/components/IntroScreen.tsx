@@ -44,8 +44,8 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         </p>
       </div>
 
-      <div className="pointer-events-none absolute top-[28.5%] left-1/2 z-0 w-[81.1%] -translate-x-1/2">
-        <ElementOrbit showFigure={false} elementSet="intro" />
+      <div className="pointer-events-none absolute top-[28.5%] left-1/2 w-[81.1%] -translate-x-1/2">
+        <ElementOrbit showFigure={false} animationMode="intro" />
       </div>
 
       <div className="pointer-events-none absolute top-[35.6%] left-[22.9%] z-[2] h-[14%] w-[20.2%] opacity-70">

@@ -20,7 +20,7 @@ export type FormState = {
 };
 
 export const emptyPerson: Person = {
-  name: "김기니",
+  name: "",
   gender: "female",
   year: "",
   month: "",

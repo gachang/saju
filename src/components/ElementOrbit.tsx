@@ -18,26 +18,21 @@ const ELEMENTS: Array<{
   { key: "earth", glyph: "土", left: 9.5, top: 33.1 },
 ];
 
-const INTRO_ELEMENTS = new Set<ElementKey>(["metal", "earth", "water"]);
-
 type Props = {
   showFigure?: boolean;
-  elementSet?: "all" | "intro";
+  animationMode?: "intro" | "loading";
 };
 
 /**
  * The animated circular altar from the final 402 × 874 Figma frames.
- * `intro` keeps only 金·土·水; the full five-element assembly is reserved for
- * the loading page.
+ * Both screens use the complete five-element assembly; the mode only controls
+ * their rotation speed.
  */
 export function ElementOrbit({
   showFigure = true,
-  elementSet = "all",
+  animationMode = "loading",
 }: Props) {
   const reduceMotion = useReducedMotion();
-  const visibleElements = ELEMENTS.filter(
-    (element) => elementSet === "all" || INTRO_ELEMENTS.has(element.key),
-  );
   return (
     <div className="relative aspect-square w-full" aria-hidden="true">
       <motion.div
@@ -63,7 +58,7 @@ export function ElementOrbit({
         className={`absolute inset-[11.5%] opacity-95 ${
           reduceMotion
             ? ""
-            : elementSet === "intro"
+            : animationMode === "intro"
               ? "saju-orbit-ring-intro"
               : "saju-orbit-ring-loading"
         }`}
@@ -130,16 +125,16 @@ export function ElementOrbit({
       )}
 
       <motion.div
-        data-orbit-track={elementSet}
-        className={`absolute inset-0 ${
+        data-orbit-track={animationMode}
+        className={`absolute inset-0 z-20 ${
           reduceMotion
             ? ""
-            : elementSet === "intro"
+            : animationMode === "intro"
               ? "saju-orbit-track-intro"
               : "saju-orbit-track-loading"
         }`}
       >
-        {visibleElements.map((element, index) => (
+        {ELEMENTS.map((element, index) => (
           <div
             key={element.key}
             className="absolute size-[15.65%] -translate-x-1/2 -translate-y-1/2"
@@ -149,7 +144,7 @@ export function ElementOrbit({
               className={`relative size-full ${
                 reduceMotion
                   ? ""
-                  : elementSet === "intro"
+                  : animationMode === "intro"
                     ? "saju-orbit-counter-intro"
                     : "saju-orbit-counter-loading"
               }`}
