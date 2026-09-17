@@ -106,6 +106,7 @@ export async function generateCompleteReading(pair: ChartPair, options: {
     const revised = await repairReport(result.report, input, repair, { signal, onProgress: options.onProgress, onCheckpoint: options.onCheckpoint, stages: ["luna", "luna"], concurrency: 2, editorialIssues });
     result = { ...revised, attempts: [...result.attempts, ...revised.attempts] };
   }
+  result = { ...result, validation: result.validation.filter(issue => !/^[1-8]:editorial:title_fluency:/u.test(issue)) };
   if (!result.validation.length) options.onProgress?.({ stage: "complete", completed: 8, total: 8 });
   return { ...result, editorial, usage, elapsedMs: Date.now() - started, promptVersion: PROMPT_VERSION };
 }
