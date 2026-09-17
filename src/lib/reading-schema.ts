@@ -55,15 +55,26 @@ function hasGuaranteedOutcomeClaim(text: string) {
 }
 
 export function normalizeTitleStyle(section: ReportSection): ReportSection {
+  if (!section.title.includes("기니")) return section;
   const punctuation = [2, 5].includes(section.id) ? "!" : "";
-  const title = section.title.normalize("NFC")
+  const cleaned = section.title.normalize("NFC")
     .replace(/[\r\n]+/gu, " ")
     .replace(/\s+/gu, " ")
     .trim()
-    .replace(/[!?]/gu, "")
-    .trim()
-    .replace(/\s+기니$/u, "기니");
-  return { ...section, title: title.endsWith("기니") ? `${title}${punctuation}` : section.title };
+    .replace(/[!?。.]+/gu, "")
+    .replace(/기니/gu, "")
+    .trim();
+  const commaParts = cleaned.split(",").map(part => part.trim()).filter(Boolean);
+  let titleStem: string;
+  if (commaParts.length >= 2) {
+    titleStem = `${commaParts[0]}, ${commaParts.slice(1).join(" ")}`;
+  } else {
+    const words = cleaned.replace(/,/gu, "").split(" ").filter(Boolean);
+    if (words.length < 2) return section;
+    const middle = Math.max(1, Math.floor(words.length / 2));
+    titleStem = `${words.slice(0, middle).join(" ")}, ${words.slice(middle).join(" ")}`;
+  }
+  return { ...section, title: `${titleStem.trim()}기니${punctuation}` };
 }
 
 export function validateSection(section: ReportSection, input: ReadingInput) {
