@@ -16,7 +16,7 @@ type Props = {
 };
 
 const controlClass =
-  "h-[52px] w-full rounded-[13px] border border-[#faf999]/20 bg-[#001e3b] px-[14px] font-[var(--font-report-sans)] text-[16px] text-[#fcfcf4] outline-none transition-colors placeholder:text-[#fcfcf4]/60 focus:border-[#faf999]/60";
+  "h-[52px] w-full rounded-[13px] border border-[#faf999]/20 bg-[#001e3b] px-[14px] [font-family:var(--font-report-sans)] text-[16px] text-[#fcfcf4] outline-none transition-colors placeholder:text-[#fcfcf4]/60 focus:border-[#faf999]/60";
 
 function Segment({
   selected,
@@ -33,7 +33,7 @@ function Segment({
       role="radio"
       aria-checked={selected}
       onClick={onClick}
-      className={`flex h-[42px] min-w-0 flex-1 items-center justify-center rounded-[10px] font-[var(--font-report-sans)] text-[13px] font-bold transition-colors ${
+      className={`flex h-[42px] min-w-0 flex-1 items-center justify-center rounded-[10px] [font-family:var(--font-report-sans)] text-[13px] font-bold transition-colors ${
         selected ? "bg-[#054787] text-[#f3ef9c]" : "text-[#fcfcf4]/60"
       }`}
     >
@@ -51,11 +51,11 @@ function FieldLabel({
 }) {
   return (
     <div className="flex items-end gap-2 whitespace-nowrap">
-      <span className="font-[var(--font-report-score)] text-[16px] leading-[23px] text-[#fcfcf4]">
+      <span className="[font-family:var(--font-diphylleia)] text-[16px] leading-[normal] text-[#fcfcf4]">
         {children}
       </span>
       {hint && (
-        <span className="pb-px font-[var(--font-report-score)] text-[12px] leading-[17px] text-[#fcfcf4]/60">
+        <span className="pb-px [font-family:var(--font-diphylleia)] text-[12px] leading-[normal] text-[#fcfcf4]/60">
           {hint}
         </span>
       )}
@@ -88,7 +88,7 @@ function NativePickerField({
         disabled ? "opacity-45" : ""
       }`}
     >
-      <span className="font-[var(--font-report-sans)] text-[16px] text-[#fcfcf4]/60">
+      <span className="[font-family:var(--font-report-sans)] text-[16px] text-[#fcfcf4]/60">
         {displayValue}
       </span>
       <input
@@ -234,7 +234,7 @@ export function FormScreen({
                 role="checkbox"
                 aria-checked={person.isLeapMonth}
                 onClick={() => patchPerson({ isLeapMonth: !person.isLeapMonth })}
-                className="mt-2 flex items-center gap-2 font-[var(--font-report-score)] text-[12px] text-[#fcfcf4]/75"
+                className="mt-2 flex items-center gap-2 [font-family:var(--font-diphylleia)] text-[12px] text-[#fcfcf4]/75"
               >
                 <span className={`grid size-4 place-items-center rounded-[4px] border ${person.isLeapMonth ? "border-[#f3ef9c] bg-[#054787]" : "border-[#faf999]/25 bg-[#001e3b]"}`}>
                   {person.isLeapMonth ? "✓" : ""}
@@ -269,11 +269,11 @@ export function FormScreen({
               <span className={`mt-px grid size-5 shrink-0 place-items-center rounded-[5px] border text-[12px] ${person.timeUnknown ? "border-[#f3ef9c] bg-[#054787] text-[#f3ef9c]" : "border-[#faf999]/25 bg-[#001e3b] text-transparent"}`}>
                 ✓
               </span>
-              <span className="font-[var(--font-report-score)]">
-                <span className="block text-[14px] leading-[20px] text-[#fcfcf4]">
+              <span className="[font-family:var(--font-diphylleia)]">
+                <span className="block text-[14px] leading-[normal] text-[#fcfcf4]">
                   태어난 시간을 몰라요
                 </span>
-                <span className="mt-1 block text-[10px] leading-[15px] text-[#fcfcf4]/60">
+                <span className="mt-1 block text-[10px] leading-[1.55] text-[#fcfcf4]/60">
                   시주를 빼고 후보를 모두 비교해요.
                 </span>
               </span>
@@ -299,7 +299,7 @@ export function FormScreen({
           )}
         </div>
 
-        <div className="absolute inset-x-6 bottom-[6.18%]">
+        <div className="absolute inset-x-6 bottom-[54px]">
           <GoldButton
             disabled={!ready}
             pressed={submitting}

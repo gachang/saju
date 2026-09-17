@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import type { AutoParseableTextFormat } from "openai/lib/parser";
 
-export const READING_MODEL = "gpt-5.6-luna" as const;
+export const READING_MODEL = "gpt-4.1-mini" as const;
 export const READING_BASE_URL = "https://api.openai.com/v1";
 
 /** All report stages call OpenAI directly; never forward a third-party key. */
@@ -19,7 +19,9 @@ export function createReadingClient(timeout: number) {
       model: request.model,
       messages: [{ role: "system", content: request.instructions }, { role: "user", content: request.input }],
       response_format: { type: "json_schema", json_schema: { name: format.name, strict: true, schema: format.schema } },
-      reasoning_effort: request.reasoning?.effort ?? "low",
+      ...(request.model.startsWith("gpt-5")
+        ? { reasoning_effort: request.reasoning?.effort ?? "low" }
+        : {}),
       store: false,
       max_completion_tokens: request.max_output_tokens,
       stream: false,

@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { Report } from "@/lib/reading-schema";
 
 export const runtime = "nodejs";
-export const maxDuration = 240;
+export const maxDuration = 60;
 // Per-instance backstop, NOT a global quota. Enable Vercel Firewall rate limits before public API launch.
 let active = 0;
 let windowStart = Date.now();

@@ -39,7 +39,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         </h1>
       </div>
       <div className="absolute inset-x-4 top-[21.62%] z-20 text-center">
-        <p className="font-[var(--font-report-serif)] text-[15px] font-black leading-[22px] text-[rgba(252,252,244,0.78)]">
+        <p className="[font-family:var(--font-report-serif)] text-[15px] font-black leading-[normal] text-[rgba(252,252,244,0.78)]">
           자네 마음에 품은 그 별…
           <br />
           사주팔자로 낱낱이 파헤쳐 주겠네
@@ -65,9 +65,10 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         <Image
           src="/figma-final/intro-scene.png"
           alt="성덕기니 앞에 모인 기니피그들"
-          fill
-          sizes="420px"
-          className="scale-[1.095] object-contain object-top"
+          width={2719}
+          height={4095}
+          sizes="100vw"
+          className="absolute top-[-9.53%] left-[0.03%] h-[109.51%] w-[99.94%] max-w-none object-fill"
           priority
         />
       </motion.div>

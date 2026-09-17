@@ -11,12 +11,11 @@ import type { FormState, Person } from "@/lib/saju";
 
 const PROGRESS_STEPS = [
   { at: 0, value: 8 },
-  { at: 2_000, value: 20 },
-  { at: 8_000, value: 35 },
-  { at: 20_000, value: 50 },
-  { at: 45_000, value: 68 },
-  { at: 90_000, value: 82 },
-  { at: 150_000, value: 91 },
+  { at: 2_000, value: 22 },
+  { at: 8_000, value: 40 },
+  { at: 18_000, value: 60 },
+  { at: 32_000, value: 78 },
+  { at: 48_000, value: 92 },
 ] as const;
 
 function chartFor(person: Person) {
@@ -71,7 +70,7 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
 
       try {
         for (let step = 0; step < 3; step += 1) {
-          const timeout = window.setTimeout(() => controller.abort(), 235_000);
+          const timeout = window.setTimeout(() => controller.abort(), 58_000);
           let response: Response;
           let body: unknown;
           try {
@@ -123,30 +122,30 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
   const partnerName = form.partner.name.trim() || "김기니";
   const visibleError = charts.error || error;
   const headline = visibleError
-    ? "별빛이 잠깐 흐려졌기니"
+    ? "별빛이\n잠깐 흐려졌기니"
     : progress >= 92
-      ? "마지막 글을 다듬는 중이기니"
+      ? "마지막 글을\n다듬는 중이기니"
       : progress >= 68
-        ? "둘의 이야기를 쓰는 중이기니"
+        ? "이야기를\n쓰는 중이기니"
         : progress >= 35
-          ? "기운을 맞춰보는 중이기니"
-          : "사주를 펼쳐보는 중이기니";
+          ? "기운을\n맞추는 중이기니"
+          : "사주를\n펼치는 중이기니";
 
   return (
     <section className="relative h-full overflow-hidden bg-ink" aria-label="궁합 보고서 생성 중">
       <Backdrop dial />
 
-      <div className="absolute top-[14.19%] left-1/2 z-20 w-[330px] -translate-x-1/2 text-center">
+      <div className="absolute top-[14.19%] left-1/2 z-20 flex w-[294px] -translate-x-1/2 flex-col items-center gap-3 text-center">
         <motion.h1
           key={headline}
-          className="font-hambak text-[36px] leading-[48px] text-white"
+          className="w-full whitespace-pre-line font-hambak text-[40px] leading-[normal] text-white"
           initial={reduceMotion ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           {headline}
         </motion.h1>
-        <p className="mt-3 font-hambak text-[20px] leading-[26px] text-[#f8f2e6]">
+        <p className="w-full font-hambak text-[20px] leading-[normal] text-[#f8f2e6]">
           {visibleError ? "잠시 숨을 고르고 다시 불러보겠기니" : "나가면 힘이 빠지니 기다리겠기니?"}
         </p>
       </div>
@@ -157,6 +156,14 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
       >
+        <Image
+          src="/figma-final/loading-glow.svg"
+          alt=""
+          width={493}
+          height={493}
+          sizes="493px"
+          className="pointer-events-none absolute top-[calc(50%+4px)] left-[calc(50%+0.5px)] h-auto w-[151.23%] max-w-none -translate-x-1/2 -translate-y-1/2"
+        />
         <ElementOrbit />
       </motion.div>
 
@@ -165,8 +172,9 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
           {[selfName, partnerName].map((name, index) => (
             <div key={`${index}-${name}`} className="contents">
               {index === 1 && (
-                <div className="relative h-[46px] w-[51px] shrink-0">
-                  <Image src="/figma-final/name-connector.png" alt="좋아하는 사이" fill sizes="51px" className="object-contain" />
+                <div className="relative flex h-[46px] w-[51px] shrink-0 items-center justify-center">
+                  <Image src="/figma-final/name-line.svg" alt="" width={51} height={1} className="absolute left-0 top-1/2 h-auto w-full -translate-y-1/2" />
+                  <Image src="/figma-final/name-heart.svg" alt="좋아하는 사이" width={24} height={24} className="relative size-6" />
                 </div>
               )}
               <div className="flex h-[60px] min-w-0 flex-1 rounded-[66px] border-[0.5px] border-[#f3ef9c] p-0.5">
@@ -177,8 +185,8 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
             </div>
           ))}
         </div>
-        <p className="mt-6 text-center font-[var(--font-report-serif)] text-[16px] leading-[23px] text-[#f8f2e6]">
-          {visibleError || "성덕기니가 둘의 보고서를 쓰고 있어요"}
+        <p className="mt-6 text-center [font-family:var(--font-report-serif)] text-[16px] font-normal leading-[normal] text-[#f8f2e6]">
+          {visibleError || "성덕기니가 둘의 궁합을 살펴보는 중이에요"}
         </p>
         {visibleError && !charts.error && (
           <button

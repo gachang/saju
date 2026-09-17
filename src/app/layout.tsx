@@ -28,7 +28,7 @@ const reportSerif = localFont({
 });
 const chartFont = localFont({ src:"./fonts/report/YujiMai-chart.woff2", variable:"--font-report-chart", weight:"400", display:"swap", preload:false });
 const onboardingHanjaFont = localFont({ src:"./fonts/report/YujiMai-onboarding.ttf", variable:"--font-onboarding-hanja", weight:"400", display:"swap", preload:false });
-const scoreFont = localFont({ src:"./fonts/report/Diphylleia-score.woff2", variable:"--font-report-score", weight:"400", display:"swap", preload:false });
+const diphylleia = localFont({ src:"./fonts/report/Diphylleia-score.woff2", variable:"--font-diphylleia", weight:"400", display:"swap", preload:false });
 
 export const metadata: Metadata = {
   title: "성덕기니",
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${hambakSnow.variable} ${gmarketSans.variable} ${reportSans.variable} ${reportSerif.variable} ${chartFont.variable} ${onboardingHanjaFont.variable} ${scoreFont.variable} h-full antialiased`}
+      className={`${hambakSnow.variable} ${gmarketSans.variable} ${reportSans.variable} ${reportSerif.variable} ${chartFont.variable} ${onboardingHanjaFont.variable} ${diphylleia.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

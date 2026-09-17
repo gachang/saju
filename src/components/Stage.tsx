@@ -46,8 +46,8 @@ export function Stage() {
   }, []);
 
   return (
-    <main className="flex h-dvh w-full justify-center overflow-hidden bg-ink-deep sm:items-center">
-      <div className="relative h-dvh max-h-[874px] w-full max-w-[402px] overflow-hidden bg-ink shadow-[0_0_80px_rgba(0,0,0,0.6)]">
+    <main className="h-dvh w-dvw overflow-hidden bg-ink">
+      <div className="relative h-full w-full overflow-hidden bg-ink">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={step}
