@@ -43,13 +43,18 @@ const removeAbstractClosing = (paragraph: string) => {
     : paragraph;
 };
 
+const finishParagraph = (paragraph: string) => {
+  const trimmed = paragraph.trim();
+  return /[.!?]$/u.test(trimmed) ? trimmed : `${trimmed}.`;
+};
+
 const sanitizeParagraph = (paragraph: string) => paragraph
   .replace(/그 사람/gu, "{{FAVORITE}} 님")
   .replace(/당신|그대/gu, "{{USER}} 님")
   .replace(/운명적으로/gu, "자연스럽게");
 
 const finalizeSection = (section: Report["sections"][number]) => {
-  const paragraphs = section.paragraphs.map(paragraph => removeAbstractClosing(translateRawRelation(sanitizeParagraph(paragraph))));
+  const paragraphs = section.paragraphs.map(paragraph => finishParagraph(removeAbstractClosing(translateRawRelation(sanitizeParagraph(paragraph)))));
   if (section.id === 6 && !/^\{\{USER\}\} 님![^?]*\?/u.test(paragraphs[0] ?? "")) {
     paragraphs[0] = `{{USER}} 님! 사실 요즘 잠깐 쉬어 가고 싶은 때 아닌가요? {{USER}} 님과 {{FAVORITE}} 님 관계에는 언제든 부담 없이 덕질을 쉬거나 잠시 멀어질 자유가 있어요. ${paragraphs[0]}`;
   }
