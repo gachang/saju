@@ -3,7 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { readingInput, type ChartPair, type NameLengths } from "./compatibility";
 import { generateReading, type ReadingModel } from "./reading.server";
-import { paragraphRepairTarget, selectParagraphRepair, selectTitleRepair, repairReport, type PipelineEvent, type RepairRequest } from "./reading-pipeline";
+import { paragraphRepairTarget, selectParagraphRepair, selectSentenceRepair, selectTitleRepair, repairReport, type PipelineEvent, type RepairRequest } from "./reading-pipeline";
 import { countDisplayedText, sectionSchema, type Report } from "./reading-schema";
 import { SYSTEM_PROMPT, SECTION_TOPICS, PROMPT_VERSION } from "./reading-prompt";
 import { reviewReading } from "./reading-editor.server";
@@ -46,6 +46,20 @@ export async function generateCompleteReading(pair: ChartPair, options: {
       recordUsage({ model, phase: `title-${attempt}-${section.id}`, usage: response.usage, elapsedMs: Date.now() - start });
       if (response.status !== "completed" || !response.output_parsed) throw new Error("READING_INCOMPLETE");
       return selectTitleRepair(section, response.output_parsed.titles.slice(0, 3), input);
+    }
+    if (errors.every(error => /^\d+:repeated_sentence_with=\d+$/.test(error)) && repeatedSentences[0]) {
+      const repeatedSentence = repeatedSentences[0];
+      const targetChars = countDisplayedText(repeatedSentence, input);
+      const response = await withRateLimitRetry(() => client.structured.parse({
+        model, store: false, tools: [], reasoning: { effort: "low" }, max_output_tokens: 1600,
+        instructions: "한국어 보고서에서 다른 장과 중복된 문장 하나만 바꾼다. 문단이나 장 전체를 반환하지 않는다. 원문의 의미·호칭 자리표시자·근거 label·해요체를 보존하되 문장 구조와 표현은 분명히 다르게 쓴다. 새 사실이나 근거를 추가하지 않는다. 완결된 대체 문장 3개만 candidates 배열로 반환한다.",
+        input: JSON.stringify({ section_id: section.id, repeated_sentence: repeatedSentence, target_chars: targetChars,
+          instruction: `각 후보는 공백·문장부호 포함 ${Math.max(1, targetChars - 5)}~${targetChars + 5}자이고 마침표로 끝낸다. repeated_sentence의 어절 순서만 바꾸지 말고 새로운 문장으로 다시 쓴다.` }),
+        text: { format: zodTextFormat(z.object({ candidates: z.array(z.string()) }).strict(), "sentence_candidates") },
+      }, { signal }), signal);
+      recordUsage({ model, phase: `sentence-${attempt}-${section.id}`, usage: response.usage, elapsedMs: Date.now() - start });
+      if (response.status !== "completed" || !response.output_parsed) throw new Error("READING_INCOMPLETE");
+      return selectSentenceRepair(section, repeatedSentence, response.output_parsed.candidates.slice(0, 3), input);
     }
     const target = paragraphRepairTarget(section, input);
     if (errors.every(error => /^\d+:body_length=\d+$/.test(error))) {

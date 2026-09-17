@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { AXES, readingInput } from "../src/lib/compatibility";
-import { mergeSection, paragraphRepairTarget, selectParagraphRepair, selectTitleRepair, repairReport, type PipelineEvent, type RepairRequest } from "../src/lib/reading-pipeline";
+import { mergeSection, paragraphRepairTarget, selectParagraphRepair, selectSentenceRepair, selectTitleRepair, repairReport, type PipelineEvent, type RepairRequest } from "../src/lib/reading-pipeline";
 import { countText, displayText, validateReport, type Report, type ReportSection } from "../src/lib/reading-schema";
 
 const input = readingInput({
@@ -83,6 +83,16 @@ test("paragraph candidate selection rejects a valid-length copy of a preserved p
   const long = withBodyLength(good, 827);
   const selected = selectParagraphRepair(long, [good.paragraphs[1], good.paragraphs[2]], input);
   assert.deepEqual(selected, good);
+});
+
+test("sentence repair replaces only the repeated sentence and preserves a valid section", () => {
+  const report = validReport();
+  const section = structuredClone(report.sections[7]);
+  const original = section.paragraphs[2];
+  const repeated = report.sections[0].paragraphs[2];
+  section.paragraphs[2] = repeated;
+  const selected = selectSentenceRepair(section, repeated, [repeated, original], input);
+  assert.deepEqual(selected, report.sections[7]);
 });
 
 test("mergeSection rejects a replacement whose id differs from the requested section", () => {

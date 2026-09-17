@@ -63,6 +63,26 @@ export function selectTitleRepair(section: ReportSection, titles: string[], inpu
   return [...candidates, section].sort((a, b) => penalty(validateSection(a, input)) - penalty(validateSection(b, input)))[0];
 }
 
+export function selectSentenceRepair(section: ReportSection, repeatedSentence: string, candidates: string[], input: ReadingInput) {
+  const normalize = (text: string) => text.normalize("NFC").replace(/\s+/gu, " ").trim();
+  const target = normalize(repeatedSentence);
+  let paragraphIndex = -1;
+  let originalSentence = "";
+  for (const [index, paragraph] of section.paragraphs.entries()) {
+    const match = (paragraph.match(/[^.!?]+[.!?]+|[^.!?]+$/gu) ?? []).find(sentence => normalize(sentence) === target);
+    if (match) { paragraphIndex = index; originalSentence = match; break; }
+  }
+  if (paragraphIndex < 0) return section;
+  const variants = candidates.filter(Boolean).map(sentence => ({
+    ...section,
+    paragraphs: section.paragraphs.map((paragraph, index) => index === paragraphIndex
+      ? paragraph.replace(originalSentence, sentence.trim()) : paragraph) as ReportSection["paragraphs"],
+  }));
+  const score = (candidate: ReportSection) => penalty(validateSection(candidate, input))
+    + (candidate.paragraphs.some(paragraph => (paragraph.match(/[^.!?]+[.!?]+|[^.!?]+$/gu) ?? []).some(sentence => normalize(sentence) === target)) ? 10_000 : 0);
+  return [...variants, section].sort((a, b) => score(a) - score(b))[0];
+}
+
 export async function repairReport(
   draft: Report,
   input: ReadingInput,
