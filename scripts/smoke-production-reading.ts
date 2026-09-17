@@ -4,7 +4,11 @@ import { setTimeout } from "node:timers/promises";
 const origin = "https://otaku-saju-web.vercel.app";
 async function main() {
   const fixture = JSON.parse(await readFile("tests/fixtures/accepted-report.json", "utf8"));
-  let resumeToken: string | undefined;
+  const resumeFile = process.argv[2];
+  let resumeToken: string | undefined = resumeFile
+    ? JSON.parse(await readFile(resumeFile, "utf8")).resumeToken
+    : undefined;
+  if (resumeFile && !resumeToken) throw new Error("MISSING_RESUME_TOKEN");
   for (let step = 1; step <= 3; step++) {
     const started = Date.now();
     const response = await fetch(`${origin}/api/reading-copy`, {

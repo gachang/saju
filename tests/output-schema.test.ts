@@ -42,7 +42,7 @@ test("title normalization removes accidental punctuation and suffix spacing", ()
   const normalized = normalizeTitleStyle(changed);
   assert.equal(normalized.title, base.title);
   assert.ok(!validateSection(normalized, input).includes("8:title_style"));
-  const excited = normalizeTitleStyle({ ...report.sections[1], title: report.sections[1].title.replace(/!$/u, "?!") });
+  const excited = normalizeTitleStyle({ ...report.sections[1], title: report.sections[1].title.replace(/기니!$/u, " 기니 !?") });
   assert.equal(excited.title, report.sections[1].title);
 });
 
