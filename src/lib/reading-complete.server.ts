@@ -10,7 +10,7 @@ export type ReadingUsage = { model: ReadingModel; phase: string; usage: unknown;
 // Presentation polish remains measurable in offline evals, but no longer turns
 // a grounded one-pass report into several minutes of additional model calls.
 const isNonBlockingCopyIssue = (issue: string) =>
-  /^(?:[1-8]:(?:body_length|title_length|title_style|formal_register|repeated_sentence_with|duplicate_paragraph_with)=?|title_punctuation_count$)/u.test(issue);
+  /^(?:[1-8]:(?:body_length|title_length|title_style|formal_register|repeated_sentence_with|duplicate_paragraph_with|evidence_label|axis_meaning|compatibility_type)=?|title_punctuation_count$)/u.test(issue);
 
 export async function generateCompleteReading(pair: ChartPair, options: {
   today?: string; signal?: AbortSignal; initial?: Report; draftModel?: ReadingModel; nameLengths?: NameLengths;
