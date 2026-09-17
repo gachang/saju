@@ -67,6 +67,10 @@ export function compatibility(pair: ChartPair) {
     compatibility_type: `${highest} 중심 · ${lowest} 조율형`, evidence };
 }
 
+export function compatibilityScore(computed: ReturnType<typeof compatibility>) {
+  return Math.round(AXES.reduce((sum, axis) => sum + computed.scores[axis], 0) / AXES.length);
+}
+
 export function readingInput(pair: ChartPair, today = new Date().toISOString().slice(0, 10), nameLengths: NameLengths = DEFAULT_NAME_LENGTHS) {
   const computed = compatibility(pair);
   return { ...computed, axis_meanings: AXIS_MEANINGS, name_lengths: nameLengthsSchema.parse(nameLengths), today, coverage: { self: pair.self.hour ? "4주" : "3주", favorite: pair.favorite.hour ? "4주" : "3주", scoring: "연·월·일주만 사용", convention: "선택된 명식 · 시주는 점수 미반영" },

@@ -99,18 +99,20 @@
 }
 
 /* Figma 2011:4530: compact accordion chapters. */
-.chapters { padding-inline:24px; }
+.chapters { width:calc(100% - 48px); max-width:354px; margin:32px auto 0; padding:0; }
 .divider { position:relative; height:14px; margin-bottom:32px; display:flex; justify-content:center; align-items:center; }
 .divider > img:last-child { position:relative; }
 .divider > img:first-child { height:.5px !important; top:50% !important; }
-.heading { margin-bottom:24px; color:#f8f2e6; font-family:var(--font-report-serif),serif; font-size:19px; letter-spacing:normal; }
+.heading { margin-bottom:16px; color:#f8f2e6; font-family:var(--font-report-serif),serif; font-size:19px; letter-spacing:normal; }
 .list { gap:12px; }
-.card { border:1px solid rgba(231,191,103,.16); border-radius:22px; background:linear-gradient(180deg,rgba(5,71,135,.75),rgba(5,71,135,.27)); }
+.card { border:1px solid rgba(250,249,153,.16); border-radius:22px; background:linear-gradient(-11.92deg,rgba(5,71,135,.16) 12.14%,rgba(2,58,112,.4) 87.86%); }
 .cardHeader { align-items:center; justify-content:space-between; gap:12px; cursor:pointer; list-style:none; }
 .cardHeader::-webkit-details-marker { display:none; }
 .cardHeader > div { min-width:0; }
-.number { padding:0; margin-bottom:8px; color:#e7bf67; font-size:9px; letter-spacing:1.17px; }
+.number { padding:0; margin-bottom:4px; color:#f3ef9c; font-size:9px; letter-spacing:1.17px; }
 .title { max-width:none; color:#f8f2e6; font-family:var(--font-report-serif),serif; font-size:16px; letter-spacing:normal; }
 .chevron { flex-shrink:0; }
 .card[open] .chevron { transform:rotate(180deg); }
-.body { margin-top:24px; font-family:var(--font-report-serif),serif; letter-spacing:normal; }
+.body { margin-top:24px; font-family:var(--font-report-sans),sans-serif; line-height:1.7; letter-spacing:normal; }
+
+@media (max-width:359px) { .chapters { width:calc(100% - 40px); } }

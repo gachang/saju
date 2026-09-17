@@ -6,6 +6,7 @@ import { AnalyzingScreen } from "./AnalyzingScreen";
 import { FormScreen } from "./FormScreen";
 import { IntroScreen } from "./IntroScreen";
 import { ResultScreen } from "./ResultScreen";
+import type { Report } from "@/lib/reading-schema";
 import { createInitialForm, type FormState } from "@/lib/saju";
 
 type Step = "intro" | "self" | "partner" | "analyzing" | "result";
@@ -22,6 +23,7 @@ const fade = {
 export function Stage() {
   const [step, setStep] = useState<Step>("intro");
   const [form, setForm] = useState<FormState>(createInitialForm);
+  const [report, setReport] = useState<Report | null>(null);
   const [pressed, setPressed] = useState(false);
 
   const advance = useCallback((to: Step) => {
@@ -34,7 +36,13 @@ export function Stage() {
 
   const restart = useCallback(() => {
     setForm(createInitialForm());
+    setReport(null);
     setStep("intro");
+  }, []);
+
+  const finishAnalysis = useCallback((completedReport: Report) => {
+    setReport(completedReport);
+    setStep("result");
   }, []);
 
   return (
@@ -70,10 +78,10 @@ export function Stage() {
             )}
 
             {step === "analyzing" && (
-              <AnalyzingScreen form={form} onDone={() => setStep("result")} />
+              <AnalyzingScreen form={form} onDone={finishAnalysis} />
             )}
 
-            {step === "result" && <ResultScreen form={form} onRestart={restart} />}
+            {step === "result" && report && <ResultScreen form={form} report={report} onRestart={restart} />}
           </motion.div>
         </AnimatePresence>
       </div>

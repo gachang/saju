@@ -29,7 +29,7 @@ before(async () => {
 test("report layout renders all eight chapters and all 24 original paragraphs", () => {
   const html = renderToStaticMarkup(createElement(ReportChapters, { report, selfName: "사용자", favoriteName: "최애" }));
   assert.equal((html.match(/<details\b/g) ?? []).length, 8);
-  assert.equal((html.match(/<details[^>]*open=""/g) ?? []).length, 1);
+  assert.equal((html.match(/<details[^>]*open=""/g) ?? []).length, 0);
   assert.equal((html.match(/<summary\b/g) ?? []).length, 8);
   assert.equal((html.match(/<h2\b/g) ?? []).length, 1);
   assert.equal((html.match(/<h3\b/g) ?? []).length, 8);

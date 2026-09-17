@@ -16,7 +16,7 @@ const respond = (body: unknown, status = 200) => Response.json(body, { status, h
 const requestSchema = pairSchema.extend({ name_lengths: nameLengthsSchema.optional(), resumeToken: z.string().max(100_000).optional() }).strict();
 
 export async function POST(request: Request) {
-  if (process.env.READING_API_ENABLED !== "true" || !process.env.OPENAI_API_KEY) return respond({ error: "AI 보고서는 준비 중이에요. 아래 계산 결과를 먼저 확인해 주세요." }, 503);
+  if (!process.env.OPENAI_API_KEY) return respond({ error: "AI 보고서 연결을 확인하고 있어요. 잠시 후 다시 시도해 주세요." }, 503);
   if (request.headers.get("origin") !== new URL(request.url).origin) return respond({ error: "허용되지 않은 요청이에요." }, 403);
   if (!request.headers.get("content-type")?.includes("application/json")) return respond({ error: "JSON 형식이 필요해요." }, 415);
   if (Date.now() - windowStart > 60_000) { windowStart = Date.now(); calls = 0; }
