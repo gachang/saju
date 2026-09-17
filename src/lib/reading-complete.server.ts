@@ -98,9 +98,10 @@ export async function generateCompleteReading(pair: ChartPair, options: {
     const review = await reviewReading(result.report, input, signal);
     recordUsage({ model: READING_MODEL, phase: `editor-${pass + 1}`, usage: review.usage, elapsedMs: review.elapsedMs });
     editorial.push(review.issues);
-    if (!review.issues.length) break;
+    const blockingIssues = pass === 2 ? review.issues.filter(issue => issue.code !== "title_fluency") : review.issues;
+    if (!blockingIssues.length) break;
     const editorialIssues: Record<number, string[]> = {};
-    for (const issue of review.issues) (editorialIssues[issue.section_id] ??= []).push(`${issue.section_id}:editorial:${issue.code}:${issue.explanation} [원문: ${issue.quote}]`);
+    for (const issue of blockingIssues) (editorialIssues[issue.section_id] ??= []).push(`${issue.section_id}:editorial:${issue.code}:${issue.explanation} [원문: ${issue.quote}]`);
     if (pass === 2) { result.validation.push(...Object.values(editorialIssues).flat()); break; }
     const revised = await repairReport(result.report, input, repair, { signal, onProgress: options.onProgress, onCheckpoint: options.onCheckpoint, stages: ["luna", "luna"], concurrency: 2, editorialIssues });
     result = { ...revised, attempts: [...result.attempts, ...revised.attempts] };
