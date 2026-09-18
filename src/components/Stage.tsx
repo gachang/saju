@@ -20,6 +20,12 @@ const fade = {
   exit: { opacity: 0, scale: 0.985 },
 };
 
+const reportFade = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
 export function Stage() {
   const [step, setStep] = useState<Step>("intro");
   const [form, setForm] = useState<FormState>(createInitialForm);
@@ -45,14 +51,16 @@ export function Stage() {
     setStep("result");
   }, []);
 
+  const showingReport = step === "result" && Boolean(report);
+
   return (
-    <main className={`flex h-dvh w-dvw justify-center overflow-hidden ${step === "intro" ? "bg-ink sm:items-center sm:bg-ink-deep" : "bg-ink"}`}>
-      <div className={`relative h-full w-full overflow-hidden bg-ink ${step === "intro" ? "sm:max-h-[874px] sm:max-w-[402px] sm:shadow-[0_0_80px_rgba(0,0,0,0.6)]" : ""}`}>
+    <main className={showingReport ? "min-h-dvh w-full bg-ink" : `flex h-dvh w-dvw justify-center overflow-hidden ${step === "intro" ? "bg-ink sm:items-center sm:bg-ink-deep" : "bg-ink"}`}>
+      <div className={showingReport ? "relative min-h-dvh w-full bg-ink" : `relative h-full w-full overflow-hidden bg-ink ${step === "intro" ? "sm:max-h-[874px] sm:max-w-[402px] sm:shadow-[0_0_80px_rgba(0,0,0,0.6)]" : ""}`}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={step}
-            className="absolute inset-0"
-            {...fade}
+            className={showingReport ? "relative min-h-dvh w-full" : "absolute inset-0"}
+            {...(showingReport ? reportFade : fade)}
             transition={{ duration: 0.45, ease: "easeInOut" }}
           >
             {step === "intro" && <IntroScreen onStart={() => advance("self")} />}
@@ -78,7 +86,7 @@ export function Stage() {
             )}
 
             {step === "analyzing" && (
-              <AnalyzingScreen form={form} onDone={finishAnalysis} />
+              <AnalyzingScreen form={form} onDone={finishAnalysis} onBack={setStep} />
             )}
 
             {step === "result" && report && <ResultScreen form={form} report={report} onRestart={restart} />}

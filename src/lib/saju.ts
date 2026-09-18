@@ -90,11 +90,21 @@ export const BIRTH_TIMES = [
 export const SANGSAENG = ["金生水", "水生木", "木生火", "火生土", "土生金"];
 export const SANGGEUK = ["金克木", "木克土", "土克水", "水克火", "火克金"];
 
-export function isPersonComplete(p: Person): boolean {
-  return Boolean(
-    p.year &&
-      p.month &&
-      p.day &&
-      (p.timeUnknown || p.birthTime),
+export function isBirthDateValid(p: Person): boolean {
+  const year = Number(p.year);
+  const month = Number(p.month);
+  const day = Number(p.day);
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) return false;
+  if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31) return false;
+
+  const now = new Date();
+  const today = Number(
+    `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`,
   );
+  const birthDate = Number(`${year}${String(month).padStart(2, "0")}${String(day).padStart(2, "0")}`);
+  return birthDate <= today;
+}
+
+export function isPersonComplete(p: Person): boolean {
+  return isBirthDateValid(p) && Boolean(p.timeUnknown || p.birthTime);
 }

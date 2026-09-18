@@ -31,19 +31,34 @@ function chartFor(person: Person) {
   });
 }
 
-export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (report: Report) => void }) {
+type InputStep = "self" | "partner";
+
+export function AnalyzingScreen({
+  form,
+  onDone,
+  onBack,
+}: {
+  form: FormState;
+  onDone: (report: Report) => void;
+  onBack: (step: InputStep) => void;
+}) {
   const reduceMotion = useReducedMotion();
   const [progress, setProgress] = useState(8);
   const [error, setError] = useState("");
   const [retryKey, setRetryKey] = useState(0);
   const resumeTokenRef = useRef<string | undefined>(undefined);
   const charts = useMemo(() => {
+    let self;
     try {
-      const self = chartFor(form.self);
-      const favorite = chartFor(form.partner);
-      return { self, favorite, error: "" };
+      self = chartFor(form.self);
     } catch {
-      return { self: null, favorite: null, error: "출생 정보를 다시 확인해 주세요." };
+      return { self: null, favorite: null, error: "본인 출생 정보를 다시 확인해 주세요.", invalidStep: "self" as InputStep };
+    }
+    try {
+      const favorite = chartFor(form.partner);
+      return { self, favorite, error: "", invalidStep: null };
+    } catch {
+      return { self, favorite: null, error: "좋아하는 사람의 출생 정보를 다시 확인해 주세요.", invalidStep: "partner" as InputStep };
     }
   }, [form]);
 
@@ -188,6 +203,15 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
         <p className="mt-6 text-center [font-family:var(--font-report-serif)] text-[16px] font-normal leading-[normal] text-[#f8f2e6]">
           {visibleError || "성덕기니가 둘의 궁합을 살펴보는 중이에요"}
         </p>
+        {charts.error && charts.invalidStep && (
+          <button
+            type="button"
+            onClick={() => onBack(charts.invalidStep!)}
+            className="mx-auto mt-4 flex h-11 items-center justify-center rounded-[14px] border border-[#ff8f8f] bg-[#012e58] px-7 font-hambak text-[17px] text-[#ffb1b1]"
+          >
+            입력 다시 확인하기
+          </button>
+        )}
         {visibleError && !charts.error && (
           <button
             type="button"
@@ -199,7 +223,7 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
         )}
       </div>
 
-      <div
+      {!charts.error && <div
         className="absolute top-[89.25%] left-1/2 z-20 h-1 w-[170px] -translate-x-1/2 overflow-hidden rounded-[14px] bg-[#000c17]"
         role="progressbar"
         aria-label="보고서 준비 진행률"
@@ -213,7 +237,7 @@ export function AnalyzingScreen({ form, onDone }: { form: FormState; onDone: (re
           animate={{ width: `${progress}%` }}
           transition={reduceMotion ? { duration: 0 } : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         />
-      </div>
+      </div>}
     </section>
   );
 }

@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { AXES, DEFAULT_NAME_LENGTHS, nameLengthsSchema, type readingInput } from "./compatibility";
 
+export const REPORT_CHAPTER_TITLES = [
+  "첫 만남의 기운",
+  "끌림의 이유",
+  "팬으로서의 기질",
+  "덕질 운의 흐름",
+  "그 사람과 당신의 궁합",
+  "탈덕과 회귀의 갈림길",
+  "만약, 현실에서 마주쳤다면",
+  "이 사랑이 향하는 곳",
+] as const;
+
 export const sectionSchema = z.object({
   id: z.number().int(), title: z.string(), paragraphs: z.array(z.string()).length(3),
   evidence_ids: z.array(z.string()), flow_ids: z.array(z.string()),

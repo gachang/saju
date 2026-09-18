@@ -1,22 +1,26 @@
 .screen {
   position: relative;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin-inline: auto;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: visible;
   background: #012e58;
   color: #fff;
   font-family: var(--font-report-sans), sans-serif;
   scrollbar-width: none;
+  touch-action: pan-y;
 }
 
 .screen::-webkit-scrollbar { display: none; }
 
 .content {
   position: relative;
-  min-height: 100%;
-  padding-bottom: 124px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 148px;
+  padding-bottom: calc(148px + env(safe-area-inset-bottom));
   isolation: isolate;
 }
 
@@ -514,6 +518,7 @@
   display: flex;
   width: 100%;
   padding: 18px 24px 24px;
+  padding: 18px 24px max(24px, env(safe-area-inset-bottom));
   transform: translateX(-50%);
   flex-direction: column;
   align-items: center;
