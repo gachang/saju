@@ -106,6 +106,23 @@ select {
   -webkit-appearance: none;
 }
 
+/* Keep the input steps usable inside short mobile and in-app browser viewports. */
+.saju-form-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.saju-form-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.saju-form-page {
+  padding-top: 25.4vh;
+  padding-top: 25.4dvh;
+  padding-bottom: 54px;
+  padding-bottom: max(54px, env(safe-area-inset-bottom));
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

@@ -30,3 +30,15 @@ test("form and analyzing screens expose visible recovery guidance", () => {
   assert.match(analyzing, /onBack\(charts\.invalidStep/);
   assert.match(analyzing, /!charts\.error && <div/);
 });
+
+test("self and partner input forms scroll without covering fields with the submit button", () => {
+  const form = readFileSync(new URL("../src/components/FormScreen.tsx", import.meta.url), "utf8");
+  const styles = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+
+  assert.match(form, /saju-form-scroll absolute inset-0 z-10 overflow-y-auto/);
+  assert.match(form, /saju-form-page flex min-h-full flex-col px-6/);
+  assert.match(form, /className="mt-auto pt-8"/);
+  assert.doesNotMatch(form, /absolute inset-x-6 bottom-\[54px\]/);
+  assert.match(styles, /\.saju-form-scroll[\s\S]*-webkit-overflow-scrolling: touch/);
+  assert.match(styles, /\.saju-form-page[\s\S]*padding-bottom: max\(54px, env\(safe-area-inset-bottom\)\)/);
+});

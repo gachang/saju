@@ -170,7 +170,7 @@ export function FormScreen({
       </h1>
 
       <form
-        className="absolute inset-0 z-10"
+        className="saju-form-scroll absolute inset-0 z-10 overflow-y-auto overscroll-y-contain"
         onSubmit={(event) => {
           event.preventDefault();
           if (ready) {
@@ -180,7 +180,8 @@ export function FormScreen({
           }
         }}
       >
-        <div className="absolute inset-x-6 top-[25.4%] flex flex-col gap-5">
+        <div className="saju-form-page flex min-h-full flex-col px-6">
+          <div className="flex flex-col gap-5">
           <div className="flex items-end gap-2">
             <label className="min-w-0 flex-1">
               <FieldLabel>이름</FieldLabel>
@@ -331,16 +332,17 @@ export function FormScreen({
               />
             </label>
           )}
-        </div>
+          </div>
 
-        <div className="absolute inset-x-6 bottom-[54px]">
-          <GoldButton
-            disabled={submitting}
-            pressed={submitting}
-            type="submit"
-          >
-            분석하기
-          </GoldButton>
+          <div className="mt-auto pt-8">
+            <GoldButton
+              disabled={submitting}
+              pressed={submitting}
+              type="submit"
+            >
+              분석하기
+            </GoldButton>
+          </div>
         </div>
       </form>
     </section>
