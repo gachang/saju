@@ -156,19 +156,6 @@ export function FormScreen({
   return (
     <section className="relative h-full overflow-hidden bg-ink" aria-label={mode === "self" ? "본인 정보 입력" : "좋아하는 사람 정보 입력"}>
       <Backdrop />
-      <BrandMark className="absolute top-[6.86%] left-1/2 z-10 size-[72px] -translate-x-1/2" />
-
-      <h1 className="absolute inset-x-4 top-[16.48%] z-10 text-center font-hambak text-[24px] leading-[31px] text-white">
-        {mode === "self" ? (
-          <>
-            당신이 태어난
-            <br />
-            순간을 알려주기니
-          </>
-        ) : (
-          "좋아하는 사람 알려주기니"
-        )}
-      </h1>
 
       <form
         className="saju-form-scroll absolute inset-0 z-10 overflow-y-auto overscroll-y-contain"
@@ -183,7 +170,21 @@ export function FormScreen({
         }}
       >
         <div className="saju-form-page flex min-h-full flex-col px-6">
-          <div className="flex flex-col gap-5">
+          <BrandMark className="mx-auto size-[72px] shrink-0" />
+
+          <h1 className="mt-3 text-center font-hambak text-[24px] leading-[31px] text-white">
+            {mode === "self" ? (
+              <>
+                당신이 태어난
+                <br />
+                순간을 알려주기니
+              </>
+            ) : (
+              "좋아하는 사람 알려주기니"
+            )}
+          </h1>
+
+          <div className={`${mode === "self" ? "mt-4" : "mt-[47px]"} flex flex-col gap-5`}>
             <div>
               <div className="flex items-end gap-2">
                 <label className="min-w-0 flex-1">

@@ -117,8 +117,8 @@ select {
 }
 
 .saju-form-page {
-  padding-top: 25.4vh;
-  padding-top: 25.4dvh;
+  padding-top: 6.86vh;
+  padding-top: 6.86dvh;
   padding-bottom: 54px;
   padding-bottom: max(54px, env(safe-area-inset-bottom));
 }

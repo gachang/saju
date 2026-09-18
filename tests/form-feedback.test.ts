@@ -47,3 +47,15 @@ test("self and partner input forms scroll without covering fields with the submi
   assert.match(styles, /\.saju-form-scroll[\s\S]*-webkit-overflow-scrolling: touch/);
   assert.match(styles, /\.saju-form-page[\s\S]*padding-bottom: max\(54px, env\(safe-area-inset-bottom\)\)/);
 });
+
+test("input screen brand and title participate in the same scroll flow as the fields", () => {
+  const form = readFileSync(new URL("../src/components/FormScreen.tsx", import.meta.url), "utf8");
+  const styles = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  const formStart = form.indexOf("<form");
+
+  assert.ok(form.indexOf("<BrandMark", formStart) > formStart);
+  assert.ok(form.indexOf("<h1", formStart) > formStart);
+  assert.doesNotMatch(form, /<BrandMark className="absolute/);
+  assert.match(form, /mode === "self" \? "mt-4" : "mt-\[47px\]"/);
+  assert.match(styles, /\.saju-form-page[\s\S]*padding-top: 6\.86dvh/);
+});
