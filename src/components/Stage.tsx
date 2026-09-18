@@ -54,12 +54,12 @@ export function Stage() {
   const showingReport = step === "result" && Boolean(report);
 
   return (
-    <main className={showingReport ? "min-h-dvh w-full bg-ink" : `flex h-dvh w-dvw justify-center overflow-hidden ${step === "intro" ? "bg-ink sm:items-center sm:bg-ink-deep" : "bg-ink"}`}>
-      <div className={showingReport ? "relative min-h-dvh w-full bg-ink" : `relative h-full w-full overflow-hidden bg-ink ${step === "intro" ? "sm:max-h-[874px] sm:max-w-[402px] sm:shadow-[0_0_80px_rgba(0,0,0,0.6)]" : ""}`}>
+    <main className={`flex h-dvh w-dvw justify-center overflow-hidden ${step === "intro" ? "bg-ink sm:items-center sm:bg-ink-deep" : "bg-ink"}`}>
+      <div className={`relative h-full w-full overflow-hidden bg-ink ${step === "intro" ? "sm:max-h-[874px] sm:max-w-[402px] sm:shadow-[0_0_80px_rgba(0,0,0,0.6)]" : ""}`}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={step}
-            className={showingReport ? "relative min-h-dvh w-full" : "absolute inset-0"}
+            className="absolute inset-0"
             {...(showingReport ? reportFade : fade)}
             transition={{ duration: 0.45, ease: "easeInOut" }}
           >

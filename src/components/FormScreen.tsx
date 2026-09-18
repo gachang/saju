@@ -134,6 +134,7 @@ export function FormScreen({
     onChange({ ...value, [key]: { ...person, ...patch } });
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const ready = isPersonComplete(person);
+  const nameInvalid = submitAttempted && !person.name.trim();
   const dateInvalid = submitAttempted && !isBirthDateValid(person);
   const timeInvalid = submitAttempted && !person.timeUnknown && !person.birthTime;
   const now = new Date();
@@ -171,6 +172,7 @@ export function FormScreen({
 
       <form
         className="saju-form-scroll absolute inset-0 z-10 overflow-y-auto overscroll-y-contain"
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           if (ready) {
@@ -182,37 +184,47 @@ export function FormScreen({
       >
         <div className="saju-form-page flex min-h-full flex-col px-6">
           <div className="flex flex-col gap-5">
-          <div className="flex items-end gap-2">
-            <label className="min-w-0 flex-1">
-              <FieldLabel>이름</FieldLabel>
-              <input
-                className={`${controlClass} mt-2`}
-                value={person.name}
-                onChange={(event) => patchPerson({ name: event.target.value })}
-                placeholder="김기니"
-                maxLength={12}
-                autoComplete="off"
-              />
-            </label>
-            <div
-              role="radiogroup"
-              aria-label="성별"
-              className="flex h-[50px] w-[118px] shrink-0 gap-1 rounded-[14px] bg-[#001e3b] p-1"
-            >
-              <Segment
-                selected={person.gender === "female"}
-                onClick={() => patchPerson({ gender: "female" })}
-              >
-                여자
-              </Segment>
-              <Segment
-                selected={person.gender === "male"}
-                onClick={() => patchPerson({ gender: "male" })}
-              >
-                남자
-              </Segment>
+            <div>
+              <div className="flex items-end gap-2">
+                <label className="min-w-0 flex-1">
+                  <FieldLabel invalid={nameInvalid}>이름</FieldLabel>
+                  <input
+                    className={`${controlClass} mt-2 ${nameInvalid ? "border-[#ff6b6b] shadow-[0_0_0_1px_rgba(255,107,107,0.28)] focus:border-[#ff6b6b]" : ""}`}
+                    value={person.name}
+                    onChange={(event) => patchPerson({ name: event.target.value })}
+                    placeholder="김기니"
+                    maxLength={12}
+                    autoComplete="off"
+                    required
+                    aria-invalid={nameInvalid || undefined}
+                    aria-describedby={nameInvalid ? `${mode}-name-error` : undefined}
+                  />
+                </label>
+                <div
+                  role="radiogroup"
+                  aria-label="성별"
+                  className="flex h-[50px] w-[118px] shrink-0 gap-1 rounded-[14px] bg-[#001e3b] p-1"
+                >
+                  <Segment
+                    selected={person.gender === "female"}
+                    onClick={() => patchPerson({ gender: "female" })}
+                  >
+                    여자
+                  </Segment>
+                  <Segment
+                    selected={person.gender === "male"}
+                    onClick={() => patchPerson({ gender: "male" })}
+                  >
+                    남자
+                  </Segment>
+                </div>
+              </div>
+              {nameInvalid && (
+                <p id={`${mode}-name-error`} role="alert" className="mt-1.5 text-[11px] leading-[1.45] text-[#ff8f8f]">
+                  이름을 입력해 주세요.
+                </p>
+              )}
             </div>
-          </div>
 
           <div>
             <FieldLabel invalid={dateInvalid}>생년월일</FieldLabel>

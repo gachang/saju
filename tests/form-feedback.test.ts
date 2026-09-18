@@ -6,6 +6,7 @@ import { emptyPerson, isBirthDateValid, isPersonComplete } from "../src/lib/saju
 const today = new Date();
 const validDate = {
   ...emptyPerson,
+  name: "테스트",
   year: String(today.getFullYear() - 20),
   month: "1",
   day: "1",
@@ -16,6 +17,8 @@ test("form completeness requires a non-future date and an explicit time choice",
   assert.equal(isPersonComplete(validDate), false);
   assert.equal(isPersonComplete({ ...validDate, birthTime: "12:30" }), true);
   assert.equal(isPersonComplete({ ...validDate, timeUnknown: true }), true);
+  assert.equal(isPersonComplete({ ...validDate, name: "", timeUnknown: true }), false);
+  assert.equal(isPersonComplete({ ...validDate, name: "   ", timeUnknown: true }), false);
   assert.equal(isBirthDateValid({ ...validDate, year: String(today.getFullYear() + 1) }), false);
 });
 
@@ -24,6 +27,8 @@ test("form and analyzing screens expose visible recovery guidance", () => {
   const analyzing = readFileSync(new URL("../src/components/AnalyzingScreen.tsx", import.meta.url), "utf8");
 
   assert.match(form, /태어난 시간을 설정하거나/);
+  assert.match(form, /이름을 입력해 주세요/);
+  assert.match(form, /required/);
   assert.match(form, /오늘보다 이전의 올바른 생년월일/);
   assert.match(form, /aria-invalid=/);
   assert.match(analyzing, /입력 다시 확인하기/);

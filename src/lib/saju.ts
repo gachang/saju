@@ -106,5 +106,5 @@ export function isBirthDateValid(p: Person): boolean {
 }
 
 export function isPersonComplete(p: Person): boolean {
-  return isBirthDateValid(p) && Boolean(p.timeUnknown || p.birthTime);
+  return Boolean(p.name.trim()) && isBirthDateValid(p) && Boolean(p.timeUnknown || p.birthTime);
 }

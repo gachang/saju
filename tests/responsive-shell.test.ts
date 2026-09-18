@@ -8,16 +8,15 @@ test("onboarding and report backgrounds fill phone-width viewports", () => {
 
   assert.match(stage, /h-dvh w-dvw/);
   assert.match(stage, /relative h-full w-full overflow-hidden bg-ink/);
-  assert.match(stage, /showingReport \? "min-h-dvh w-full bg-ink"/);
-  assert.match(stage, /showingReport \? "relative min-h-dvh w-full"/);
+  assert.match(stage, /className="absolute inset-0"/);
   assert.match(stage, /\.\.\.\(showingReport \? reportFade : fade\)/);
 
   const screenRule = reportCss.match(/\.screen\s*\{([^}]+)\}/)?.[1] ?? "";
   const dockRule = reportCss.match(/\.shareDock\s*\{([^}]+)\}/)?.[1] ?? "";
   assert.match(screenRule, /width:\s*100%/);
-  assert.match(screenRule, /min-height:\s*100dvh/);
-  assert.match(screenRule, /overflow-y:\s*visible/);
-  assert.doesNotMatch(screenRule, /overflow-y:\s*auto/);
+  assert.match(screenRule, /height:\s*100%/);
+  assert.match(screenRule, /overflow-y:\s*auto/);
+  assert.match(screenRule, /-webkit-overflow-scrolling:\s*touch/);
   assert.doesNotMatch(screenRule, /max-width:\s*402px/);
   assert.match(dockRule, /width:\s*100%/);
   assert.match(reportCss, /padding-bottom:\s*148px/);

@@ -1,11 +1,12 @@
 .screen {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
   margin-inline: auto;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
   background: #012e58;
   color: #fff;
   font-family: var(--font-report-sans), sans-serif;
@@ -17,8 +18,7 @@
 
 .content {
   position: relative;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100%;
   padding-bottom: 148px;
   padding-bottom: calc(148px + env(safe-area-inset-bottom));
   isolation: isolate;
