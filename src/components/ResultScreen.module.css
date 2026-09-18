@@ -1,7 +1,6 @@
 .screen {
   position: relative;
   width: 100%;
-  max-width: 402px;
   height: 100%;
   margin-inline: auto;
   overflow-x: hidden;
@@ -513,7 +512,7 @@
   left: 50%;
   z-index: 20;
   display: flex;
-  width: min(100%, 402px);
+  width: 100%;
   padding: 18px 24px 24px;
   transform: translateX(-50%);
   flex-direction: column;
@@ -573,6 +572,13 @@
 .screen :is(button, summary):focus-visible {
   outline: 2px solid #f3ef9c;
   outline-offset: 4px;
+}
+
+@media (min-width: 640px) {
+  .screen,
+  .shareDock {
+    max-width: 402px;
+  }
 }
 
 @media (max-width: 359px) {
