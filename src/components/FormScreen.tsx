@@ -17,7 +17,7 @@ type Props = {
 };
 
 const controlClass =
-  "h-[52px] w-full rounded-[13px] border border-[#faf999]/20 bg-[#001e3b] px-[14px] [font-family:var(--font-report-sans)] text-[16px] text-[#fcfcf4] outline-none transition-colors placeholder:text-[#fcfcf4]/60 focus:border-[#faf999]/60";
+  "h-[52px] w-full rounded-[13px] border border-[#faf999]/20 bg-[#001e3b] px-[14px] [font-family:var(--font-diphylleia)] text-[16px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#faf999]/60";
 
 function Segment({
   selected,
@@ -34,7 +34,7 @@ function Segment({
       role="radio"
       aria-checked={selected}
       onClick={onClick}
-      className={`flex h-[42px] min-w-0 flex-1 items-center justify-center rounded-[10px] [font-family:var(--font-report-sans)] text-[13px] font-bold transition-colors ${
+      className={`flex h-[42px] min-w-0 flex-1 items-center justify-center rounded-[10px] [font-family:var(--font-diphylleia)] text-[13px] font-bold transition-colors ${
         selected ? "bg-[#054787] text-[#f3ef9c]" : "text-[#fcfcf4]/60"
       }`}
     >
@@ -97,7 +97,7 @@ function NativePickerField({
         disabled ? "opacity-45" : ""
       }`}
     >
-      <span className="[font-family:var(--font-report-sans)] text-[16px] text-[#fcfcf4]/60">
+      <span className={`[font-family:var(--font-diphylleia)] text-[16px] ${value && !disabled ? "text-white" : "text-white/60"}`}>
         {displayValue}
       </span>
       <input
@@ -158,7 +158,7 @@ export function FormScreen({
       <Backdrop />
 
       <form
-        className="saju-form-scroll absolute inset-0 z-10 overflow-y-auto overscroll-y-contain"
+        className="saju-form-scroll absolute inset-0 z-10 overflow-y-auto overscroll-y-contain [font-family:var(--font-diphylleia)]"
         noValidate
         onSubmit={(event) => {
           event.preventDefault();
@@ -353,7 +353,7 @@ export function FormScreen({
               pressed={submitting}
               type="submit"
             >
-              분석하기
+              {mode === "self" ? "다음" : "분석하기"}
             </GoldButton>
           </div>
         </div>

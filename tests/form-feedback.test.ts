@@ -59,3 +59,12 @@ test("input screen brand and title participate in the same scroll flow as the fi
   assert.match(form, /mode === "self" \? "mt-4" : "mt-\[47px\]"/);
   assert.match(styles, /\.saju-form-page[\s\S]*padding-top: 6\.86dvh/);
 });
+
+test("input screens use Diphylleia, white completed values, and a next-step label", () => {
+  const form = readFileSync(new URL("../src/components/FormScreen.tsx", import.meta.url), "utf8");
+
+  assert.match(form, /controlClass =[\s\S]*font-diphylleia[\s\S]*text-white/);
+  assert.match(form, /value && !disabled \? "text-white" : "text-white\/60"/);
+  assert.match(form, /saju-form-scroll[^"]*font-diphylleia/);
+  assert.match(form, /mode === "self" \? "다음" : "분석하기"/);
+});

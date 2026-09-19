@@ -48,7 +48,6 @@ export function ResultScreen({ form, report, onRestart }: { form: FormState; rep
           .map((paragraph) => displayText(paragraph, selfName, favoriteName))
           .join("\n\n")}`,
     ),
-    "전통 명리의 상징을 활용한 엔터테인먼트 콘텐츠로, 실제 감정·관계·미래를 예측하지 않습니다.",
   ].join("\n\n");
 
   async function share() {
@@ -105,9 +104,6 @@ export function ResultScreen({ form, report, onRestart }: { form: FormState; rep
         <ReportChapters report={report} selfName={selfName} favoriteName={favoriteName} />
 
         <footer className={styles.footer}>
-          <p className={styles.footnote}>
-            전통 명리의 상징을 활용한 오락 콘텐츠예요.<br />실제 감정·관계·미래를 예측하지 않아요.
-          </p>
           <button type="button" onClick={onRestart} className={styles.restart}>처음으로</button>
         </footer>
       </div>

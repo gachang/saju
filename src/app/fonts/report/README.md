@@ -6,7 +6,9 @@ The 2011:4530 layout uses `NotoSerifKR-400-900.woff2` (variable weights
 The earlier static Bold file is retained for historical asset compatibility.
 
 `YujiMai-chart.woff2` preserves the chart's 22 stem/branch characters and em dash;
-`Diphylleia-score.woff2` preserves the fixed label `궁합`. Both are genuine
+`Diphylleia-score.woff2` preserves the fixed label `궁합`. `Diphylleia-Regular.ttf`
+is the complete upstream font used for user-entered names and all labels on the
+two input screens. These are genuine
 Google Fonts originals, subset with FontTools, with bundled OFL notices:
 [Yuji Mai](https://github.com/google/fonts/tree/main/ofl/yujimai) and
 [Diphylleia](https://github.com/google/fonts/tree/main/ofl/diphylleia).

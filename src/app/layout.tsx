@@ -28,7 +28,7 @@ const reportSerif = localFont({
 });
 const chartFont = localFont({ src:"./fonts/report/YujiMai-chart.woff2", variable:"--font-report-chart", weight:"400", display:"swap", preload:false });
 const onboardingHanjaFont = localFont({ src:"./fonts/report/YujiMai-onboarding.ttf", variable:"--font-onboarding-hanja", weight:"400", display:"swap", preload:false });
-const diphylleia = localFont({ src:"./fonts/report/Diphylleia-score.woff2", variable:"--font-diphylleia", weight:"400", display:"swap", preload:false });
+const diphylleia = localFont({ src:"./fonts/report/Diphylleia-Regular.ttf", variable:"--font-diphylleia", weight:"400", display:"swap", preload:false });
 
 export const metadata: Metadata = {
   title: "성덕기니",

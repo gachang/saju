@@ -11,7 +11,7 @@ import {
   type EarthlyBranch,
   type HeavenlyStem,
 } from "manseryeok";
-import { compatibility, compatibilityScore } from "@/lib/compatibility";
+import { chartOneLineSummary, compatibility, compatibilityScore } from "@/lib/compatibility";
 import { getCoupleTier } from "@/lib/couple-tier";
 import type { ChartResult } from "@/lib/engine";
 import styles from "./ResultScreen.module.css";
@@ -177,6 +177,10 @@ export function ChartCard({ name, favorite, chart }: { name: string; favorite?: 
           }),
         )}
       </dl>
+      <div className={styles.chartSummary}>
+        <p className={styles.chartSummaryLabel}>한 줄 요약</p>
+        <p className={styles.chartSummaryText}>{chartOneLineSummary(pillar, name)}</p>
+      </div>
       {!pillar.hour && <p className={styles.smallCopy}>입력하지 않은 출생시각은 임의로 만들지 않아 시주를 제외했어요.</p>}
     </section>
   );

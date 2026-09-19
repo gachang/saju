@@ -8,6 +8,8 @@ test("onboarding and report backgrounds fill phone-width viewports", () => {
 
   assert.match(stage, /h-dvh w-dvw/);
   assert.match(stage, /relative h-full w-full overflow-hidden bg-ink/);
+  assert.match(stage, /sm:max-h-\[874px\] sm:max-w-\[402px\]/);
+  assert.doesNotMatch(stage, /step === "intro" \? "sm:max-h/);
   assert.match(stage, /className="absolute inset-0"/);
   assert.match(stage, /\.\.\.\(showingReport \? reportFade : fade\)/);
 

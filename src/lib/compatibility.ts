@@ -71,6 +71,12 @@ function manseProfile(chart: ChartPair["self"]) {
   };
 }
 
+export function chartOneLineSummary(chart: ChartPair["self"], name?: string) {
+  const profile = manseProfile(chart);
+  const subject = name?.trim() ? `${name.trim()}님은 ` : "";
+  return `${subject}${profile.month_climate.description}에 ${profile.day_master.image}의 결이 놓인 명식이에요.`;
+}
+
 function dayMasterFlow(self: ReturnType<typeof manseProfile>, favorite: ReturnType<typeof manseProfile>) {
   const a = self.day_master, b = favorite.day_master;
   if (a.element === b.element) return `{{USER}} 님의 ${a.label}과 {{FAVORITE}} 님의 ${b.label}은 같은 ${a.element} 기운이라 기본 결이 닮지만, 자기 방식이 굳으면 고집이 맞부딪힐 수 있어요.`;
