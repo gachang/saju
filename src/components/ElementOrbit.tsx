@@ -57,50 +57,59 @@ export function ElementOrbit({
         ))}
       </motion.div>
 
-      {animationMode === "loading" ? (
-        <>
+      <div
+        data-orbit-rings={animationMode}
+        className={`pointer-events-none absolute inset-0 z-10 ${
+          reduceMotion
+            ? ""
+            : animationMode === "intro"
+              ? "saju-orbit-track-intro"
+              : "saju-orbit-track-loading"
+        }`}
+      >
+        <Image
+          src="/figma-final/loading-orbit-outer.svg"
+          alt=""
+          width={252}
+          height={252}
+          sizes="252px"
+          className="absolute top-[12.88%] left-1/2 h-auto w-[77.3%] max-w-none -translate-x-1/2"
+          style={{ height: "auto" }}
+          priority
+          unoptimized
+        />
+        <Image
+          src="/figma-final/loading-orbit-inner.svg"
+          alt=""
+          width={234}
+          height={234}
+          sizes="234px"
+          className="absolute top-[15.64%] left-1/2 h-auto w-[71.66%] max-w-none -translate-x-1/2"
+          style={{ height: "auto" }}
+          priority
+          unoptimized
+        />
+        {animationMode === "intro" && (
           <Image
-            src="/figma-final/loading-orbit-outer.svg"
+            src="/figma-final/intro-orbit-middle.svg"
             alt=""
-            width={252}
-            height={252}
-            sizes="252px"
-            className="pointer-events-none absolute top-[12.88%] left-1/2 h-auto w-[77.3%] max-w-none -translate-x-1/2"
+            width={198}
+            height={198}
+            sizes="198px"
+            className="absolute top-[21.17%] left-1/2 h-auto w-[60.78%] max-w-none -translate-x-1/2"
+            style={{ height: "auto" }}
             priority
             unoptimized
           />
-          <Image
-            src="/figma-final/loading-orbit-inner.svg"
-            alt=""
-            width={234}
-            height={234}
-            sizes="234px"
-            className="pointer-events-none absolute top-[15.64%] left-1/2 h-auto w-[71.66%] max-w-none -translate-x-1/2"
-            priority
-            unoptimized
-          />
-        </>
-      ) : (
-        <motion.div
-          className={`absolute top-[12.88%] left-[11.5%] size-[77%] opacity-95 ${reduceMotion ? "" : "saju-orbit-ring-intro"}`}
-        >
-          <Image
-            src="/rings.svg"
-            alt=""
-            fill
-            sizes="260px"
-            className="object-contain"
-            priority
-          />
-        </motion.div>
-      )}
+        )}
+      </div>
 
       {showFigure && (
         <>
           {[16.9, 58.6].map((left, index) => (
             <motion.div
               key={left}
-              className="absolute top-[15.95%] h-[37.5%] w-[24.85%] opacity-[0.56]"
+              className="absolute top-[15.95%] z-[11] h-[37.5%] w-[24.85%] opacity-[0.56]"
               style={{ left: `${left}%` }}
               animate={
                 reduceMotion
@@ -126,7 +135,7 @@ export function ElementOrbit({
           ))}
 
           <motion.div
-            className="absolute top-[17.48%] left-[25.5%] h-[61.35%] w-[49.1%]"
+            className="absolute top-[17.48%] left-[25.5%] z-[12] h-[61.35%] w-[49.1%]"
             animate={
               reduceMotion
                 ? undefined

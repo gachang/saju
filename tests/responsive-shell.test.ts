@@ -21,8 +21,8 @@ test("onboarding and report backgrounds fill phone-width viewports", () => {
   assert.match(screenRule, /-webkit-overflow-scrolling:\s*touch/);
   assert.doesNotMatch(screenRule, /max-width:\s*402px/);
   assert.match(dockRule, /width:\s*100%/);
-  assert.match(reportCss, /padding-bottom:\s*148px/);
-  assert.match(reportCss, /padding-bottom:\s*calc\(148px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(reportCss, /padding-bottom:\s*94px/);
+  assert.match(reportCss, /padding-bottom:\s*calc\(70px \+ max\(24px, env\(safe-area-inset-bottom\)\)\)/);
   assert.match(
     reportCss,
     /@media \(min-width: 640px\)[\s\S]*?\.screen,[\s\S]*?\.shareDock\s*\{\s*max-width:\s*402px;/,

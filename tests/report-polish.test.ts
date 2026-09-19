@@ -21,7 +21,7 @@ test("chart cards include a grounded one-line summary matching the Figma card", 
   assert.match(css, /\.chartSummaryText[\s\S]*font-size: 13px/);
 });
 
-test("report heading and backdrop stay transparent and the visible disclaimer is removed", () => {
+test("report heading stays transparent, the backdrop owns only the bottom gradient, and the visible disclaimer is removed", () => {
   const screen = readFileSync(new URL("../src/components/ResultScreen.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
   const headingRule = css.match(/\.tierHeading\s*\{([^}]+)\}/)?.[1] ?? "";
@@ -29,7 +29,9 @@ test("report heading and backdrop stay transparent and the visible disclaimer is
 
   assert.match(headingRule, /background:\s*transparent/);
   assert.match(headingRule, /border:\s*0/);
-  assert.match(backdropRule, /background:\s*transparent/);
+  assert.match(backdropRule, /background:\s*linear-gradient/);
+  assert.match(backdropRule, /transparent calc\(100% - 440px\)/);
+  assert.match(backdropRule, /#000c17 100%/);
   assert.doesNotMatch(backdropRule, /rgba\(18, 18, 18/);
   assert.doesNotMatch(screen, /전통 명리의 상징을 활용한 오락 콘텐츠/);
   assert.doesNotMatch(css, /\.footnote\s*\{/);
@@ -42,11 +44,16 @@ test("the Figma orbit circles belong to the loading screen, not the report hero"
 
   assert.doesNotMatch(overview, /orbit-(?:outer|inner)\.svg/);
   assert.doesNotMatch(css, /\.orbit(?:Rings|Outer|Inner)/);
-  assert.match(orbit, /animationMode === "loading"/);
+  assert.match(orbit, /animationMode = "loading"/);
   assert.match(orbit, /loading-orbit-outer\.svg/);
   assert.match(orbit, /top-\[12\.88%\][\s\S]*w-\[77\.3%\]/);
   assert.match(orbit, /loading-orbit-inner\.svg/);
   assert.match(orbit, /top-\[15\.64%\][\s\S]*w-\[71\.66%\]/);
+  assert.match(orbit, /animationMode === "intro"[\s\S]*intro-orbit-middle\.svg/);
+  assert.match(orbit, /top-\[21\.17%\][\s\S]*w-\[60\.78%\]/);
+  assert.match(orbit, /data-orbit-rings=\{animationMode\}/);
+  assert.match(orbit, /saju-orbit-track-intro/);
+  assert.match(orbit, /saju-orbit-track-loading/);
 });
 
 test("the share button has no visible caption below it", () => {
@@ -57,4 +64,13 @@ test("the share button has no visible caption below it", () => {
   assert.doesNotMatch(screen, /styles\.shareCaption/);
   assert.doesNotMatch(css, /\.shareCaption\s*\{/);
   assert.match(screen, /className="sr-only" aria-live="polite"/);
+});
+
+test("the report owns its bottom gradient and keeps compact bordered actions", () => {
+  const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.background\s*\{[\s\S]*linear-gradient\([\s\S]*#000c17 100%/);
+  assert.match(css, /\.restart\s*\{[\s\S]*border:\s*1\.5px solid #f3ef9c/);
+  assert.match(css, /\.shareDock\s*\{[\s\S]*background:\s*transparent/);
+  assert.match(css, /padding-bottom:\s*calc\(70px \+ max\(24px, env\(safe-area-inset-bottom\)\)\)/);
 });

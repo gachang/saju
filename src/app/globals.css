@@ -83,10 +83,6 @@ body {
   animation-name: saju-orbit-counterclockwise;
 }
 
-.saju-orbit-ring-intro {
-  animation: saju-orbit-counterclockwise 36s linear infinite;
-}
-
 .saju-orbit-track-loading,
 .saju-orbit-counter-loading {
   animation: saju-orbit-clockwise 42s linear infinite;
