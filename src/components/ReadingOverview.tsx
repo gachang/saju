@@ -63,6 +63,24 @@ export function ReadingHero({ computed }: { computed: Compatibility }) {
         <div className={styles.ring} aria-hidden="true">
           <Image src="/report/lemon-ring.png" alt="" fill sizes="328px" preload />
         </div>
+        <div className={styles.orbitRings} aria-hidden="true">
+          <Image
+            src="/report/orbit-outer.svg"
+            alt=""
+            width={252}
+            height={252}
+            className={styles.orbitOuter}
+            unoptimized
+          />
+          <Image
+            src="/report/orbit-inner.svg"
+            alt=""
+            width={234}
+            height={234}
+            className={styles.orbitInner}
+            unoptimized
+          />
+        </div>
         <div className={styles.portrait}>
           {tier.art === "lemon" ? (
             <Image src={tier.image} alt={`${tier.name} 커플`} width={224} height={168} sizes="224px" preload className={styles.lemonPair} />
@@ -177,10 +195,12 @@ export function ChartCard({ name, favorite, chart }: { name: string; favorite?: 
           }),
         )}
       </dl>
-      <div className={styles.chartSummary}>
-        <p className={styles.chartSummaryLabel}>한 줄 요약</p>
-        <p className={styles.chartSummaryText}>{chartOneLineSummary(pillar, name)}</p>
-      </div>
+      {!favorite && (
+        <div className={styles.chartSummary}>
+          <p className={styles.chartSummaryLabel}>한 줄 요약</p>
+          <p className={styles.chartSummaryText}>{chartOneLineSummary(pillar, name)}</p>
+        </div>
+      )}
       {!pillar.hour && <p className={styles.smallCopy}>입력하지 않은 출생시각은 임의로 만들지 않아 시주를 제외했어요.</p>}
     </section>
   );
