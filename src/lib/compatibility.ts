@@ -31,6 +31,19 @@ const STEM_IMAGES: Record<HeavenlyStem, string> = {
   계: "조용히 스며들어 감각을 적시는 이슬비 같은 계수",
 };
 
+const DAY_MASTER_CARD_TITLES: Record<HeavenlyStem, string> = {
+  갑: "곧게 자라는 큰 나무",
+  을: "유연하게 피어나는 풀꽃",
+  병: "온기를 퍼뜨리는 태양",
+  정: "오래 빛나는 작은 등불",
+  무: "중심을 잡는 단단한 산",
+  기: "세심하게 품어 주는 밭흙",
+  경: "모양을 다듬는 단단한 쇠",
+  신: "섬세하게 빛나는 보석",
+  임: "크게 흐르는 넓은 바다",
+  계: "조용히 스며드는 이슬비",
+};
+
 const MONTH_CLIMATES: Record<EarthlyBranch, { climate_type: string; description: string; temperature: number; moisture: number }> = {
   자: { climate_type: "한습", description: "찬 수기가 깊고 습기가 강한 자월", temperature: -2, moisture: 2 },
   축: { climate_type: "한습", description: "차갑고 축축한 기운이 남아 있는 축월", temperature: -2, moisture: 1 },
@@ -75,6 +88,10 @@ export function chartOneLineSummary(chart: ChartPair["self"], name?: string) {
   const profile = manseProfile(chart);
   const subject = name?.trim() ? `${name.trim()}님은 ` : "";
   return `${subject}${profile.month_climate.description}에 ${profile.day_master.image}의 결이 놓인 명식이에요.`;
+}
+
+export function chartCardTitle(chart: ChartPair["self"]) {
+  return DAY_MASTER_CARD_TITLES[chart.day[0] as HeavenlyStem];
 }
 
 function dayMasterFlow(self: ReturnType<typeof manseProfile>, favorite: ReturnType<typeof manseProfile>) {

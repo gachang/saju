@@ -2,7 +2,7 @@ import { READING_MODEL } from "./reading-client.server";
 import { readingInput, type ChartPair, type NameLengths } from "./compatibility";
 import { generateReading, type ReadingModel } from "./reading.server";
 import type { PipelineEvent } from "./reading-pipeline";
-import { normalizeTitleStyle, validateReport, type Report } from "./reading-schema";
+import { hasBrokenTitleClause, normalizeTitleStyle, validateReport, type Report } from "./reading-schema";
 import { PROMPT_VERSION } from "./reading-prompt";
 
 export type ReadingUsage = { model: ReadingModel; phase: string; usage: unknown; elapsedMs: number };
@@ -10,7 +10,7 @@ export type ReadingUsage = { model: ReadingModel; phase: string; usage: unknown;
 // Presentation polish remains measurable in offline evals, but no longer turns
 // a grounded one-pass report into several minutes of additional model calls.
 const isNonBlockingCopyIssue = (issue: string) =>
-  /^(?:[1-8]:(?:body_length|title_length|title_style|formal_register|repeated_sentence_with|duplicate_paragraph_with|evidence_label|axis_meaning|compatibility_type|names)=?|title_punctuation_count$|missing_(?:time|hour)_limitation$)/u.test(issue);
+  /^(?:[1-8]:(?:body_length|title_length|title_style|title_fluency|formal_register|repeated_sentence_with|duplicate_paragraph_with|evidence_label|axis_meaning|compatibility_type|names)=?|title_punctuation_count$|missing_(?:time|hour)_limitation$)/u.test(issue);
 
 const TITLE_FALLBACKS = [
   "서로 다른 온도가 첫눈에 호기심을 깨우고, 입덕의 문을 활짝 열었기니",
@@ -60,7 +60,9 @@ const finalizeSection = (section: Report["sections"][number]) => {
   }
   const normalized = normalizeTitleStyle({ ...section, paragraphs });
   const completedVerb = /(?:았|었|했|됐|였|렸|졌|쳤|냈|켰|웠|겼|췄)기니!?$/u.test(normalized.title);
-  return completedVerb ? normalized : { ...normalized, title: TITLE_FALLBACKS[section.id - 1] };
+  return completedVerb && !hasBrokenTitleClause(normalized.title)
+    ? normalized
+    : { ...normalized, title: TITLE_FALLBACKS[section.id - 1] };
 };
 
 export async function generateCompleteReading(pair: ChartPair, options: {

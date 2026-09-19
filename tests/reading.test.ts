@@ -181,6 +181,24 @@ test("title punctuation belongs only to sections two and five, with exactly one 
   assert.ok(validateSection(extraComma, input).includes("1:title_style"));
 });
 
+test("titles reject clipped past-tense clauses while allowing natural connective forms", () => {
+  const section = sectionWithText("두 표현을 살펴봐요.");
+  for (const title of [
+    "영상 한 장면에 멈췄 다른 바람, 서로의 속도에 천천히 익숙해졌기니",
+    "소중한 순간 곱씹었 조금씩 기록하며, 자기만의 감상 리듬을 찾았기니",
+    "서늘함 맞닿고 상반된 리듬 조화시켰 서로, 다른 결을 존중하며 균형 맞췄기니",
+  ]) {
+    assert.ok(validateSection({ ...section, title }, input).includes("1:title_fluency"), title);
+  }
+  for (const title of [
+    "영상 한 장면에 멈춘 순간 다른 바람을 느끼고, 새로운 리듬에 익숙해졌기니",
+    "소중한 순간을 곱씹으며 조금씩 기록하고, 자기만의 감상 리듬을 찾았기니",
+    "상반된 리듬을 조화시키고 서로를 존중하며, 오래 좋아할 균형을 맞췄기니",
+  ]) {
+    assert.ok(!validateSection({ ...section, title }, input).includes("1:title_fluency"), title);
+  }
+});
+
 test("compatibility section preserves supplied type and explains every named axis", () => {
   const definitions = AXES.map(axis => `${axis}은 ${input.axis_meanings[axis]}을 뜻해요.`).join(" ");
   const section = sectionWithText(`${input.compatibility_type}이에요. ${definitions}`, 5);

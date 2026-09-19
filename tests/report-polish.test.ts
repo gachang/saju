@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { chartOneLineSummary } from "../src/lib/compatibility";
+import { chartCardTitle, chartOneLineSummary } from "../src/lib/compatibility";
 
 const chart = { year: "임신", month: "경술", day: "계유", hour: null } as const;
 
@@ -19,6 +19,18 @@ test("chart cards include a grounded one-line summary matching the Figma card", 
   assert.match(css, /\.chartSummary[\s\S]*background: rgba\(250, 249, 153, 0\.08\)/);
   assert.match(css, /\.chartSummaryLabel[\s\S]*font-size: 8px/);
   assert.match(css, /\.chartSummaryText[\s\S]*font-size: 13px/);
+});
+
+test("the self chart title follows the day master instead of using one fixed slogan", () => {
+  const overview = readFileSync(new URL("../src/components/ReadingOverview.tsx", import.meta.url), "utf8");
+  const water = { year: "임신", month: "경술", day: "계유", hour: null } as const;
+  const wood = { year: "임신", month: "경술", day: "갑신", hour: null } as const;
+
+  assert.equal(chartCardTitle(water), "조용히 스며드는 이슬비");
+  assert.equal(chartCardTitle(wood), "곧게 자라는 큰 나무");
+  assert.notEqual(chartCardTitle(water), chartCardTitle(wood));
+  assert.match(overview, /chartCardTitle\(pillar\)/);
+  assert.doesNotMatch(overview, /흙더미 속 다이아 원석/);
 });
 
 test("report heading stays transparent, the backdrop owns only the bottom gradient, and the visible disclaimer is removed", () => {

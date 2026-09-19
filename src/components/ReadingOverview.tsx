@@ -11,7 +11,7 @@ import {
   type EarthlyBranch,
   type HeavenlyStem,
 } from "manseryeok";
-import { chartOneLineSummary, compatibility, compatibilityScore } from "@/lib/compatibility";
+import { chartCardTitle, chartOneLineSummary, compatibility, compatibilityScore } from "@/lib/compatibility";
 import { getCoupleTier } from "@/lib/couple-tier";
 import type { ChartResult } from "@/lib/engine";
 import styles from "./ResultScreen.module.css";
@@ -134,7 +134,7 @@ export function ChartCard({ name, favorite, chart }: { name: string; favorite?: 
       <div className={styles.cardHeading}>
         <div>
           <p className={styles.eyebrow}>{name}님의 만세력</p>
-          <h2>{favorite ? "마음이 향하는 별의 좌표" : "흙더미 속 다이아 원석"}</h2>
+          <h2>{favorite ? "마음이 향하는 별의 좌표" : chartCardTitle(pillar)}</h2>
         </div>
       </div>
       <dl className={styles.pillars}>

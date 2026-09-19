@@ -4,7 +4,7 @@ import { PROMPT_VERSION, SECTION_BLUEPRINTS, SECTION_TOPICS, SYSTEM_PROMPT } fro
 import { REPORT_CHAPTER_TITLES } from "../src/lib/reading-schema";
 
 test("the report prompt anchors every chapter in a distinct fan experience", () => {
-  assert.equal(PROMPT_VERSION, "otaku-report-v2.6-chapter-contrast");
+  assert.equal(PROMPT_VERSION, "otaku-report-v2.7-title-fluency");
   assert.equal(SECTION_TOPICS.length, 8);
   assert.equal(SECTION_BLUEPRINTS.length, 8);
   assert.equal(new Set(SECTION_BLUEPRINTS).size, 8);
@@ -18,4 +18,6 @@ test("the report prompt anchors every chapter in a distinct fan experience", () 
   assert.match(SYSTEM_PROMPT, /대표 장면 \/ 대표 행동 \/ 마지막 결론/u);
   assert.match(SYSTEM_PROMPT, /같은 결론이나 행동을 두 장에서 재사용하지 않는다/u);
   assert.match(SYSTEM_PROMPT, /모든 장에 똑같은 ‘설명→주의→조언’ 틀을 복제하지 않는다/u);
+  assert.match(SYSTEM_PROMPT, /‘멈췄 다른’, ‘곱씹었 조금씩’, ‘조화시켰 서로’는 금지/u);
+  assert.match(SYSTEM_PROMPT, /자연스러운 연결형으로 다시 쓴다/u);
 });

@@ -46,6 +46,11 @@ const seasonPattern = /(?:^|[\s,.;:!?‘’“”'"])(?:봄|여름|가을|겨울
 const unsupportedAstrologyPattern = /용신|희신|기신|십신|십성|원진|귀문|합화|삼합|방합|천을귀인|도화살|홍염살|역마살|백호살|양인살|괴강살|공망|대운|세운|월운|신강|신약|격국|통근|투간|지장간|십이운성|정관|편관|정재|편재|정인|편인|식신|겁재|비견/u;
 const unsupportedDeficiencyPattern = /(?:오행|타고난 기운|명식)[^.!?]{0,50}(?:부족|결핍|보충|보완)|(?:목|화|토|금|수)(?:의 기운| 기운)[^.!?]{0,20}(?:부족|결핍)|[‘'](?:목|화|토|금|수)[’'][^.!?]{0,10}(?:부족|결핍)/u;
 
+// A frequent generation failure is a truncated past-tense ending followed by
+// another phrase (for example, "멈췄 다른" or "곱씹었 조금씩").
+export const hasBrokenTitleClause = (title: string) =>
+  /(?:았|었|였|했|됐|렸|졌|쳤|냈|켰|웠|겼|췄)(?:\s*,|\s+(?!기니)(?=[가-힣]))/u.test(title.normalize("NFC"));
+
 function hasReciprocalAffectionClaim(text: string) {
   return sentences(text).some(sentence => {
     // These are targeted warning patterns, not a proof that all prose is grounded.
@@ -106,6 +111,7 @@ export function validateSection(section: ReportSection, input: ReadingInput) {
     || /[\r\n]/u.test(section.title)
     || /\s기니[!?]?$/u.test(section.title)
     || !expectedTitleEnd.test(section.title)) fail("title_style");
+  if (hasBrokenTitleClause(section.title)) fail("title_fluency");
   if (length < 700 || length > 750) fail(`body_length=${length}`);
   if (paragraphs.some(p => /[\r\n]/u.test(p))) fail("paragraph_break");
   if (paragraphs.some(p => !/[.!?]$/u.test(p.trim()))) fail("unfinished_sentence");
