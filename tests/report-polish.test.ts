@@ -35,12 +35,26 @@ test("report heading and backdrop stay transparent and the visible disclaimer is
   assert.doesNotMatch(css, /\.footnote\s*\{/);
 });
 
-test("the report hero restores both exported Figma orbit circles", () => {
+test("the Figma orbit circles belong to the loading screen, not the report hero", () => {
   const overview = readFileSync(new URL("../src/components/ReadingOverview.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
+  const orbit = readFileSync(new URL("../src/components/ElementOrbit.tsx", import.meta.url), "utf8");
 
-  assert.match(overview, /\/report\/orbit-outer\.svg/);
-  assert.match(overview, /\/report\/orbit-inner\.svg/);
-  assert.match(css, /\.orbitOuter[\s\S]*top:\s*42px[\s\S]*left:\s*38px/);
-  assert.match(css, /\.orbitInner[\s\S]*top:\s*51px[\s\S]*left:\s*47px/);
+  assert.doesNotMatch(overview, /orbit-(?:outer|inner)\.svg/);
+  assert.doesNotMatch(css, /\.orbit(?:Rings|Outer|Inner)/);
+  assert.match(orbit, /animationMode === "loading"/);
+  assert.match(orbit, /loading-orbit-outer\.svg/);
+  assert.match(orbit, /top-\[12\.88%\][\s\S]*w-\[77\.3%\]/);
+  assert.match(orbit, /loading-orbit-inner\.svg/);
+  assert.match(orbit, /top-\[15\.64%\][\s\S]*w-\[71\.66%\]/);
+});
+
+test("the share button has no visible caption below it", () => {
+  const screen = readFileSync(new URL("../src/components/ResultScreen.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
+
+  assert.doesNotMatch(screen, /보고서 내용을 바로 공유해요/);
+  assert.doesNotMatch(screen, /styles\.shareCaption/);
+  assert.doesNotMatch(css, /\.shareCaption\s*\{/);
+  assert.match(screen, /className="sr-only" aria-live="polite"/);
 });

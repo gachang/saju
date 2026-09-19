@@ -96,10 +96,6 @@ body {
   animation-name: saju-orbit-counterclockwise;
 }
 
-.saju-orbit-ring-loading {
-  animation: saju-orbit-counterclockwise 90s linear infinite;
-}
-
 /* Native selects keep their platform arrow; we draw our own instead. */
 select {
   appearance: none;

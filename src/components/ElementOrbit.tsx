@@ -57,24 +57,43 @@ export function ElementOrbit({
         ))}
       </motion.div>
 
-      <motion.div
-        className={`absolute top-[12.88%] left-[11.5%] size-[77%] opacity-95 ${
-          reduceMotion
-            ? ""
-            : animationMode === "intro"
-              ? "saju-orbit-ring-intro"
-              : "saju-orbit-ring-loading"
-        }`}
-      >
-        <Image
-          src="/rings.svg"
-          alt=""
-          fill
-          sizes="260px"
-          className="object-contain"
-          priority
-        />
-      </motion.div>
+      {animationMode === "loading" ? (
+        <>
+          <Image
+            src="/figma-final/loading-orbit-outer.svg"
+            alt=""
+            width={252}
+            height={252}
+            sizes="252px"
+            className="pointer-events-none absolute top-[12.88%] left-1/2 h-auto w-[77.3%] max-w-none -translate-x-1/2"
+            priority
+            unoptimized
+          />
+          <Image
+            src="/figma-final/loading-orbit-inner.svg"
+            alt=""
+            width={234}
+            height={234}
+            sizes="234px"
+            className="pointer-events-none absolute top-[15.64%] left-1/2 h-auto w-[71.66%] max-w-none -translate-x-1/2"
+            priority
+            unoptimized
+          />
+        </>
+      ) : (
+        <motion.div
+          className={`absolute top-[12.88%] left-[11.5%] size-[77%] opacity-95 ${reduceMotion ? "" : "saju-orbit-ring-intro"}`}
+        >
+          <Image
+            src="/rings.svg"
+            alt=""
+            fill
+            sizes="260px"
+            className="object-contain"
+            priority
+          />
+        </motion.div>
+      )}
 
       {showFigure && (
         <>

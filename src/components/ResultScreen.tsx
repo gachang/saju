@@ -112,8 +112,8 @@ export function ResultScreen({ form, report, onRestart }: { form: FormState; rep
         <button type="button" className={styles.share} onClick={share}>
           <Image src="/report/share.svg" alt="" width={24} height={24} unoptimized />
           공유하기
+          <span className="sr-only" aria-live="polite">{shareMessage}</span>
         </button>
-        <p className={styles.shareCaption}>{shareMessage || "보고서 내용을 바로 공유해요"}</p>
       </div>
     </div>
   );
