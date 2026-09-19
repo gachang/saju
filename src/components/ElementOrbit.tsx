@@ -33,6 +33,7 @@ export function ElementOrbit({
   animationMode = "loading",
 }: Props) {
   const reduceMotion = useReducedMotion();
+  const ringOffset = animationMode === "intro" ? -0.5 : 0.5;
   return (
     <div className="relative aspect-square w-full" aria-hidden="true">
       <motion.div
@@ -59,13 +60,14 @@ export function ElementOrbit({
 
       <div
         data-orbit-rings={animationMode}
-        className={`pointer-events-none absolute inset-0 z-10 ${
+        className={`pointer-events-none absolute inset-y-0 z-10 ${
           reduceMotion
             ? ""
             : animationMode === "intro"
               ? "saju-orbit-track-intro"
               : "saju-orbit-track-loading"
         }`}
+        style={{ left: `${ringOffset}px`, right: `${-ringOffset}px` }}
       >
         <Image
           src="/figma-final/loading-orbit-outer.svg"
@@ -89,19 +91,17 @@ export function ElementOrbit({
           priority
           unoptimized
         />
-        {animationMode === "intro" && (
-          <Image
-            src="/figma-final/intro-orbit-middle.svg"
-            alt=""
-            width={198}
-            height={198}
-            sizes="198px"
-            className="absolute top-[21.17%] left-1/2 h-auto w-[60.78%] max-w-none -translate-x-1/2"
-            style={{ height: "auto" }}
-            priority
-            unoptimized
-          />
-        )}
+        <Image
+          src="/figma-final/intro-orbit-middle.svg"
+          alt=""
+          width={198}
+          height={198}
+          sizes="198px"
+          className="absolute top-[21.17%] left-1/2 h-auto w-[60.78%] max-w-none -translate-x-1/2"
+          style={{ height: "auto" }}
+          priority
+          unoptimized
+        />
       </div>
 
       {showFigure && (
@@ -134,24 +134,26 @@ export function ElementOrbit({
             </motion.div>
           ))}
 
-          <motion.div
-            className="absolute top-[17.48%] left-[25.5%] z-[12] h-[61.35%] w-[49.1%]"
-            animate={
-              reduceMotion
-                ? undefined
-                : { y: [0, -5, 0], scale: [1, 1.012, 1] }
-            }
-            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Image
-              src="/figma-final/guinea-loading.png"
-              alt="성덕기니"
-              fill
-              sizes="200px"
-              className="object-contain drop-shadow-[0_0_18px_rgba(250,249,153,0.34)]"
-              priority
-            />
-          </motion.div>
+          <div className="absolute top-[17.48%] left-[calc(50%+1px)] z-[12] h-[61.35%] w-[49.1%] -translate-x-1/2">
+            <motion.div
+              className="relative size-full"
+              animate={
+                reduceMotion
+                  ? undefined
+                  : { y: [0, -5, 0], scale: [1, 1.012, 1] }
+              }
+              transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Image
+                src="/figma-final/guinea-loading.png"
+                alt="성덕기니"
+                fill
+                sizes="200px"
+                className="object-contain drop-shadow-[0_0_18px_rgba(250,249,153,0.34)]"
+                priority
+              />
+            </motion.div>
+          </div>
         </>
       )}
 

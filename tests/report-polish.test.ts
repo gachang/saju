@@ -49,9 +49,11 @@ test("the Figma orbit circles belong to the loading screen, not the report hero"
   assert.match(orbit, /top-\[12\.88%\][\s\S]*w-\[77\.3%\]/);
   assert.match(orbit, /loading-orbit-inner\.svg/);
   assert.match(orbit, /top-\[15\.64%\][\s\S]*w-\[71\.66%\]/);
-  assert.match(orbit, /animationMode === "intro"[\s\S]*intro-orbit-middle\.svg/);
+  assert.match(orbit, /intro-orbit-middle\.svg/);
   assert.match(orbit, /top-\[21\.17%\][\s\S]*w-\[60\.78%\]/);
   assert.match(orbit, /data-orbit-rings=\{animationMode\}/);
+  assert.match(orbit, /animationMode === "intro" \? -0\.5 : 0\.5/);
+  assert.match(orbit, /left-\[calc\(50%\+1px\)\]/);
   assert.match(orbit, /saju-orbit-track-intro/);
   assert.match(orbit, /saju-orbit-track-loading/);
 });
@@ -71,6 +73,7 @@ test("the report owns its bottom gradient and keeps compact bordered actions", (
 
   assert.match(css, /\.background\s*\{[\s\S]*linear-gradient\([\s\S]*#000c17 100%/);
   assert.match(css, /\.restart\s*\{[\s\S]*border:\s*1\.5px solid #f3ef9c/);
-  assert.match(css, /\.shareDock\s*\{[\s\S]*background:\s*transparent/);
+  assert.match(css, /\.shareDock\s*\{[\s\S]*linear-gradient\(0deg, #000c17 0%, rgba\(0, 30, 59, 0\) 100%\)/);
+  assert.match(css, /\.shareDock\s*\{[\s\S]*backdrop-filter:\s*blur\(4px\)/);
   assert.match(css, /padding-bottom:\s*calc\(70px \+ max\(24px, env\(safe-area-inset-bottom\)\)\)/);
 });
