@@ -9,6 +9,7 @@ import {
 } from "../src/lib/shared-report-schema";
 import {
   consumeSharedReportCreationQuota,
+  hasSharedReportStorageConfig,
   loadSharedReport,
   saveSharedReport,
   sharedReportRedisKey,
@@ -20,6 +21,33 @@ import { POST } from "../src/app/api/shared-reports/route";
 import type { ChartResult } from "../src/lib/engine";
 
 const fixture = JSON.parse(readFileSync(new URL("./fixtures/accepted-report.json", import.meta.url), "utf8"));
+
+const storageEnvironmentNames = [
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+  "KV_REST_API_URL",
+  "KV_REST_API_TOKEN",
+] as const;
+
+function captureStorageEnvironment() {
+  return Object.fromEntries(
+    storageEnvironmentNames.map((name) => [name, process.env[name]]),
+  ) as Record<(typeof storageEnvironmentNames)[number], string | undefined>;
+}
+
+function clearStorageEnvironment() {
+  for (const name of storageEnvironmentNames) delete process.env[name];
+}
+
+function restoreStorageEnvironment(
+  snapshot: ReturnType<typeof captureStorageEnvironment>,
+) {
+  for (const name of storageEnvironmentNames) {
+    const value = snapshot[name];
+    if (value === undefined) delete process.env[name];
+    else process.env[name] = value;
+  }
+}
 
 const selfChart: ChartResult = {
   variants: [
@@ -138,14 +166,28 @@ test("shared-report storage fails closed when Upstash is not configured", async 
   );
 });
 
-test("shared-report POST enforces same-origin JSON and returns a canonical link", async () => {
-  const previousFetch = globalThis.fetch;
-  const previousUrl = process.env.UPSTASH_REDIS_REST_URL;
-  const previousToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+test("direct Upstash REST environment variables remain supported", () => {
+  const previousEnvironment = captureStorageEnvironment();
+  clearStorageEnvironment();
   process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
   process.env.UPSTASH_REDIS_REST_TOKEN = "test-token";
+  try {
+    assert.equal(hasSharedReportStorageConfig(), true);
+  } finally {
+    restoreStorageEnvironment(previousEnvironment);
+  }
+});
+
+test("shared-report POST enforces same-origin JSON and returns a canonical link", async () => {
+  const previousFetch = globalThis.fetch;
+  const previousEnvironment = captureStorageEnvironment();
+  clearStorageEnvironment();
+  process.env.KV_REST_API_URL = "https://example.upstash.io";
+  process.env.KV_REST_API_TOKEN = "test-token";
   let command: Array<string | number> = [];
-  globalThis.fetch = async (_url, init) => {
+  globalThis.fetch = async (url, init) => {
+    assert.equal(url, "https://example.upstash.io");
+    assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer test-token");
     command = JSON.parse(String(init?.body));
     if (command[0] === "INCR") return Response.json({ result: 1 });
     if (command[0] === "EXPIRE") return Response.json({ result: 1 });
@@ -174,18 +216,13 @@ test("shared-report POST enforces same-origin JSON and returns a canonical link"
     assert.deepEqual(command.slice(3), ["EX", SHARED_REPORT_TTL_SECONDS, "NX"]);
   } finally {
     globalThis.fetch = previousFetch;
-    if (previousUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL;
-    else process.env.UPSTASH_REDIS_REST_URL = previousUrl;
-    if (previousToken === undefined) delete process.env.UPSTASH_REDIS_REST_TOKEN;
-    else process.env.UPSTASH_REDIS_REST_TOKEN = previousToken;
+    restoreStorageEnvironment(previousEnvironment);
   }
 });
 
 test("shared-report POST returns 503 before reading a body when storage is absent", async () => {
-  const previousUrl = process.env.UPSTASH_REDIS_REST_URL;
-  const previousToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-  delete process.env.UPSTASH_REDIS_REST_URL;
-  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  const previousEnvironment = captureStorageEnvironment();
+  clearStorageEnvironment();
   try {
     const response = await POST(new Request("https://otaku-saju-web.vercel.app/api/shared-reports", {
       method: "POST",
@@ -195,9 +232,32 @@ test("shared-report POST returns 503 before reading a body when storage is absen
     assert.equal(response.status, 503);
     assert.equal(response.headers.get("cache-control"), "no-store, max-age=0");
   } finally {
-    if (previousUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL;
-    else process.env.UPSTASH_REDIS_REST_URL = previousUrl;
-    if (previousToken === undefined) delete process.env.UPSTASH_REDIS_REST_TOKEN;
-    else process.env.UPSTASH_REDIS_REST_TOKEN = previousToken;
+    restoreStorageEnvironment(previousEnvironment);
+  }
+});
+
+test("shared-report storage never mixes incomplete Upstash and Vercel KV pairs", async () => {
+  const previousEnvironment = captureStorageEnvironment();
+  const previousFetch = globalThis.fetch;
+  clearStorageEnvironment();
+  process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
+  process.env.KV_REST_API_TOKEN = "different-provider-token";
+  let fetched = false;
+  globalThis.fetch = async () => {
+    fetched = true;
+    return Response.json({ result: "OK" });
+  };
+
+  try {
+    const response = await POST(new Request("https://otaku-saju-web.vercel.app/api/shared-reports", {
+      method: "POST",
+      headers: { origin: "https://otaku-saju-web.vercel.app", "content-type": "application/json" },
+      body: JSON.stringify(input),
+    }));
+    assert.equal(response.status, 503);
+    assert.equal(fetched, false);
+  } finally {
+    globalThis.fetch = previousFetch;
+    restoreStorageEnvironment(previousEnvironment);
   }
 });

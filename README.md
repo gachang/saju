@@ -38,7 +38,7 @@ pnpm report:export .eval/fresh-2.json example
 
 Vercel Production의 서버 전용 비밀변수 `OPENAI_API_KEY`를 사용합니다. 키는 Git이나 문서에 포함하지 않습니다. 기존 `CODYSSEY_API_KEY`는 사용하지 않습니다. 인스턴스별 호출 제한은 글로벌 비용 한도가 아니므로 상용 공개 전 분산 호출 제한·인증·비용 한도를 추가해야 합니다. 실제 호칭 대신 NFC 기준 길이(각 1~12자)를 전송해 치환 후 분량을 검사합니다.
 
-공유 기능에는 Vercel Upstash Redis 통합이 만든 서버 전용 `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`과 Kakao Developers의 브라우저용 `NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY`가 필요합니다. Kakao 앱의 Web 플랫폼/JavaScript SDK 도메인과 제품 링크 도메인에는 `https://otaku-saju-web.vercel.app`을 등록합니다. REST API 키나 Admin 키는 사용하지 않습니다. 공유 링크는 추측하기 어려운 무작위 토큰이며 Redis TTL로 3일 뒤 삭제됩니다. 링크를 가진 사람은 만료 전까지 보고서를 볼 수 있으므로 공개 채널 공유에 주의해야 합니다.
+공유 기능은 Vercel Upstash Redis 통합이 자동 생성하는 서버 전용 `KV_REST_API_URL`, `KV_REST_API_TOKEN`을 사용합니다. 직접 만든 Upstash 데이터베이스의 `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`도 대체 변수로 지원합니다. 읽기 전용 토큰과 TCP 방식 `REDIS_URL`은 저장 기능에 사용하지 않습니다. Kakao Developers의 JavaScript 키는 `KAKAO_JAVASCRIPT_KEY`로 설정하며 기존 `NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY`도 지원합니다. 어느 이름을 쓰든 브라우저 SDK에 전달되는 공개 키이며, REST API 키나 Admin 키를 사용하면 안 됩니다. Kakao 앱의 Web 플랫폼/JavaScript SDK 도메인과 제품 링크 도메인에는 `https://otaku-saju-web.vercel.app`을 등록합니다. 공유 링크는 추측하기 어려운 무작위 토큰이며 Redis TTL로 3일 뒤 삭제됩니다. 링크를 가진 사람은 만료 전까지 보고서를 볼 수 있으므로 공개 채널 공유에 주의해야 합니다.
 
 API 키를 Git에 커밋하지 마세요. `.env.local`은 무시되며 `.env.example`은 변수명만 포함합니다. 로컬 키 없이도 빌드와 결정적 검사를 수행할 수 있으며, 실제 생성 호출은 Vercel 서버 런타임에서만 실행합니다.
 

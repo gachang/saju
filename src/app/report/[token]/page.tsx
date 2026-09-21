@@ -8,6 +8,7 @@ import {
   SHARE_PREVIEW_PATH,
   SHARE_TITLE,
 } from "@/lib/kakao-share";
+import { getKakaoJavascriptKey } from "@/lib/kakao-config.server";
 import {
   loadSharedReport,
   SharedReportStorageUnavailableError,
@@ -76,7 +77,11 @@ export default async function SharedReportPage({ params }: SharedReportPageProps
   const shareUrl = new URL(`/report/${token}`, CANONICAL_ORIGIN).toString();
   return (
     <ReportShell>
-      <SharedReportClient report={report} shareUrl={shareUrl} />
+      <SharedReportClient
+        kakaoJavascriptKey={getKakaoJavascriptKey()}
+        report={report}
+        shareUrl={shareUrl}
+      />
     </ReportShell>
   );
 }

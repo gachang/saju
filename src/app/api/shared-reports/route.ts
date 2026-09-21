@@ -2,6 +2,7 @@ import { z } from "zod";
 import { sharedReportInputSchema } from "@/lib/shared-report-schema";
 import {
   consumeSharedReportCreationQuota,
+  hasSharedReportStorageConfig,
   saveSharedReport,
   SharedReportStorageUnavailableError,
 } from "@/lib/shared-reports.server";
@@ -92,7 +93,7 @@ export async function POST(request: Request) {
   if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) {
     return respond({ error: "JSON 형식이 필요해요." }, 415);
   }
-  if (!process.env.UPSTASH_REDIS_REST_URL?.trim() || !process.env.UPSTASH_REDIS_REST_TOKEN?.trim()) {
+  if (!hasSharedReportStorageConfig()) {
     return respond({ error: "공유 링크 저장소를 연결하고 있어요. 잠시 후 다시 시도해 주세요." }, 503);
   }
 

@@ -28,7 +28,7 @@ const reportFade = {
   exit: { opacity: 0 },
 };
 
-export function Stage() {
+export function Stage({ kakaoJavascriptKey }: { kakaoJavascriptKey: string }) {
   const [step, setStep] = useState<Step>("intro");
   const [form, setForm] = useState<FormState>(createInitialForm);
   const [report, setReport] = useState<Report | null>(null);
@@ -104,7 +104,14 @@ export function Stage() {
               <AnalyzingScreen form={form} onDone={finishAnalysis} onBack={setStep} />
             )}
 
-            {step === "result" && report && <ResultScreen form={form} report={report} onRestart={restart} />}
+            {step === "result" && report && (
+              <ResultScreen
+                form={form}
+                report={report}
+                kakaoJavascriptKey={kakaoJavascriptKey}
+                onRestart={restart}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

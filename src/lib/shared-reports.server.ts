@@ -32,9 +32,25 @@ export class SharedReportStorageUnavailableError extends Error {
   }
 }
 
+function runtimeStorageEnvironment(): { url?: string; token?: string } {
+  const candidates = [
+    {
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    },
+    {
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN,
+    },
+  ];
+
+  return candidates.find(({ url, token }) => url?.trim() && token?.trim()) ?? {};
+}
+
 function storageConfig(dependencies: StoreDependencies) {
-  const rawUrl = dependencies.env?.url ?? process.env.UPSTASH_REDIS_REST_URL;
-  const token = dependencies.env?.token ?? process.env.UPSTASH_REDIS_REST_TOKEN;
+  const environment = dependencies.env ?? runtimeStorageEnvironment();
+  const rawUrl = environment.url;
+  const token = environment.token;
   if (!rawUrl?.trim() || !token?.trim()) throw new SharedReportStorageUnavailableError();
 
   try {
@@ -45,6 +61,15 @@ function storageConfig(dependencies: StoreDependencies) {
     return { url: url.toString().replace(/\/$/u, ""), token: token.trim() };
   } catch {
     throw new SharedReportStorageUnavailableError();
+  }
+}
+
+export function hasSharedReportStorageConfig() {
+  try {
+    storageConfig({});
+    return true;
+  } catch {
+    return false;
   }
 }
 

@@ -33,6 +33,7 @@ function chartFor(person: Person) {
 
 type ResultScreenProps = {
   onRestart: () => void;
+  kakaoJavascriptKey: string;
 } & (
   | {
       form: FormState;
@@ -85,7 +86,7 @@ export function ResultScreen(props: ResultScreenProps) {
   const favoriteDisplayName = groupName ? `${favoriteName} · ${groupName}` : favoriteName;
 
   function initializeKakao() {
-    const key = process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY;
+    const key = props.kakaoJavascriptKey;
     if (!key || !window.Kakao) return false;
 
     try {
@@ -198,7 +199,7 @@ export function ResultScreen(props: ResultScreenProps) {
 
   return (
     <div className={styles.screen} aria-label="성덕기니 결과 보고서">
-      {process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY && (
+      {props.kakaoJavascriptKey && (
         <Script
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.3/kakao.min.js"
           strategy="afterInteractive"
