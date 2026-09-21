@@ -3,9 +3,11 @@
 import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { AnalyzingScreen } from "./AnalyzingScreen";
-import { FormScreen } from "./FormScreen";
 import { IntroScreen } from "./IntroScreen";
+import { PartnerFormScreen } from "./PartnerFormScreen";
 import { ResultScreen } from "./ResultScreen";
+import { SelfFormScreen } from "./SelfFormScreen";
+import { loadSelfProfile, saveSelfProfile } from "@/lib/profile-storage";
 import type { Report } from "@/lib/reading-schema";
 import { createInitialForm, type FormState } from "@/lib/saju";
 
@@ -40,6 +42,17 @@ export function Stage() {
     }, PRESS_MS);
   }, []);
 
+  /**
+   * Autofill happens on the way into the 본인 form rather than on mount, so the
+   * first render stays identical on the server and a 처음으로 restart picks the
+   * saved profile back up on its next pass through the intro.
+   */
+  const openSelfForm = useCallback(() => {
+    const saved = loadSelfProfile();
+    if (saved) setForm((current) => ({ ...current, self: saved }));
+    advance("self");
+  }, [advance]);
+
   const restart = useCallback(() => {
     setForm(createInitialForm());
     setReport(null);
@@ -63,11 +76,10 @@ export function Stage() {
             {...(showingReport ? reportFade : fade)}
             transition={{ duration: 0.45, ease: "easeInOut" }}
           >
-            {step === "intro" && <IntroScreen onStart={() => advance("self")} />}
+            {step === "intro" && <IntroScreen onStart={openSelfForm} />}
 
             {step === "self" && (
-              <FormScreen
-                mode="self"
+              <SelfFormScreen
                 value={form}
                 onChange={setForm}
                 onSubmit={() => advance("partner")}
@@ -76,11 +88,14 @@ export function Stage() {
             )}
 
             {step === "partner" && (
-              <FormScreen
-                mode="partner"
+              <PartnerFormScreen
                 value={form}
                 onChange={setForm}
-                onSubmit={() => advance("analyzing")}
+                onBack={() => setStep("self")}
+                onSubmit={() => {
+                  saveSelfProfile(form.self);
+                  advance("analyzing");
+                }}
                 submitting={pressed}
               />
             )}

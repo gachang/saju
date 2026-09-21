@@ -1,13 +1,21 @@
 export type Calendar = "solar" | "lunar";
 
+export type Meridiem = "AM" | "PM";
+
 export type Person = {
   name: string;
   gender: "" | "male" | "female";
   year: string;
   month: string;
   day: string;
+  /** What the birth-date field shows; `year`/`month`/`day` hold the parsed result. */
+  birthDateText: string;
   calendar: Calendar;
+  /** 24-hour `HH:MM`, derived from the 12-hour fields below. Empty until they resolve. */
   birthTime: string;
+  birthHour: string;
+  birthMinute: string;
+  meridiem: Meridiem;
   timeUnknown: boolean;
   isLeapMonth: boolean;
 };
@@ -25,8 +33,12 @@ export const emptyPerson: Person = {
   year: "",
   month: "",
   day: "",
+  birthDateText: "",
   calendar: "solar",
   birthTime: "",
+  birthHour: "",
+  birthMinute: "",
+  meridiem: "AM",
   timeUnknown: false,
   isLeapMonth: false,
 };
@@ -89,6 +101,64 @@ export const BIRTH_TIMES = [
 /** Bottom-of-screen decoration from the design: the 오행 생극 cycles. */
 export const SANGSAENG = ["金生水", "水生木", "木生火", "火生土", "土生金"];
 export const SANGGEUK = ["金克木", "木克土", "土克水", "水克火", "火克金"];
+
+/**
+ * `YYYYMMDD` or `YYMMDD`, with any mix of the separators people actually type
+ * (`2001.01.11`, `01-01-11`, `2001 01 11`) tolerated between the groups.
+ */
+const BIRTH_DATE_PATTERN = /^(\d{4}|\d{2})[\s/.,-]*(\d{2})[\s/.,-]*(\d{2})$/;
+
+/** Anything outside this set means the person typed something that is not a number. */
+const BIRTH_DATE_ALLOWED_CHARS = /^[\d\s/.,-]*$/;
+
+export type BirthDateParts = { year: string; month: string; day: string };
+
+export function hasOnlyBirthDateChars(raw: string): boolean {
+  return BIRTH_DATE_ALLOWED_CHARS.test(raw);
+}
+
+export function birthDateDigits(raw: string): string {
+  return raw.replace(/\D/g, "").slice(0, 8);
+}
+
+/**
+ * Two-digit years land in the hundred-year window ending today, so at 2026 a
+ * `20` reads as 2020 rather than 1920 while a `30` still reads as 1930.
+ */
+export function resolveTwoDigitYear(shortYear: number, today = new Date()): number {
+  const earliest = today.getFullYear() - 100;
+  const candidate = 1900 + shortYear;
+  return candidate <= earliest ? candidate + 100 : candidate;
+}
+
+export function parseBirthDateInput(raw: string, today = new Date()): BirthDateParts | null {
+  const match = BIRTH_DATE_PATTERN.exec(raw.trim());
+  if (!match) return null;
+
+  const [, rawYear, rawMonth, rawDay] = match;
+  const year = rawYear.length === 4 ? Number(rawYear) : resolveTwoDigitYear(Number(rawYear), today);
+  const month = Number(rawMonth);
+  const day = Number(rawDay);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+  return { year: String(year), month: String(month), day: String(day) };
+}
+
+export function formatBirthDate({ year, month, day }: BirthDateParts): string {
+  return `${year}.${month.padStart(2, "0")}.${day.padStart(2, "0")}`;
+}
+
+/** Folds the 시/분/AM·PM fields into the 24-hour string the engine reads. */
+export function to24HourTime(hour: string, minute: string, meridiem: Meridiem): string {
+  if (!/^\d{1,2}$/.test(hour) || !/^\d{1,2}$/.test(minute)) return "";
+
+  const h = Number(hour);
+  const m = Number(minute);
+  if (h < 1 || h > 12 || m > 59) return "";
+
+  const h24 = meridiem === "AM" ? h % 12 : (h % 12) + 12;
+  return `${String(h24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
 
 export function isBirthDateValid(p: Person): boolean {
   const year = Number(p.year);
