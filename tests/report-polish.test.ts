@@ -16,7 +16,18 @@ test("chart cards include a grounded one-line summary matching the Figma card", 
   assert.match(overview, /chartSummaryLabel}>한 줄 요약/);
   assert.match(overview, /chartOneLineSummary\(pillar, name\)/);
   assert.match(overview, /!favorite && \(/);
+  assert.match(overview, /className=\{styles\.pillarHeader\}/);
+  assert.match(overview, /<strong>\{value \?\? "미상"\}<\/strong>/);
+  assert.match(overview, /className=\{styles\.pillarColumn\}/);
+  assert.doesNotMatch(overview, /<dt>\{label\}·\{element\}<\/dt>/);
+  assert.match(css, /\.pillarColumn[\s\S]*gap: 8px/);
+  assert.match(css, /\.pillarUpper[\s\S]*gap: 4px/);
+  assert.match(css, /\.pillarHeader[\s\S]*font-size: 10px/);
+  assert.match(css, /\.pillarHeader strong[\s\S]*font-weight: 500/);
+  assert.match(css, /\.pillar[\s\S]*padding: 11px 4px/);
+  assert.match(css, /\.favoriteCard[\s\S]*border-color: rgba\(250, 249, 153, 0\.2\)/);
   assert.match(css, /\.chartSummary[\s\S]*background: rgba\(250, 249, 153, 0\.08\)/);
+  assert.match(css, /\.chartSummaryLabel[\s\S]*color: #faf999/);
   assert.match(css, /\.chartSummaryLabel[\s\S]*font-size: 8px/);
   assert.match(css, /\.chartSummaryText[\s\S]*font-size: 13px/);
 });
@@ -83,10 +94,12 @@ test("the share dock includes the revised expiring-link caption", () => {
   assert.match(screen, /className="sr-only" aria-live="polite"/);
 });
 
-test("the report owns its responsive bottom gradient and uses the revised in-flow actions", () => {
+test("the report owns its responsive bottom gradient and keeps the share CTA pinned to its shell", () => {
   const screen = readFileSync(new URL("../src/components/ResultScreen.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
   const backgroundRule = css.match(/\.background\s*\{([^}]+)\}/)?.[1] ?? "";
+  const screenRule = css.match(/\.screen\s*\{([^}]+)\}/)?.[1] ?? "";
+  const scrollRule = css.match(/\.scrollArea\s*\{([^}]+)\}/)?.[1] ?? "";
   const contentRule = css.match(/\.content\s*\{([^}]+)\}/)?.[1] ?? "";
   const dockRule = css.match(/\.shareDock\s*\{([^}]+)\}/)?.[1] ?? "";
   const restartRule = css.match(/\.restart\s*\{([^}]+)\}/)?.[1] ?? "";
@@ -101,20 +114,28 @@ test("the report owns its responsive bottom gradient and uses the revised in-flo
   assert.match(restartRule, /font-size:\s*20px/);
   assert.match(restartRule, /font-weight:\s*900/);
   assert.match(restartRule, /line-height:\s*normal/);
-  assert.match(dockRule, /position:\s*relative/);
+  assert.match(screenRule, /overflow:\s*hidden/);
+  assert.match(scrollRule, /height:\s*100%/);
+  assert.match(scrollRule, /overflow-y:\s*auto/);
+  assert.match(contentRule, /padding-bottom:\s*var\(--share-dock-reserve\)/);
+  assert.match(dockRule, /position:\s*absolute/);
+  assert.match(dockRule, /inset-inline:\s*0/);
+  assert.match(dockRule, /bottom:\s*0/);
+  assert.match(dockRule, /z-index:\s*30/);
   assert.match(dockRule, /gap:\s*10px/);
   assert.match(dockRule, /#000c17 0%/);
   assert.match(dockRule, /rgba\(0, 25, 49, 0\.28\) 86\.229%/);
   assert.match(dockRule, /rgba\(0, 30, 59, 0\) 100%/);
   assert.match(dockRule, /backdrop-filter:\s*blur\(10px\)/);
-  assert.doesNotMatch(dockRule, /position:\s*fixed/);
+  assert.match(dockRule, /pointer-events:\s*none/);
   assert.match(shareRule, /max-width:\s*354px/);
   assert.match(shareRule, /height:\s*54px/);
   assert.match(shareRule, /border:\s*1\.5px solid #f3ef9c/);
   assert.match(shareRule, /font-size:\s*18px/);
   assert.match(shareRule, /font-weight:\s*800/);
-  assert.doesNotMatch(contentRule, /padding-bottom/);
-  assert.match(screen, /<footer[\s\S]*<div className=\{styles\.shareDock\}>[\s\S]*<\/div>\s*<\/div>/);
+  assert.match(shareRule, /pointer-events:\s*auto/);
+  assert.match(screen, /className=\{styles\.scrollArea\}/);
+  assert.match(screen, /<\/div>\s*<div className=\{styles\.shareDock\}>/);
 });
 
 test("the revised report hero typography matches the Figma text styles", () => {

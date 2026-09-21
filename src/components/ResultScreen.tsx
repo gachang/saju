@@ -79,42 +79,44 @@ export function ResultScreen({ form, report, onRestart }: { form: FormState; rep
 
   return (
     <div className={styles.screen} aria-label="성덕기니 결과 보고서">
-      <div className={styles.content}>
-        <div className={styles.background} aria-hidden="true">
-          <Image src="/report/zodiac.png" alt="" width={1254} height={1254} className={styles.zodiac} preload />
-          <div className={styles.light}>
-            <Image src="/report/light.png" alt="" fill sizes="386px" className="object-cover" preload />
+      <div className={styles.scrollArea}>
+        <div className={styles.content}>
+          <div className={styles.background} aria-hidden="true">
+            <Image src="/report/zodiac.png" alt="" width={1254} height={1254} className={styles.zodiac} preload />
+            <div className={styles.light}>
+              <Image src="/report/light.png" alt="" fill sizes="386px" className="object-cover" preload />
+            </div>
           </div>
+
+          <ReadingHero computed={computed} />
+
+          <section className={styles.overview} aria-labelledby="chart-heading">
+            <div className={styles.divider} aria-hidden="true">
+              <Image src="/report/divider.svg" alt="" fill unoptimized />
+              <Image src="/report/star.svg" alt="" width={14} height={14} unoptimized />
+            </div>
+            <h2 id="chart-heading" className={styles.sectionHeading}>너의 사주를 자세하게 풀어줄기니</h2>
+            <div className={styles.chartList}>
+              <ChartCard name={selfName} chart={result.self} />
+              <ChartCard name={favoriteDisplayName} favorite chart={result.favorite} />
+            </div>
+          </section>
+
+          <ReportChapters report={report} selfName={selfName} favoriteName={favoriteName} />
+
+          <footer className={styles.footer}>
+            <button type="button" onClick={onRestart} className={styles.restart}>처음으로</button>
+          </footer>
         </div>
+      </div>
 
-        <ReadingHero computed={computed} />
-
-        <section className={styles.overview} aria-labelledby="chart-heading">
-          <div className={styles.divider} aria-hidden="true">
-            <Image src="/report/divider.svg" alt="" fill unoptimized />
-            <Image src="/report/star.svg" alt="" width={14} height={14} unoptimized />
-          </div>
-          <h2 id="chart-heading" className={styles.sectionHeading}>너의 사주를 자세하게 풀어줄기니</h2>
-          <div className={styles.chartList}>
-            <ChartCard name={selfName} chart={result.self} />
-            <ChartCard name={favoriteDisplayName} favorite chart={result.favorite} />
-          </div>
-        </section>
-
-        <ReportChapters report={report} selfName={selfName} favoriteName={favoriteName} />
-
-        <footer className={styles.footer}>
-          <button type="button" onClick={onRestart} className={styles.restart}>처음으로</button>
-        </footer>
-
-        <div className={styles.shareDock}>
-          <button type="button" className={styles.share} onClick={share}>
-            <Image src="/report/share.svg" alt="" width={24} height={24} unoptimized />
-            공유하기
-            <span className="sr-only" aria-live="polite">{shareMessage}</span>
-          </button>
-          <p className={styles.shareCaption}>링크는 3일 뒤 사라져요</p>
-        </div>
+      <div className={styles.shareDock}>
+        <button type="button" className={styles.share} onClick={share}>
+          <Image src="/report/share.svg" alt="" width={24} height={24} unoptimized />
+          공유하기
+          <span className="sr-only" aria-live="polite">{shareMessage}</span>
+        </button>
+        <p className={styles.shareCaption}>링크는 3일 뒤 사라져요</p>
       </div>
     </div>
   );

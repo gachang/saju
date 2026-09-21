@@ -137,18 +137,19 @@ export function ChartCard({ name, favorite, chart }: { name: string; favorite?: 
           <h2>{favorite ? "마음이 향하는 별의 좌표" : chartCardTitle(pillar)}</h2>
         </div>
       </div>
-      <dl className={styles.pillars}>
-        {([0, 1] as const).flatMap((row) =>
-          ([
-            ["hour", "시주"],
-            ["day", "일주"],
-            ["month", "월주"],
-            ["year", "연주"],
-          ] as const).map(([key, label]) => {
-            const value = pillar[key];
-            const stem = value?.[0] as HeavenlyStem;
-            const branch = value?.[1] as EarthlyBranch;
-            const dayMaster = pillar.day[0] as HeavenlyStem;
+      <div className={styles.pillars} role="table" aria-label={`${name} 님의 만세력`}>
+        {([
+          ["hour", "시"],
+          ["day", "일"],
+          ["month", "월"],
+          ["year", "년"],
+        ] as const).map(([key, label]) => {
+          const value = pillar[key];
+          const stem = value?.[0] as HeavenlyStem;
+          const branch = value?.[1] as EarthlyBranch;
+          const dayMaster = pillar.day[0] as HeavenlyStem;
+
+          const cell = (row: 0 | 1) => {
             const element = value
               ? row === 0
                 ? getHeavenlyStemElement(stem)
@@ -168,15 +169,34 @@ export function ChartCard({ name, favorite, chart }: { name: string; favorite?: 
                   : getBranchTenGod(dayMaster, branch);
 
             return (
-              <div key={`${key}-${row}`} className={value ? styles.pillar : `${styles.pillar} ${styles.unknown}`}>
-                <dt>{label}·{element}</dt>
-                <dd aria-label={`${label} ${row === 0 ? "천간" : "지지"} ${value?.[row] ?? "미상"}`}>{hanja}</dd>
-                <dd className={styles.elements}>{tenGod}</dd>
+              <div
+                key={`${key}-${row}`}
+                className={value ? styles.pillar : `${styles.pillar} ${styles.unknown}`}
+                role="cell"
+                aria-label={`${label}주 ${row === 0 ? "천간" : "지지"} ${value?.[row] ?? "미상"}, ${element}, ${tenGod}`}
+              >
+                <span className={styles.pillarElement}>{element}</span>
+                <span className={styles.pillarHanja} aria-hidden="true">{hanja}</span>
+                <span className={styles.elements}>{tenGod}</span>
               </div>
             );
-          }),
-        )}
-      </dl>
+          };
+
+          return (
+            <div key={key} className={styles.pillarColumn} role="rowgroup">
+              <div className={styles.pillarUpper}>
+                <div className={styles.pillarHeader} role="columnheader">
+                  <span>{label}</span>
+                  <span aria-hidden="true">·</span>
+                  <strong>{value ?? "미상"}</strong>
+                </div>
+                {cell(0)}
+              </div>
+              {cell(1)}
+            </div>
+          );
+        })}
+      </div>
       {!favorite && (
         <div className={styles.chartSummary}>
           <p className={styles.chartSummaryLabel}>한 줄 요약</p>
