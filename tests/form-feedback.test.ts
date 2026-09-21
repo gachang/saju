@@ -36,7 +36,7 @@ test("form and analyzing screens expose visible recovery guidance", () => {
   assert.match(fields, /aria-invalid=/);
   assert.match(analyzing, /입력 다시 확인하기/);
   assert.match(analyzing, /onBack\(charts\.invalidStep/);
-  assert.match(analyzing, /!charts\.error && <div/);
+  assert.match(analyzing, /!charts\.error && \(/);
 });
 
 test("self and partner input forms scroll without covering fields with the submit button", () => {

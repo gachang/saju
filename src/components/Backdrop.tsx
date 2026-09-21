@@ -10,7 +10,7 @@ export function Backdrop({ dial = false }: { dial?: boolean }) {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden bg-ink">
       {dial && (
         <motion.div
-          className="absolute top-[-7.8%] left-[-54.7%] aspect-square w-[242.8%] opacity-[0.59]"
+          className="absolute top-[-8.92%] left-[-54.23%] aspect-square w-[242.8%] opacity-[0.59]"
           animate={reduceMotion ? undefined : { rotate: 360 }}
           transition={{ duration: 420, repeat: Infinity, ease: "linear" }}
         >

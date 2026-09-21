@@ -143,3 +143,31 @@ test("the intro and loading copy use the revised Figma font weights and sizes", 
   assert.match(analyzing, /font-hambak text-\[24px\] font-extrabold leading-\[normal\] text-white/);
   assert.match(analyzing, /\[font-family:var\(--font-report-serif\)\] text-\[15px\] font-medium leading-\[normal\] text-\[rgba\(252,252,244,0\.78\)\]/);
 });
+
+test("the loading composition shares one centered Figma stack without a motion transform collision", () => {
+  const analyzing = readFileSync(new URL("../src/components/AnalyzingScreen.tsx", import.meta.url), "utf8");
+  const backdrop = readFileSync(new URL("../src/components/Backdrop.tsx", import.meta.url), "utf8");
+  const stack = analyzing.match(/data-loading-stack="true"[\s\S]*?className="([^"]+)"/)?.[1] ?? "";
+  const orbit = analyzing.match(/data-loading-orbit="true"[\s\S]*?className="([^"]+)"/)?.[1] ?? "";
+  const summary = analyzing.match(/data-loading-summary="true"[\s\S]*?className="([^"]+)"/)?.[1] ?? "";
+
+  assert.match(stack, /top-\[15\.33%\]/);
+  assert.match(stack, /bottom-\[13\.96%\]/);
+  assert.match(stack, /left-1\/2/);
+  assert.match(stack, /w-\[81\.1%\]/);
+  assert.match(stack, /max-w-\[326px\]/);
+  assert.match(stack, /-translate-x-1\/2/);
+  assert.match(stack, /gap-\[min\(60px,6\.86dvh\)\]/);
+  assert.doesNotMatch(stack, /justify-center/);
+  assert.match(analyzing, /h-\[57px\] w-\[90\.18%\][^"\n]*justify-center[^"\n]*gap-1/);
+  assert.match(orbit, /relative/);
+  assert.match(orbit, /h-\[306px\]/);
+  assert.match(orbit, /w-full/);
+  assert.doesNotMatch(orbit, /left-1\/2|-translate-x-1\/2/);
+  assert.match(summary, /w-\[97\.24%\]/);
+  assert.match(summary, /max-w-\[317px\]/);
+  assert.match(summary, /gap-6/);
+  assert.doesNotMatch(analyzing, /top-\[31\.35%\]|top-\[73\.55%\]|top-\[89\.25%\]/);
+  assert.doesNotMatch(analyzing, /"[^"\n]*\\n[^"\n]*"/);
+  assert.match(backdrop, /top-\[-8\.92%\] left-\[-54\.23%\]/);
+});
