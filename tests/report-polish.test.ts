@@ -87,11 +87,29 @@ test("the share dock includes the revised expiring-link caption", () => {
   const captionRule = css.match(/\.shareCaption\s*\{([^}]+)\}/)?.[1] ?? "";
 
   assert.doesNotMatch(screen, /보고서 내용을 바로 공유해요/);
-  assert.match(screen, /<p className=\{styles\.shareCaption\}>링크는 3일 뒤 사라져요<\/p>/);
+  assert.match(screen, /\{shareMessage \|\| "링크는 3일 뒤 사라져요"\}/);
   assert.match(captionRule, /font-size:\s*10px/);
   assert.match(captionRule, /font-weight:\s*400/);
   assert.match(captionRule, /color:\s*rgba\(248, 242, 230, 0\.8\)/);
-  assert.match(screen, /className="sr-only" aria-live="polite"/);
+  assert.match(screen, /className=\{styles\.shareCaption\} role="status" aria-live="polite"/);
+});
+
+test("sharing creates one privacy-minimized expiring report link and prefers Kakao", () => {
+  const screen = readFileSync(new URL("../src/components/ResultScreen.tsx", import.meta.url), "utf8");
+  const payload = screen.match(/const payload = \{([\s\S]*?)\n      \};/)?.[1] ?? "";
+
+  assert.match(screen, /useRef<Promise<SharedReportResponse> \| null>\(/);
+  assert.match(screen, /props\.initialShareUrl/);
+  assert.match(screen, /fetch\("\/api\/shared-reports"/);
+  assert.match(screen, /selfChart: \{ \.\.\.result\.self, variants: \[result\.self\.variants\[0\]\] \}/);
+  assert.match(screen, /favoriteChart: \{ \.\.\.result\.favorite, variants: \[result\.favorite\.variants\[0\]\] \}/);
+  assert.doesNotMatch(payload, /birthDateText|birthTime|birthHour|birthMinute|gender|calendar|form\./);
+  assert.match(screen, /kakao_js_sdk\/2\.8\.3\/kakao\.min\.js/);
+  assert.match(screen, /window\.Kakao\?\.Share\.sendDefault\(kakaoShareTemplate\(url\)\)/);
+  assert.match(screen, /navigator\.share\(\{ title: "성덕기니 보고서", url \}\)/);
+  assert.match(screen, /navigator\.clipboard\.writeText\(url\)/);
+  assert.match(screen, /disabled=\{isSharing\}/);
+  assert.match(screen, /aria-busy=\{isSharing\}/);
 });
 
 test("the report owns its responsive bottom gradient and keeps the share CTA pinned to its shell", () => {
@@ -151,7 +169,7 @@ test("the revised report hero typography matches the Figma text styles", () => {
   assert.match(descriptionRule, /font-size:\s*14px/);
   assert.match(descriptionRule, /font-weight:\s*400/);
   assert.match(descriptionRule, /line-height:\s*1\.7/);
-  assert.match(descriptionRule, /text-align:\s*center/);
+  assert.match(descriptionRule, /text-align:\s*left/);
   assert.match(descriptionRule, /text-wrap:\s*pretty/);
 });
 

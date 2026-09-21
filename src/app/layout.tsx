@@ -1,5 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import {
+  CANONICAL_ORIGIN,
+  SHARE_DESCRIPTION,
+  SHARE_PREVIEW_PATH,
+  SHARE_TITLE,
+} from "@/lib/kakao-share";
 import "./globals.css";
 
 const hambakSnow = localFont({
@@ -33,8 +39,34 @@ const onboardingHanjaFont = localFont({ src:"./fonts/report/YujiMai-onboarding.t
 const diphylleia = localFont({ src:"./fonts/report/Diphylleia-Regular.ttf", variable:"--font-diphylleia", weight:"400", display:"swap", preload:false });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(CANONICAL_ORIGIN),
   title: "성덕기니",
-  description: "성덕기니가 자네와 그이의 궁합을 봐주겠네.",
+  description: SHARE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: "/",
+    siteName: "성덕기니",
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
+    images: [
+      {
+        url: SHARE_PREVIEW_PATH,
+        width: 538,
+        height: 272,
+        alt: "성덕기니 궁합 보고서",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
+    images: [SHARE_PREVIEW_PATH],
+  },
 };
 
 export const viewport: Viewport = {
