@@ -16,7 +16,7 @@ test("OpenAI transport uses strict structured output and rejects third-party key
     assert.equal(body.response_format.type, "json_schema");
     assert.equal(body.response_format.json_schema.strict, true);
     assert.deepEqual(body.response_format.json_schema.schema.required, ["title"]);
-    assert.equal(body.reasoning_effort, "low");
+    assert.equal(body.reasoning_effort, "none");
     assert.equal(body.store, false);
     assert.deepEqual(body.messages.map((m: { role: string }) => m.role), ["system", "user"]);
     assert.equal(body.max_completion_tokens, 100);

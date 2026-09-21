@@ -9,7 +9,7 @@ async function main() {
     model: READING_MODEL,
     instructions: 'Return JSON with status set to "ok".',
     input: "Connection test only.",
-    reasoning: { effort: "low" },
+    reasoning: { effort: "none" },
     max_output_tokens: 512,
     text: { format: zodTextFormat(z.object({ status: z.literal("ok") }), "connection_test") },
   });
