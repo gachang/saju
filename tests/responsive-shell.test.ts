@@ -14,17 +14,25 @@ test("onboarding and report backgrounds fill phone-width viewports", () => {
   assert.match(stage, /\.\.\.\(showingReport \? reportFade : fade\)/);
 
   const screenRule = reportCss.match(/\.screen\s*\{([^}]+)\}/)?.[1] ?? "";
+  const backgroundRule = reportCss.match(/\.background\s*\{([^}]+)\}/)?.[1] ?? "";
   const dockRule = reportCss.match(/\.shareDock\s*\{([^}]+)\}/)?.[1] ?? "";
+  const shareRule = reportCss.match(/\.share\s*\{([^}]+)\}/)?.[1] ?? "";
   assert.match(screenRule, /width:\s*100%/);
   assert.match(screenRule, /height:\s*100%/);
   assert.match(screenRule, /overflow-y:\s*auto/);
   assert.match(screenRule, /-webkit-overflow-scrolling:\s*touch/);
   assert.doesNotMatch(screenRule, /max-width:\s*402px/);
   assert.match(dockRule, /width:\s*100%/);
-  assert.match(reportCss, /padding-bottom:\s*94px/);
-  assert.match(reportCss, /padding-bottom:\s*calc\(70px \+ max\(24px, env\(safe-area-inset-bottom\)\)\)/);
+  assert.match(dockRule, /position:\s*relative/);
+  assert.match(dockRule, /max\(24px, env\(safe-area-inset-bottom\)\)/);
+  assert.match(shareRule, /width:\s*100%/);
+  assert.match(shareRule, /max-width:\s*354px/);
+  assert.match(backgroundRule, /100% 250px no-repeat/);
+  assert.doesNotMatch(backgroundRule, /402px/);
+  assert.doesNotMatch(reportCss, /padding-bottom:\s*94px/);
+  assert.doesNotMatch(reportCss, /padding-bottom:\s*calc\(70px \+ max\(24px, env\(safe-area-inset-bottom\)\)\)/);
   assert.match(
     reportCss,
-    /@media \(min-width: 640px\)[\s\S]*?\.screen,[\s\S]*?\.shareDock\s*\{\s*max-width:\s*402px;/,
+    /@media \(min-width: 640px\)[\s\S]*?\.screen\s*\{\s*max-width:\s*402px;/,
   );
 });

@@ -106,14 +106,15 @@ export function ResultScreen({ form, report, onRestart }: { form: FormState; rep
         <footer className={styles.footer}>
           <button type="button" onClick={onRestart} className={styles.restart}>처음으로</button>
         </footer>
-      </div>
 
-      <div className={styles.shareDock}>
-        <button type="button" className={styles.share} onClick={share}>
-          <Image src="/report/share.svg" alt="" width={24} height={24} unoptimized />
-          공유하기
-          <span className="sr-only" aria-live="polite">{shareMessage}</span>
-        </button>
+        <div className={styles.shareDock}>
+          <button type="button" className={styles.share} onClick={share}>
+            <Image src="/report/share.svg" alt="" width={24} height={24} unoptimized />
+            공유하기
+            <span className="sr-only" aria-live="polite">{shareMessage}</span>
+          </button>
+          <p className={styles.shareCaption}>링크는 3일 뒤 사라져요</p>
+        </div>
       </div>
     </div>
   );

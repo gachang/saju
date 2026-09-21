@@ -42,9 +42,9 @@ test("report heading stays transparent, the backdrop owns only the bottom gradie
   assert.match(headingRule, /background:\s*transparent/);
   assert.match(headingRule, /border:\s*0/);
   assert.match(backdropRule, /background:\s*linear-gradient/);
-  assert.match(backdropRule, /transparent calc\(100% - 440px\)/);
-  assert.match(backdropRule, /#000c17 100%/);
-  assert.doesNotMatch(backdropRule, /rgba\(18, 18, 18/);
+  assert.match(backdropRule, /rgba\(18, 18, 18, 0\.7\) 72\.226%/);
+  assert.match(backdropRule, /100% 250px no-repeat/);
+  assert.doesNotMatch(backdropRule, /calc\(100% - 440px\)/);
   assert.doesNotMatch(screen, /전통 명리의 상징을 활용한 오락 콘텐츠/);
   assert.doesNotMatch(css, /\.footnote\s*\{/);
 });
@@ -70,22 +70,76 @@ test("the Figma orbit circles belong to the loading screen, not the report hero"
   assert.match(orbit, /saju-orbit-track-loading/);
 });
 
-test("the share button has no visible caption below it", () => {
+test("the share dock includes the revised expiring-link caption", () => {
   const screen = readFileSync(new URL("../src/components/ResultScreen.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
+  const captionRule = css.match(/\.shareCaption\s*\{([^}]+)\}/)?.[1] ?? "";
 
   assert.doesNotMatch(screen, /보고서 내용을 바로 공유해요/);
-  assert.doesNotMatch(screen, /styles\.shareCaption/);
-  assert.doesNotMatch(css, /\.shareCaption\s*\{/);
+  assert.match(screen, /<p className=\{styles\.shareCaption\}>링크는 3일 뒤 사라져요<\/p>/);
+  assert.match(captionRule, /font-size:\s*10px/);
+  assert.match(captionRule, /font-weight:\s*400/);
+  assert.match(captionRule, /color:\s*rgba\(248, 242, 230, 0\.8\)/);
   assert.match(screen, /className="sr-only" aria-live="polite"/);
 });
 
-test("the report owns its bottom gradient and keeps compact bordered actions", () => {
+test("the report owns its responsive bottom gradient and uses the revised in-flow actions", () => {
+  const screen = readFileSync(new URL("../src/components/ResultScreen.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
+  const backgroundRule = css.match(/\.background\s*\{([^}]+)\}/)?.[1] ?? "";
+  const contentRule = css.match(/\.content\s*\{([^}]+)\}/)?.[1] ?? "";
+  const dockRule = css.match(/\.shareDock\s*\{([^}]+)\}/)?.[1] ?? "";
+  const restartRule = css.match(/\.restart\s*\{([^}]+)\}/)?.[1] ?? "";
+  const shareRule = css.match(/\.share\s*\{([^}]+)\}/)?.[1] ?? "";
 
-  assert.match(css, /\.background\s*\{[\s\S]*linear-gradient\([\s\S]*#000c17 100%/);
-  assert.match(css, /\.restart\s*\{[\s\S]*border:\s*1\.5px solid #f3ef9c/);
-  assert.match(css, /\.shareDock\s*\{[\s\S]*linear-gradient\(0deg, #000c17 0%, rgba\(0, 30, 59, 0\) 100%\)/);
-  assert.match(css, /\.shareDock\s*\{[\s\S]*backdrop-filter:\s*blur\(4px\)/);
-  assert.match(css, /padding-bottom:\s*calc\(70px \+ max\(24px, env\(safe-area-inset-bottom\)\)\)/);
+  assert.match(backgroundRule, /rgba\(18, 18, 18, 0\.7\) 72\.226%/);
+  assert.match(backgroundRule, /100% 250px no-repeat/);
+  assert.match(restartRule, /border:\s*0/);
+  assert.match(restartRule, /background:\s*rgba\(1, 46, 88, 0\.4\)/);
+  assert.match(restartRule, /color:\s*rgba\(255, 255, 255, 0\.8\)/);
+  assert.match(restartRule, /font-family:\s*var\(--font-report-serif\)/);
+  assert.match(restartRule, /font-size:\s*20px/);
+  assert.match(restartRule, /font-weight:\s*900/);
+  assert.match(restartRule, /line-height:\s*normal/);
+  assert.match(dockRule, /position:\s*relative/);
+  assert.match(dockRule, /gap:\s*10px/);
+  assert.match(dockRule, /#000c17 0%/);
+  assert.match(dockRule, /rgba\(0, 25, 49, 0\.28\) 86\.229%/);
+  assert.match(dockRule, /rgba\(0, 30, 59, 0\) 100%/);
+  assert.match(dockRule, /backdrop-filter:\s*blur\(10px\)/);
+  assert.doesNotMatch(dockRule, /position:\s*fixed/);
+  assert.match(shareRule, /max-width:\s*354px/);
+  assert.match(shareRule, /height:\s*54px/);
+  assert.match(shareRule, /border:\s*1\.5px solid #f3ef9c/);
+  assert.match(shareRule, /font-size:\s*18px/);
+  assert.match(shareRule, /font-weight:\s*800/);
+  assert.doesNotMatch(contentRule, /padding-bottom/);
+  assert.match(screen, /<footer[\s\S]*<div className=\{styles\.shareDock\}>[\s\S]*<\/div>\s*<\/div>/);
+});
+
+test("the revised report hero typography matches the Figma text styles", () => {
+  const css = readFileSync(new URL("../src/components/ResultScreen.module.css", import.meta.url), "utf8");
+  const taglineRule = css.match(/\.tierHeading p\s*\{([^}]+)\}/)?.[1] ?? "";
+  const descriptionRule = css.match(/\.scoreDescription\s*\{([^}]+)\}/)?.[1] ?? "";
+
+  assert.match(taglineRule, /font-family:\s*var\(--font-report-serif\)/);
+  assert.match(taglineRule, /font-size:\s*16px/);
+  assert.match(taglineRule, /font-weight:\s*500/);
+  assert.match(taglineRule, /line-height:\s*normal/);
+  assert.match(descriptionRule, /font-family:\s*var\(--font-report-sans\)/);
+  assert.match(descriptionRule, /font-size:\s*14px/);
+  assert.match(descriptionRule, /font-weight:\s*400/);
+  assert.match(descriptionRule, /line-height:\s*1\.7/);
+  assert.match(descriptionRule, /text-align:\s*center/);
+  assert.match(descriptionRule, /text-wrap:\s*pretty/);
+});
+
+test("the intro and loading copy use the revised Figma font weights and sizes", () => {
+  const intro = readFileSync(new URL("../src/components/IntroScreen.tsx", import.meta.url), "utf8");
+  const analyzing = readFileSync(new URL("../src/components/AnalyzingScreen.tsx", import.meta.url), "utf8");
+
+  assert.match(intro, /text-\[15px\] font-medium leading-\[normal\] text-\[rgba\(252,252,244,0\.78\)\]/);
+  assert.match(intro, /text-\[48px\] font-extrabold leading-\[normal\] text-\[#f3ef9c\]/);
+  assert.match(analyzing, /font-hambak text-\[24px\] font-extrabold leading-\[normal\] text-white/);
+  assert.match(analyzing, /\[font-family:var\(--font-report-serif\)\] text-\[15px\] font-medium leading-\[normal\] text-\[rgba\(252,252,244,0\.78\)\]/);
 });

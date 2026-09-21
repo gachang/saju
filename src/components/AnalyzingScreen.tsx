@@ -153,14 +153,18 @@ export function AnalyzingScreen({
       <div className="absolute top-[14.19%] left-1/2 z-20 flex w-[294px] -translate-x-1/2 flex-col items-center gap-3 text-center">
         <motion.h1
           key={headline}
-          className="w-full whitespace-pre-line font-hambak text-[40px] leading-[normal] text-white"
+          className="w-full whitespace-pre-line font-hambak text-[24px] font-extrabold leading-[normal] text-white"
+          style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
           initial={reduceMotion ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           {headline}
         </motion.h1>
-        <p className="w-full font-hambak text-[20px] leading-[normal] text-[#f8f2e6]">
+        <p
+          className="w-full [font-family:var(--font-report-serif)] text-[15px] font-medium leading-[normal] text-[rgba(252,252,244,0.78)]"
+          style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
+        >
           {visibleError ? "잠시 숨을 고르고 다시 불러보겠기니" : "나가면 힘이 빠지니 기다리겠기니?"}
         </p>
       </div>

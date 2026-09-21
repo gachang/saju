@@ -19,8 +19,6 @@
 .content {
   position: relative;
   min-height: 100%;
-  padding-bottom: 94px;
-  padding-bottom: calc(70px + max(24px, env(safe-area-inset-bottom)));
   isolation: isolate;
 }
 
@@ -32,10 +30,9 @@
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    transparent 0,
-    transparent calc(100% - 440px),
-    #000c17 100%
-  );
+    rgba(18, 18, 18, 0) 0%,
+    rgba(18, 18, 18, 0.7) 72.226%
+  ) bottom center / 100% 250px no-repeat;
 }
 
 .zodiac {
@@ -241,8 +238,10 @@
   color: #f8f2e6;
   font-family: var(--font-report-serif), serif;
   font-size: 16px;
-  font-weight: 900;
-  line-height: 1.45;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  font-feature-settings: "liga" off, "clig" off;
   word-break: keep-all;
 }
 
@@ -314,9 +313,14 @@
   width: 100%;
   margin: 0;
   color: #fff;
+  font-family: var(--font-report-sans), sans-serif;
   font-size: 14px;
+  font-style: normal;
   font-weight: 400;
   line-height: 1.7;
+  text-align: center;
+  text-wrap: pretty;
+  font-feature-settings: "liga" off, "clig" off;
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
@@ -531,36 +535,45 @@
   padding: 14px 24px;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #f3ef9c;
+  border: 0;
   border-radius: 16px;
-  background: #012e58;
-  color: #f3ef9c;
+  background: rgba(1, 46, 88, 0.4);
+  color: rgba(255, 255, 255, 0.8);
   font-family: var(--font-report-serif), serif;
-  font-size: 18px;
+  font-size: 20px;
+  font-style: normal;
   font-weight: 900;
+  line-height: normal;
   cursor: pointer;
 }
 
 .shareDock {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
+  position: relative;
   z-index: 20;
   display: flex;
   width: 100%;
+  margin-top: 10px;
   padding: 18px 24px 24px;
   padding: 18px 24px max(24px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(0deg, #000c17 0%, rgba(0, 30, 59, 0) 100%);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  gap: 10px;
+  background: linear-gradient(
+    to top,
+    #000c17 0%,
+    rgba(0, 25, 49, 0.28) 86.229%,
+    rgba(0, 30, 59, 0) 100%
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .share {
+  position: relative;
+  z-index: 1;
   display: flex;
   width: 100%;
+  max-width: 354px;
   height: 54px;
   padding: 14px 24px;
   align-items: center;
@@ -574,6 +587,20 @@
   font-size: 18px;
   font-weight: 800;
   cursor: pointer;
+}
+
+.shareCaption {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: rgba(248, 242, 230, 0.8);
+  font-family: var(--font-report-sans), sans-serif;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .errorState {
@@ -602,8 +629,7 @@
 }
 
 @media (min-width: 640px) {
-  .screen,
-  .shareDock {
+  .screen {
     max-width: 402px;
   }
 }

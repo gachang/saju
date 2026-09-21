@@ -4,6 +4,8 @@ import "./globals.css";
 
 const hambakSnow = localFont({
   src: "./fonts/SF_HambakSnow.woff2",
+  weight: "800",
+  style: "normal",
   variable: "--font-hambak",
   display: "swap",
 });

@@ -39,7 +39,10 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         </h1>
       </div>
       <div className="absolute inset-x-4 top-[21.62%] z-20 text-center">
-        <p className="[font-family:var(--font-report-serif)] text-[15px] font-black leading-[normal] text-[rgba(252,252,244,0.78)]">
+        <p
+          className="[font-family:var(--font-report-serif)] text-[15px] font-medium leading-[normal] text-[rgba(252,252,244,0.78)]"
+          style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
+        >
           자네 마음에 품은 그 별…
           <br />
           사주팔자로 낱낱이 파헤쳐 주겠네
@@ -96,7 +99,8 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       </p>
 
       <motion.p
-        className="absolute top-[67.39%] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap font-hambak text-[48px] leading-[62px] text-[#f3f04e]"
+        className="absolute top-[67.39%] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap font-hambak text-[48px] font-extrabold leading-[normal] text-[#f3ef9c]"
+        style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
         initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.75, delay: 0.28, ease: "easeOut" }}
