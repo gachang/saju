@@ -116,6 +116,11 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       >
         <GoldButton onClick={onStart} artwork="intro">시작하기</GoldButton>
       </motion.div>
+      <p className="absolute inset-x-4 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 text-center [font-family:var(--font-report-sans)] text-[11px] font-normal leading-[1.6] text-[#888888]">
+        본 서비스는 특정 종교 및 종교 단체와
+        <br />
+        관련이 없습니다.
+      </p>
       </div>
     </section>
   );
