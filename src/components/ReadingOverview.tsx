@@ -99,8 +99,8 @@ export function ReadingHero({ computed }: { computed: Compatibility }) {
             <div
               className={styles.heroTrack}
               role="meter"
-              aria-label="궁합 · 다섯 관계 축 평균"
-              aria-valuemin={0}
+              aria-label="궁합 · 만세력 관계 점수를 1~100으로 보정"
+              aria-valuemin={1}
               aria-valuemax={100}
               aria-valuenow={score}
             >

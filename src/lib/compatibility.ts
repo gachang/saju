@@ -7,7 +7,7 @@ export const AXIS_MEANINGS: Record<typeof AXES[number], string> = {
   끌림: "관심이 시작되는 지점", 소통: "표현 차이를 이해하는 방식", 안정: "편안한 감상 리듬",
   성장: "취향을 넓히는 계기", "덕질 텐션": "몰입과 활력의 정도",
 };
-export const RULES_VERSION = "compat-v1.0-core";
+export const RULES_VERSION = "compat-v1.1-normalized-score";
 export const pairSchema = z.object({ self: chartSchema, favorite: chartSchema }).strict();
 export type ChartPair = z.infer<typeof pairSchema>;
 export const nameLengthsSchema = z.object({
@@ -163,7 +163,13 @@ export function compatibility(pair: ChartPair) {
 }
 
 export function compatibilityScore(computed: ReturnType<typeof compatibility>) {
-  return Math.round(AXES.reduce((sum, axis) => sum + computed.scores[axis], 0) / AXES.length);
+  const mean = AXES.reduce((sum, axis) => sum + computed.scores[axis], 0) / AXES.length;
+  // The current relation table has an unrounded mean range of 51–80:
+  // 상극 + 해 gives +1; 상극 + 합 + 육합 + 파 gives +30.
+  // Position weights sum to 1. Map that rule range onto 1–100, preserving
+  // ordering and evidence. Clamp rounding edge cases; this is not a percentile
+  // or a probability of an actual relationship. Recalibrate if rules change.
+  return Math.max(1, Math.min(100, Math.round(1 + ((mean - 51) / (80 - 51)) * 99)));
 }
 
 export function readingInput(pair: ChartPair, today = new Date().toISOString().slice(0, 10), nameLengths: NameLengths = DEFAULT_NAME_LENGTHS) {
