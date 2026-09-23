@@ -75,7 +75,9 @@ test("the Figma orbit circles belong to the loading screen, not the report hero"
   assert.match(orbit, /intro-orbit-middle\.svg/);
   assert.match(orbit, /top-\[21\.17%\][\s\S]*w-\[60\.78%\]/);
   assert.match(orbit, /data-orbit-rings=\{animationMode\}/);
-  assert.match(orbit, /animationMode === "intro" \? -0\.5 : 0\.5/);
+  assert.match(orbit, /animationMode === "intro" \? -0\.5 : 1/);
+  assert.match(orbit, /top: "50%", translate: "-50% -50%"/);
+  assert.match(orbit, /top: "1\.5%", bottom: "-1\.5%"/);
   assert.match(orbit, /left-\[calc\(50%\+1px\)\]/);
   assert.match(orbit, /saju-orbit-track-intro/);
   assert.match(orbit, /saju-orbit-track-loading/);

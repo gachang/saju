@@ -33,7 +33,12 @@ export function ElementOrbit({
   animationMode = "loading",
 }: Props) {
   const reduceMotion = useReducedMotion();
-  const ringOffset = animationMode === "intro" ? -0.5 : 0.5;
+  const ringOffset = animationMode === "intro" ? -0.5 : 1;
+  // Keep the loading circles concentric with their rotation pivot. Their old
+  // vertical offset inside the rotating box made them drift sideways as it spun.
+  const loadingRingStyle = animationMode === "loading"
+    ? { top: "50%", translate: "-50% -50%", height: "auto" }
+    : { height: "auto" };
   return (
     <div className="relative aspect-square w-full" aria-hidden="true">
       <motion.div
@@ -67,7 +72,10 @@ export function ElementOrbit({
               ? "saju-orbit-track-intro"
               : "saju-orbit-track-loading"
         }`}
-        style={{ left: `${ringOffset}px`, right: `${-ringOffset}px` }}
+        style={{
+          left: `${ringOffset}px`, right: `${-ringOffset}px`,
+          ...(animationMode === "loading" ? { top: "1.5%", bottom: "-1.5%" } : {}),
+        }}
       >
         <Image
           src="/figma-final/loading-orbit-outer.svg"
@@ -76,7 +84,7 @@ export function ElementOrbit({
           height={252}
           sizes="252px"
           className="absolute top-[12.88%] left-1/2 h-auto w-[77.3%] max-w-none -translate-x-1/2"
-          style={{ height: "auto" }}
+          style={loadingRingStyle}
           priority
           unoptimized
         />
@@ -87,7 +95,7 @@ export function ElementOrbit({
           height={234}
           sizes="234px"
           className="absolute top-[15.64%] left-1/2 h-auto w-[71.66%] max-w-none -translate-x-1/2"
-          style={{ height: "auto" }}
+          style={loadingRingStyle}
           priority
           unoptimized
         />
@@ -98,7 +106,7 @@ export function ElementOrbit({
           height={198}
           sizes="198px"
           className="absolute top-[21.17%] left-1/2 h-auto w-[60.78%] max-w-none -translate-x-1/2"
-          style={{ height: "auto" }}
+          style={loadingRingStyle}
           priority
           unoptimized
         />
