@@ -474,7 +474,7 @@
 .pillar {
   display: flex;
   min-width: 0;
-  height: 76px;
+  min-height: 76px;
   padding: 11px 4px;
   flex-direction: column;
   align-items: center;
@@ -488,11 +488,12 @@
 
 .pillarElement,
 .elements {
+  flex-shrink: 0;
   max-width: 100%;
   color: #faf999;
   font-size: 8px;
   font-weight: 400;
-  line-height: normal;
+  line-height: 1.4;
   white-space: nowrap;
 }
 
@@ -505,9 +506,10 @@
 
 .pillarHanja {
   display: flex;
+  flex-shrink: 0;
   width: 32px;
-  height: 24px;
-  align-items: flex-end;
+  min-height: 28px;
+  align-items: center;
   justify-content: center;
   color: #faf999;
   font-family: var(--font-report-chart), serif;
