@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { AnalyzingScreen } from "./AnalyzingScreen";
 import { IntroScreen } from "./IntroScreen";
@@ -10,7 +10,6 @@ import { SelfFormScreen } from "./SelfFormScreen";
 import { loadSelfProfile, saveSelfProfile } from "@/lib/profile-storage";
 import type { Report } from "@/lib/reading-schema";
 import { createInitialForm, type FormState } from "@/lib/saju";
-import homeStyles from "./HomeContent.module.css";
 
 type Step = "intro" | "self" | "partner" | "analyzing" | "result";
 
@@ -29,7 +28,7 @@ const reportFade = {
   exit: { opacity: 0 },
 };
 
-export function Stage({ kakaoJavascriptKey, introContent }: { kakaoJavascriptKey: string; introContent: ReactNode }) {
+export function Stage({ kakaoJavascriptKey }: { kakaoJavascriptKey: string }) {
   const [step, setStep] = useState<Step>("intro");
   const [form, setForm] = useState<FormState>(createInitialForm);
   const [report, setReport] = useState<Report | null>(null);
@@ -77,14 +76,7 @@ export function Stage({ kakaoJavascriptKey, introContent }: { kakaoJavascriptKey
             {...(showingReport ? reportFade : fade)}
             transition={{ duration: 0.45, ease: "easeInOut" }}
           >
-            {step === "intro" && (
-              <div className={homeStyles.scrollArea}>
-                <div className={homeStyles.hero}>
-                  <IntroScreen onStart={openSelfForm} />
-                </div>
-                {introContent}
-              </div>
-            )}
+            {step === "intro" && <IntroScreen onStart={openSelfForm} />}
 
             {step === "self" && (
               <SelfFormScreen

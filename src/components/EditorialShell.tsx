@@ -75,10 +75,11 @@ export default function EditorialShell({
       <footer className={styles.footer}>
         <Link href="/" className={styles.primaryLink}>나와 최애의 사주 보기</Link>
         <nav className={styles.footerNavigation} aria-label="다른 콘텐츠">
+          <Link href="/about">서비스 안내</Link>
           <Link href="/guides">사주 읽는 법</Link>
           <Link href="/example-report">예시 보고서</Link>
         </nav>
-        <p>성덕기니 · 좋아하는 마음을 읽는 작은 안내서</p>
+        <p>성덕기니 · 좋아하는 마음을 조금 다르게 읽어드려요</p>
       </footer>
     </div>
   );

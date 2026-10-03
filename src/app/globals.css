@@ -29,7 +29,8 @@ body {
 
 body {
   margin: 0;
-  overscroll-behavior-y: none;
+  /* Articles scroll on the document; input/report shells contain their own scrolling. */
+  overscroll-behavior-y: auto;
 }
 
 @keyframes saju-intro-enter {

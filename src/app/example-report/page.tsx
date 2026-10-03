@@ -15,7 +15,7 @@ export default function ExampleReportPage() {
       <article className={styles.article} aria-label="여덟 장으로 읽는 팬과 아티스트의 이야기">
         <section className={styles.introduction}>
           <p className={styles.sampleNames}>{EXAMPLE_REPORT.selfName} 님 × {EXAMPLE_REPORT.favoriteName} 님</p>
-          <h2>이 보고서를 읽기 전에</h2>
+          <h2>민서와 하루를 소개할게요</h2>
           <p>{EXAMPLE_REPORT.introduction}</p>
         </section>
         <nav className={styles.contents} aria-label="예시 보고서 목차">

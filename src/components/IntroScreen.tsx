@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { BrandMark } from "./BrandMark";
 import { ElementOrbit } from "./ElementOrbit";
@@ -33,12 +34,12 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         data-intro-content="true"
         className="saju-intro-enter absolute inset-0"
       >
-      <a
-        href="#service-guide"
+      <Link
+        href="/about"
         className="absolute top-4 right-4 z-30 rounded-full border border-[#f3ef9c]/30 bg-ink-deep/35 px-3 py-2 [font-family:var(--font-report-sans)] text-[11px] text-[#f3ef9c] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
       >
-        서비스 안내 <span aria-hidden="true">↓</span>
-      </a>
+        서비스 안내 <span aria-hidden="true">↗</span>
+      </Link>
       <div className="absolute inset-x-4 top-[16.48%] z-20 text-center">
         <h1 className="font-hambak text-[24px] leading-[31px] text-white">
           성덕의 기운이 흐를지 보겠기니
