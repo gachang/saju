@@ -51,6 +51,23 @@ const unsupportedDeficiencyPattern = /(?:오행|타고난 기운|명식)[^.!?]{0
 export const hasBrokenTitleClause = (title: string) =>
   /(?:았|었|였|했|됐|렸|졌|쳤|냈|켰|웠|겼|췄)(?:\s*,|\s+(?!기니)(?=[가-힣]))/u.test(title.normalize("NFC"));
 
+// Match technical failure notices, not ordinary fandom setbacks such as
+// "알림 오류" or "팬아트 저장 실패". Strict JSON alone cannot catch these.
+const generationErrorNoticePatterns = [
+  /(?:요청|응답)\s*(?:형식|포맷)(?:이|은)?\s*(?:오류|에러|실패|잘못|올바르지|유효하지)/u,
+  /(?:요청|응답)\s*(?:처리|생성|검증)(?:\s*중)?\s*(?:오류|에러|실패)/u,
+  /(?:\bAPI\b|\bJSON\b|\bSchema\b|스키마)[^,.!?]{0,40}(?:오류|에러|실패|불가|불가능|할\s*수\s*없|\b(?:error|failed|failure|invalid|unavailable|unable)\b)/iu,
+  /(?:보고서|리포트|응답|결과|출력)\s*(?:를\s*)?생성(?:에|이|을)?\s*(?:실패|불가|불가능|불(?=기니|$)|할\s*수\s*없|하지\s*못)/u,
+  /^생성\s*(?:불가|불가능|실패)(?:기니)?[.!?]?$/u,
+  /\b(?:invalid|failed|error|unable to)\s+(?:request|response|json|schema|generat(?:e|ion))\b/iu,
+  /\b(?:request|response|json|schema|report generation)\s+(?:format\s+)?(?:is\s+)?(?:error|failed|failure|invalid|unavailable)\b/iu,
+];
+
+export function hasGenerationErrorNotice(title: string) {
+  const normalized = title.normalize("NFKC").replace(/\s+/gu, " ").trim();
+  return generationErrorNoticePatterns.some(pattern => pattern.test(normalized));
+}
+
 function hasReciprocalAffectionClaim(text: string) {
   return sentences(text).some(sentence => {
     // These are targeted warning patterns, not a proof that all prose is grounded.
@@ -112,6 +129,7 @@ export function validateSection(section: ReportSection, input: ReadingInput) {
     || /\s기니[!?]?$/u.test(section.title)
     || !expectedTitleEnd.test(section.title)) fail("title_style");
   if (hasBrokenTitleClause(section.title)) fail("title_fluency");
+  if (hasGenerationErrorNotice(section.title)) fail("title_generation_error");
   if (length < 700 || length > 750) fail(`body_length=${length}`);
   if (paragraphs.some(p => /[\r\n]/u.test(p))) fail("paragraph_break");
   if (paragraphs.some(p => !/[.!?]$/u.test(p.trim()))) fail("unfinished_sentence");

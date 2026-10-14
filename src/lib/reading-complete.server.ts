@@ -2,7 +2,7 @@ import { READING_MODEL } from "./reading-client.server";
 import { readingInput, type ChartPair, type NameLengths } from "./compatibility";
 import { generateReading, type ReadingModel } from "./reading.server";
 import type { PipelineEvent } from "./reading-pipeline";
-import { REPORT_CHAPTER_TITLES, hasBrokenTitleClause, normalizeTitleStyle, validateReport, type Report } from "./reading-schema";
+import { REPORT_CHAPTER_TITLES, hasBrokenTitleClause, hasGenerationErrorNotice, normalizeTitleStyle, validateReport, type Report } from "./reading-schema";
 import { PROMPT_VERSION } from "./reading-prompt";
 
 export type ReadingUsage = { model: ReadingModel; phase: string; usage: unknown; elapsedMs: number };
@@ -34,9 +34,11 @@ const sanitizeParagraph = (paragraph: string) => paragraph
 export const finalizeSection = (section: Report["sections"][number]) => {
   const paragraphs = section.paragraphs.map(paragraph => finishParagraph(removeAbstractClosing(sanitizeParagraph(paragraph))));
   const normalized = normalizeTitleStyle({ ...section, paragraphs });
-  // Keep the generated wording; only a genuinely broken/empty title falls back
-  // to its chapter label, never a fabricated stock conclusion.
-  return normalized.title.trim() && !hasBrokenTitleClause(normalized.title)
+  // Check the original too so style normalization cannot hide an error notice.
+  // Keep valid wording; use only a neutral label for broken or non-content titles.
+  const hasContent = /[\p{L}\p{N}]/u.test(normalized.title.replace(/기니[!?]*$/u, ""));
+  return hasContent && !hasBrokenTitleClause(normalized.title)
+    && !hasGenerationErrorNotice(section.title) && !hasGenerationErrorNotice(normalized.title)
     ? normalized
     : { ...normalized, title: REPORT_CHAPTER_TITLES[section.id - 1] };
 };

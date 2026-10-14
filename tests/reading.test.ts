@@ -199,6 +199,35 @@ test("titles reject clipped past-tense clauses while allowing natural connective
   }
 });
 
+test("technical generation notices fail content validation without banning fandom setbacks", () => {
+  const section = sectionWithText("두 표현을 살펴봐요.");
+  for (const title of [
+    "어두운 화면을 가른 한 줄의 빛, 시선이 오래 머물-요청 형식 오류로 생성 불기니",
+    "요청\t형식\n오류로 생성 불가",
+    "ＡＰＩ 요청 실패로 보고서 생성 불가",
+    "JSON 파싱 실패",
+    "JSON parsing failed",
+    "JSON schema validation failed",
+    "스키마 검증 오류",
+    "요청 처리 중 오류가 발생했습니다",
+    "요청 형식이 올바르지 않아 생성할 수 없습니다",
+    "생성 불가",
+    "보고서 생성 실패",
+    "Invalid request format",
+    "Request format is invalid",
+    "Report generation failed",
+  ]) {
+    assert.ok(validateSection({ ...section, title }, input).includes("1:title_generation_error"), title);
+  }
+  for (const title of [
+    section.title,
+    "알림 오류로 놓친 방송을 다시 즐기는 시간",
+    "팬아트 저장 실패 뒤에도 이어지는 응원",
+  ]) {
+    assert.ok(!validateSection({ ...section, title }, input).includes("1:title_generation_error"), title);
+  }
+});
+
 test("compatibility section preserves supplied type and explains every named axis", () => {
   const definitions = AXES.map(axis => `${axis}은 ${input.axis_meanings[axis]}을 뜻해요.`).join(" ");
   const section = sectionWithText(`${input.compatibility_type}이에요. ${definitions}`, 5);

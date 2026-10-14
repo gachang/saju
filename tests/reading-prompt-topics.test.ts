@@ -4,7 +4,7 @@ import { PROMPT_VERSION, SECTION_BLUEPRINTS, SECTION_TOPICS, SYSTEM_PROMPT } fro
 import { REPORT_CHAPTER_TITLES } from "../src/lib/reading-schema";
 
 test("the report prompt anchors every chapter in a distinct fan experience", () => {
-  assert.equal(PROMPT_VERSION, "otaku-report-v2.9-open-scenes");
+  assert.equal(PROMPT_VERSION, "otaku-report-v2.10-title-content-guard");
   assert.equal(SECTION_TOPICS.length, 8);
   assert.equal(SECTION_BLUEPRINTS.length, 8);
   assert.equal(new Set(SECTION_BLUEPRINTS).size, 8);
@@ -20,4 +20,10 @@ test("the report prompt anchors every chapter in a distinct fan experience", () 
   assert.match(SYSTEM_PROMPT, /모든 장에 똑같은 ‘설명→주의→조언’ 틀을 복제하지 않는다/u);
   assert.match(SYSTEM_PROMPT, /‘멈췄 다른’, ‘곱씹었 조금씩’, ‘조화시켰 서로’는 금지/u);
   assert.match(SYSTEM_PROMPT, /자연스러운 연결형으로 다시 쓴다/u);
+  assert.match(SYSTEM_PROMPT, /35~45자를 목표로/u);
+  assert.match(SYSTEM_PROMPT, /짧고 완성된 제목을 우선/u);
+  assert.match(SYSTEM_PROMPT, /과거형이나 특정 동사를 강제하지 않는다/u);
+  assert.match(SYSTEM_PROMPT, /현재형·명사형도 문법과 의미가 자연스러우면 허용/u);
+  assert.match(SYSTEM_PROMPT, /본문에 없는 내용을 덧붙이지 않는다/u);
+  assert.match(SYSTEM_PROMPT, /API·스키마·요청 형식·생성 실패 등 기술적 오류나 작업 상태를 제목에 쓰지 않는다/u);
 });
